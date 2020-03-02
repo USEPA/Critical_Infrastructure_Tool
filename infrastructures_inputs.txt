@@ -1,0 +1,23 @@
+n0 100 50 50 100 100 100 100 100 100
+p0 8623000 0 0 0
+repair_factors 0.9 0.5 0.6 0.05 0.05 0.05 0.05 0.05 0.05
+nLoss None
+tLoss None
+timeSpan 80
+nRun 100
+paramTypes recover_time
+paramIndexes 1
+infStoichFactor 1
+printProgress True
+averaging False
+intervals False
+agent natural_disaster
+seedValue 1234
+name sample2
+remediationFactor 1 1 1 1 1 1 1 1 1
+contamination 0 0 0 0 0 0 0 0 0
+maxPercent 40
+backups None
+backupPercent None
+daysBackup None
+depBackup None
