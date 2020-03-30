@@ -9,7 +9,10 @@ TODO: Guide users through getting your code up and running on their own system. 
 4.	API references
 
 # Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+
+From command line: 
+run: pip install pyinstaller
+run (in the folder with all the files): pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
 
 # Contribute
 TODO: Explain how other users and developers can contribute to make your code better. 
