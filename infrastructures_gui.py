@@ -8,14 +8,20 @@ Revised by: Mitchell Wendt
 """
 
 #import statements
-import tkinter as tk
-import tkinter.messagebox
+import sys
+if (sys.version_info > (3, 0)):
+  import tkinter as tk
+else:
+  import Tkinter as tk
 import infrastructures_from_file
 import coefficients_from_file
 import tkinter.messagebox as tkMessageBox
 import infrastructures_mapping
 import os
-from tkinter.filedialog import askopenfilename
+if (sys.version_info > (3,0)):
+  from tkinter.filedialog import askopenfilename
+else:
+  from tkFileDialog import askopenfilename
 
 
 class CreateToolTip(object):
