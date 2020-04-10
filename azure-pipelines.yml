@@ -28,3 +28,7 @@ steps:
     python -m pip install pyinstaller
     pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
   displayName: 'Install dependencies'
+
+- script: |
+    pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
+  displayName: 'Create Installer'
