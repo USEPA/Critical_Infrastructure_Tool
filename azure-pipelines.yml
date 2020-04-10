@@ -21,7 +21,7 @@ steps:
 
 - script: |
     python -m pip install --upgrade pip
-    pip install pyinstaller numpy
+    pip install pyinstaller numpy matplotlib
     python infrastructures_gui.py
 # pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
   displayName: 'Install dependencies'
