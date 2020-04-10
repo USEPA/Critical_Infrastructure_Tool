@@ -9,18 +9,24 @@ Revised by: Mitchell Wendt
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import statistics
 from scipy.stats import kurtosis, skew
+import geopandas as gpd
 
 # def results(t, n, p, nRun, timeSpan, averages, bin_size, paramTypes, paramIndexes, param_vals, agent):
-def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam):
+def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime):
 
     #Plot histograms if relevant
+    overlap = pd.concat([gpd.read_file(r'C:\Repos\EPA\Shapefiles\harvey\houston data\HoustonBlocks.shp'), gpd.read_file(r'C:\Users\joshit\Desktop\dissolved2.shp')])
+    overlap['color'] = ['#C62828', '#C62828', '#283593', '#FF9800', '#283593']
+    overlap.plot(color=overlap['color'])
+    plt.show()
     if nRun > 1 and paramTypes is not None and paramIndexes is not None:
 
         for i in range(0,len(paramTypes)):
             plt.figure(figsize=(17,8))
-            plt.hist(param_vals[i], bins='auto')
+            plt.hist(param_vals[i], range=[0, maxTime])
 
             #fetch sector name and parameter name for title
             if paramTypes[i] == 'min':
