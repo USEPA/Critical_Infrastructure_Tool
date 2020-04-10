@@ -22,10 +22,11 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
+    python -m pip install numpy
     python -m pip install scipy
     python -m pip install pandas
     python -m pip install matplotlib
-    python -m pip install pyinstaller
+    python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
   displayName: 'Install dependencies'
 
 - script: |
