@@ -5,7 +5,7 @@ trigger:
 - master_dev
 
 variables:
-  buildTime: $(Date:yyyy-MM-dd-hh-mm-ss)
+  buildTime: $(Get-Date -Format yyyyMMddhhmmss)
 
 pool: 'Default'
 strategy:
