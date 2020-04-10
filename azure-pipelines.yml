@@ -4,6 +4,9 @@ trigger:
 - master
 - master_dev
 
+variables:
+  buildTime: $(Date:yyyy-MM-dd-hh-mm-ss)
+
 pool: 'Default'
 strategy:
   matrix:
@@ -15,10 +18,7 @@ workspace:
 
 steps:
  - script: | 
-    echo $(Build.DefinitionName)
-    echo $(Build.DefinitionVersion)
-    echo $(name)
-    echo $(Build.BuildId)
+    echo $(buildTime)
 
 # - task: UsePythonVersion@0
 #   inputs:
