@@ -25,5 +25,6 @@ steps:
     python -m pip install scipy
     python -m pip install pandas
     python -m pip install matplotlib
+    python -m pip install pyinstaller
     pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
   displayName: 'Install dependencies'
