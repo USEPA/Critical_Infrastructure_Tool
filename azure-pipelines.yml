@@ -4,9 +4,6 @@ trigger:
 - master
 - master_dev
 
-variables:
-  buildTime: $(Get-Date -Format yyyyMMddhhmmss)
-
 pool: 'Default'
 strategy:
   matrix:
@@ -18,7 +15,7 @@ workspace:
 
 steps:
  - script: | 
-    echo $(buildTime)
+    echo $(Build.BuildNumber)
 
 # - task: UsePythonVersion@0
 #   inputs:
