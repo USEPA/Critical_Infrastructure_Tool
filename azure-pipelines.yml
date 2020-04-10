@@ -9,7 +9,7 @@ trigger:
 pool: 'Default'
 strategy:
   matrix:
-    Python27:
+    Python37:
       python.version: '3.7'
 
 steps:
