@@ -1,0 +1,10 @@
+﻿Sector,Water,Energy,Transport,Communications,Government,Food,Emergency,Waste,Healthcare
+Water,0.76,0.98,0,0.72,0,0,0,0.11,0
+Energy,0.28,0.79,0,0.83,0,0,0,0.32,0
+Transport,0.69,0.82,0,0.64,0,0,0,0.53,0
+Communications,0.57,0.98,0,0.76,0,0,0,0.53,0
+Government,1,0.75,0,0.88,0,0,0,0.97,0
+Food,0.18,1,0,0.74,0,0,0,0.18,0
+Emergency,0.57,1,0,0.96,0,0,0,0.95,0
+Waste,0.14,0.98,0,0.64,0,0,0,0.68,0
+Healthcare,0.98,1,0,0.98,0,0,0,0.18,0
