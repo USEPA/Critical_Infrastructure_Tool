@@ -1,7 +1,4 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+name: $(Date:yyyy-MM-dd-hh-mm-ss)$(Rev:.r)
 
 trigger:
 - master
@@ -12,12 +9,16 @@ strategy:
     Python37:
       python.version: '3.7'
 
+workspace: 
+  clean: all
+
 steps:
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '$(python.version)'
     addToPath: true
     architecture: 'x64'
+  displayName: 'Set Python Version'
 
 - script: |
     python -m pip install --upgrade pip
@@ -27,8 +28,23 @@ steps:
     python -m pip install pandas
     python -m pip install matplotlib
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
-  displayName: 'Install dependencies'
+  displayName: 'Install Dependencies'
 
 - script: |
     pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
-  displayName: 'Create Installer'
+  displayName: 'Create Application'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: 'dist'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+  displayName: 'Archive Application'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
