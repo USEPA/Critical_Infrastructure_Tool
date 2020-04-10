@@ -8,11 +8,18 @@ Revised by: Mitchell Wendt
 """
 
 #import statements
-import Tkinter as tk
+import sys
+if (sys.version_info > (3, 0)):
+  import tkinter as tk
+else:
+  import Tkinter as tk
 import infrastructures_from_file
 import coefficients_from_file
 import os
-from tkFileDialog import askopenfilename
+if (sys.version_info > (3,0)):
+  from tkinter.filedialog import askopenfilename
+else:
+  from tkFileDialog import askopenfilename
 
 def main():
     LARGE_FONT= ("Verdana", 24)
