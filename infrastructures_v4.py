@@ -21,7 +21,7 @@ leg = ""
 
 def infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
                     infStoichFactor, printProgress, averaging, confIntervals, agent, seedValue, imageFileName, remediationFactor, contamination,
-                    backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks):
+                    backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives):
 
     '''
     This function calls Gillespie_model to simulate the situational
@@ -131,11 +131,17 @@ def infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramT
     for i in range (0, nRun):
         if printProgress and nRun > 1:
             print("Run " + str(i))
-            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, False, contamination, remediationFactor, backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks)
+            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, 
+                                              infStoichFactor, False, contamination, remediationFactor, backups, 
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
         elif printProgress:
-            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, True, contamination, remediationFactor, backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks)
+            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, 
+                                              infStoichFactor, True, contamination, remediationFactor, backups, 
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
         else:
-            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, False, contamination, remediationFactor, backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks)
+            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, 
+                                              infStoichFactor, False, contamination, remediationFactor, backups, 
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
         if averaging and nRun > 1:
             for j in range(0, int(timeSpan/bin_size)):
                 for k in range(0, len(n)):
@@ -185,7 +191,7 @@ def infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramT
                     averages[i][j] = averages[i][j]/num_in_bin[i]
 
     #Plotting
-    infrastructures_results.results(nRun, paramTypes, paramIndexes, param_vals, imageFileName, contam)
+    infrastructures_results.results(nRun, paramTypes, paramIndexes, param_vals, imageFileName, contam, int(timeSpan))
     #make interactive plot of infrastructure efficiency time profiles
     if averages is not None:
         bin_t = np.arange(0, timeSpan, bin_size)
@@ -253,7 +259,7 @@ def adjustContamination(contamination, remediationFactor, timestep):
             results[c] = 100
     return results
 
-def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, printProgress, contamination, remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0):
+def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, printProgress, contamination, remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0, negatives):
     '''
     This function simulates interconnected infrastructures using the Gillespie
     algorithm to stochastically determine the efficiencies of the water,
@@ -442,7 +448,6 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
         if index == 1:
             n[index-1][8] -= p[index-1][1]*bed_const
             if n[index-1][8] <= 0:
-                print("oopsie")
                 n[index-1][8] = infStoichFactor
 
         #calculate the ratio of healthy people to all people (healthy, sick, immune, dead)
@@ -631,6 +636,10 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
             v[reaction] += adj_repair_factors[reaction]
             for b in range(0, len(backupI)):
                 v[int(backupI[b])] = 0
+            if not negatives:
+                for b in range(0, len(coeffs[reaction])):
+                    if b != reaction:
+                        v[b] = 0
 
         #otherwise a disease outbreak equation is being applied. Done 10 at a time to reduce computational time
         elif q < csp[8]:
