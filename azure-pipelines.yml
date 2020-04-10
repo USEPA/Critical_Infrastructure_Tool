@@ -14,38 +14,40 @@ workspace:
   clean: all
 
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-    addToPath: true
-    architecture: 'x64'
-  displayName: 'Set Python Version'
+ - script: echo $(Build.name)
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-    python -m pip install numpy
-    python -m pip install scipy
-    python -m pip install pandas
-    python -m pip install matplotlib
-    python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
-  displayName: 'Install Dependencies'
+# - task: UsePythonVersion@0
+#   inputs:
+#     versionSpec: '$(python.version)'
+#     addToPath: true
+#     architecture: 'x64'
+#   displayName: 'Set Python Version'
 
-- script: |
-    pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
-  displayName: 'Create Application'
+# - script: |
+#     python -m pip install --upgrade pip
+#     pip install -r requirements.txt
+#     python -m pip install numpy
+#     python -m pip install scipy
+#     python -m pip install pandas
+#     python -m pip install matplotlib
+#     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
+#   displayName: 'Install Dependencies'
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: 'dist'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Date:yyyy-MM-dd-hh-mm-ss).zip'
-    replaceExistingArchive: true
-  displayName: 'Archive Application'
+# - script: |
+#     pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
+#   displayName: 'Create Application'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+# - task: ArchiveFiles@2
+#   inputs:
+#     rootFolderOrFile: 'dist'
+#     includeRootFolder: false
+#     archiveType: 'zip'
+#     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Date:yyyy-MM-dd-hh-mm-ss).zip'
+#     replaceExistingArchive: true
+#   displayName: 'Archive Application'
+
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#     ArtifactName: 'drop'
+#     publishLocation: 'Container'
