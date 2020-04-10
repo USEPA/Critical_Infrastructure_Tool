@@ -14,7 +14,7 @@ workspace:
   clean: all
 
 steps:
- - script: echo $(Build.name)
+ - script: echo $(Build.DefinitionName)
 
 # - task: UsePythonVersion@0
 #   inputs:
