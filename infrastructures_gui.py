@@ -12,6 +12,8 @@ import tkinter as tk
 import tkinter.messagebox
 import infrastructures_from_file
 import coefficients_from_file
+import tkinter.messagebox as tkMessageBox
+import infrastructures_mapping
 import os
 from tkinter.filedialog import askopenfilename
 
@@ -133,7 +135,6 @@ def main():
                 f.write("name "+ str(var17.get())+"\n")
                 f.write("remediationFactor "+ str(var18.get())+"\n")
                 f.write("contamination "+ str(var19.get())+"\n")
-                f.write("maxPercent "+ str(var20.get())+"\n")
                 f.write("backups "+ str(var21.get())+"\n")
                 f.write("backupPercent "+ str(var22.get())+"\n")
                 f.write("daysBackup "+ str(var23.get())+"\n")
@@ -146,14 +147,24 @@ def main():
 
             def loadCoeff():
                 filename = askopenfilename()
-                self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
+                if ".csv" in filename:
+                    self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
+                else:
+                    tkMessageBox.showerror("Error","Must be CSV file")
+
+            def openGIS():
+                filename = askopenfilename()
+                if ".shp" in filename:
+                    infrastructures_mapping.loadMap(filename)
+                else:
+                    tkMessageBox.showerror("Error","Must be shapefile")
 
             def loadInits():
                 filename = askopenfilename()
                 self.orders, self.coeffs, self.k = efficiencies_from_file.load_file(filename)
                 
             n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
-                confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, maxPercent, backups, \
+                confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, backups, \
                 backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file()
 
             mainframe = tk.Frame.__init__(self,parent)
@@ -235,12 +246,12 @@ def main():
             NLoss.insert(0, nLoss)
             NLoss.grid(row=7, column = 1, sticky=tk.NSEW)
 
-            tk.Label(self, text="Time of additional infrastructure outages \n(if applicable, days): ", font=("Arial", 10)).grid(row=10, column = 2, sticky=tk.W)
+            tk.Label(self, text="Time of additional infrastructure outages \n(if applicable, days): ", font=("Arial", 10)).grid(row=9, column = 2, sticky=tk.W)
             var9 = tk.StringVar()
             TLoss = tk.Entry(self, textvariable=var9)
             TLoss_ttp = CreateToolTip(TLoss, 'Enter additional time outage')
             TLoss.insert(0, tLoss)
-            TLoss.grid(row=10, column = 3, sticky=tk.NSEW)
+            TLoss.grid(row=9, column = 3, sticky=tk.NSEW)
 
             tk.Label(self, text="Number of stochastic runs:", font=("Arial", 10)).grid(row=2, column = 2, sticky=tk.W)
             var10 = tk.StringVar()
@@ -282,12 +293,6 @@ def main():
             SeedValue = tk.Entry(self, textvariable=var16)
             SeedValue.insert(0, seedValue)
             SeedValue.grid(row=7, column = 3, sticky=tk.NSEW)
-
-            tk.Label(self, text="Maximum Percent: ", font=("Arial", 10)).grid(row=9, column = 2, sticky=tk.W)
-            var20 = tk.StringVar()
-            PercentValue= tk.Entry(self, textvariable=var20)
-            PercentValue.insert(0, maxPercent)
-            PercentValue.grid(row=9, column = 3, sticky=tk.NSEW)
 
             tk.Label(self, text="Results Chart Name: ", font=("Arial", 10)).grid(row=8, column = 2, sticky=tk.W)
             var17 = tk.StringVar()
@@ -341,9 +346,10 @@ def main():
                 var25 = tk.IntVar()
             tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=15, sticky=tk.W)
 
-            tk.Button(self, text='Run',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=13, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Quit', bg='#FCB1A0', command=self.destroy, font=("Arial", 14)).grid(row=14, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=12, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Run',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=14, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Quit', bg='#FCB1A0', command=self.destroy, font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=13, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Load GIS Data', font=("Arial", 14), bg='#bcbddc', command= lambda: openGIS()).grid(row=12, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Load Initial Values', command= lambda: loadCoeff()).grid(row=19, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Optimize', command= lambda: run(True)).grid(row=13, column=0, sticky=tk.NSEW, columnspan=2)
 

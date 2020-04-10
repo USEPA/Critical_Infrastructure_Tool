@@ -16,7 +16,6 @@ seedValue 1234
 name sandy_default
 remediationFactor 1 1 1 1 1 1 1 1 1
 contamination 0 0 0 0 0 0 0 0 0
-maxPercent 40
 backups None
 backupPercent None
 daysBackup None

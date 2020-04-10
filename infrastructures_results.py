@@ -12,16 +12,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import statistics
 from scipy.stats import kurtosis, skew
-import geopandas as gpd
 
 # def results(t, n, p, nRun, timeSpan, averages, bin_size, paramTypes, paramIndexes, param_vals, agent):
 def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime):
 
     #Plot histograms if relevant
-    overlap = pd.concat([gpd.read_file(r'C:\Repos\EPA\Shapefiles\harvey\houston data\HoustonBlocks.shp'), gpd.read_file(r'C:\Users\joshit\Desktop\dissolved2.shp')])
-    overlap['color'] = ['#C62828', '#C62828', '#283593', '#FF9800', '#283593']
-    overlap.plot(color=overlap['color'])
-    plt.show()
     if nRun > 1 and paramTypes is not None and paramIndexes is not None:
 
         for i in range(0,len(paramTypes)):

@@ -32,7 +32,6 @@ def run_file(optimize, orders, coeffs, ks):
     name = 'results'
     remediationFactor = (1,1,1,1,1,1,1,1,1)
     contamination = (0,0,0,0,0,0,0,0,0)
-    maxPercent = 40
 
     #read file
     fname = "infrastructures_inputs.txt"
@@ -278,18 +277,6 @@ def run_file(optimize, orders, coeffs, ks):
                     raise ValueError("contamination values must be greater than zero and less than or equal to 100")
             contamination = c_values
 
-        elif values[0] == "maxPercent":
-            if values[1] == "none" or values[1] == "None" or values[1] == "false" or values[1] == "False":
-                maxPercent = None
-            else:
-                try:
-                    maxPercent = float(values[1])
-                except:
-                    tkMessageBox.showerror("Error","maxPercent input must be an integer or 'None'")
-                    raise TypeError("maxPercent input must be an integer or 'None'")
-                if sum(remediationFactor) > maxPercent:
-                    tkMessageBox.showerror("Error","Sum of remediation factors must be less than max percent")
-                    raise TypeError("Sum of remediation factors must be less than max percent")
 
         elif values[0] == "backups":
             values.pop(0)
@@ -382,7 +369,7 @@ def run_file(optimize, orders, coeffs, ks):
     if optimize:
         leg = infrastructures_v4.optimizeDecon(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
                                              paramIndexes, infStoichFactor, printProgress, averaging, intervals, agent, seedValue, name, remediationFactor, contamination,
-                                               maxPercent, orders, coeffs, ks,)
+                                               orders, coeffs, ks,)
     else:
         leg = infrastructures_v4.infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
                                              paramIndexes, infStoichFactor, printProgress, averaging, intervals, agent, seedValue, name, remediationFactor, contamination,
@@ -511,8 +498,6 @@ def read_file():
                 else:
                     contamString = contamString + " " + values[j]
 
-        elif values[0] == "maxPercent":
-            percentString = values[1]
 
         elif values[0] == "backups":
             values.pop(0)
@@ -555,7 +540,7 @@ def read_file():
 
     return n0String, p0String, repair_factorsString, nLossString, tLossString, timeSpanString, nRunString, paramTypesString, \
             paramIndexesString, printProgressString, averagingString, intervalsString, infStoichFactorString, agentString, \
-            seedValueString, nameString, remediationString, contamString, percentString, backupsString, backupPercentString, daysBackupString, depBackupString, \
+            seedValueString, nameString, remediationString, contamString, backupsString, backupPercentString, daysBackupString, depBackupString, \
             negativesString
     #return n0String, repair_factorsString, nLossString, tLossString, timeSpanString, nRunString, paramTypesString,
            #paramIndexesString, printProgressString, averagingString, intervalsString, seedValueString
