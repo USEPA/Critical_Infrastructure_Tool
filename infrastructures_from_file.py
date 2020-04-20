@@ -110,26 +110,25 @@ def run_file(optimize, orders, coeffs, ks):
         raise ValueError("nRun must be an integer 1 or greater")
 
     pt_values = list(data["paramTypes"])
+    paramTypes = []
     if pt_values[0] == "None" or pt_values[0] == "none":
         paramTypes = None
         paramIndexes = None
     else:
-        params = []
         for i in range(0, len(pt_values)):
             if pt_values[i] != "min" and pt_values[i] != "max" and pt_values[i] != "average" and pt_values[i] != "final_val" and pt_values[i] != "rt":
                 tkMessageBox.showerror("Error","Unknown parameter type, acceptable values are 'min', 'max', 'average', 'rt', and 'final_val'")
                 raise ValueError("Unknown parameter type, acceptable values are 'min', 'max', 'average', 'rt', and 'final_val'")
             else:
-                params.append(pt_values[i])
-        paramTypes = np.asarray(params)
+                paramTypes.append(pt_values[i])
 
     pi_values = list(data["paramIndexes"])
+    paramIndexes = []
     if pi_values[0] == "None" or pi_values[0] == "none":
         paramTypes = None
         paramIndexes = None
     else:
-        paramIndexes = []
-        if check_inputs("paramIndexes", paramIndexes, 9, 0, len(paramTypes)):       
+        if check_inputs("paramIndexes", pi_values, 9, 0, len(paramTypes)):    
             for i in range(0, len(pi_values)):
                 try:
                     paramIndexes.append(int(pi_values[i]))
