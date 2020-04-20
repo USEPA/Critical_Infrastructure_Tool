@@ -57,7 +57,7 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             plt.title('Parameter Histogram: ' + param_name + ' of ' + sector_name + ' Sector Efficiency')
             plt.xlabel('Parameter Value')
             plt.ylabel('Frequency of Parameter Range')
-            plt.savefig(runName + " " + sector_name)
+            plt.savefig("Images/" + runName + " " + sector_name)
             #print out distribution statistics as desired
             print("")
             print(param_name + ' of ' + sector_name + ' Sector Efficiency')
