@@ -5,8 +5,8 @@ nLoss None
 tLoss None
 timeSpan 50
 nRun 100
-paramTypes rt rt rt rt rt
-paramIndexes 1 2 3 8 0
+paramTypes rt
+paramIndexes 1
 infStoichFactor 1
 printProgress False
 averaging False
