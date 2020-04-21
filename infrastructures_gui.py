@@ -153,7 +153,19 @@ def main():
                 self.leg = infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
                     print(self.leg)
-
+                    
+            def runLoaded():
+                filename = askopenfilename()
+                if ".json" in filename:
+                    n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
+                    confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, backups, \
+                    backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file(filename)
+                    json_data = open(filename)
+                    data = json.load(json_data)
+                    with open(dirpath + "//" + "infrastructure_inputs.json", 'w') as outfile:
+                        json.dump(data, outfile)
+                    refresh()
+                
             def loadCoeff():
                 filename = askopenfilename()
                 if ".csv" in filename:
@@ -172,9 +184,11 @@ def main():
                 filename = askopenfilename()
                 self.orders, self.coeffs, self.k = efficiencies_from_file.load_file(filename)
                 
+                
             n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
                 confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, backups, \
                 backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file()
+            
 
             mainframe = tk.Frame.__init__(self,parent)
             label = tk.Label(self, text="Start Page", font=("Arial", 40))
@@ -355,11 +369,11 @@ def main():
                 var25 = tk.IntVar()
             tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=15, sticky=tk.W)
 
-            tk.Button(self, text='Run',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=14, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=14, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Quit', bg='#FCB1A0', command=self.destroy, font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=13, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Load GIS Data', font=("Arial", 14), bg='#bcbddc', command= lambda: openGIS()).grid(row=12, column=2, sticky=tk.NSEW, columnspan=2)
-            #tk.Button(self, text='Load Initial Values', command= lambda: loadCoeff()).grid(row=19, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc', command= lambda: runLoaded()).grid(row=12, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Optimize', command= lambda: run(True)).grid(row=13, column=0, sticky=tk.NSEW, columnspan=2)
 
             #GUI Spacing
@@ -368,11 +382,17 @@ def main():
             for i in range(0,4):
                 self.grid_columnconfigure(i, weight=1, uniform="bar")
 
+    global app
     app = TKinterWindow()
     app.title("Battelle-Gillespie Infrastructure Model")
     app.mainloop()
 
 if __name__ == '__main__':
+
+    def refresh():
+        app.destroy()
+        leg = main()
     leg = main()
+
 
 
