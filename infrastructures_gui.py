@@ -157,7 +157,7 @@ def main():
             def runLoaded():
                 print("opening folder")
                 filename = askopenfilename()
-                if ".txt" in filename:
+                if ".txt" in filename or ".json" in filename:
                     n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
                     confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, backups, \
                     backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file(filename)
