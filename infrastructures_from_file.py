@@ -13,7 +13,7 @@ import infrastructures_v4
 import tkinter.messagebox as tkMessageBox
 import json
 
-def run_file(optimize, orders, coeffs, ks ,fname="infrastructure_inputs.txt"):
+def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     #defaults
     n0 = [100,50,100,100,100,100,100,100, 100]
@@ -298,7 +298,7 @@ def check_single_input(inputName, input, max, min):
         return False
     return True
         
-def read_file(fname = "infrastructure_inputs.txt"):
+def read_file(fname = "infrastructures_inputs.txt"):
 
     #This function is only used by infrastructures_gui to prepopulate the entry boxes in the GUI
 
