@@ -207,11 +207,11 @@ def run_file(optimize, orders, coeffs, ks):
     backups = []
     if b_values[0] == "None" or b_values[0] == "none":
         backups = None
-    elif check_inputs("backups", b_values, 9, 0, 1e6):
+    elif check_inputs("backups", b_values, 9, 0, len(b_values)):
         
         for i in range(0, len(b_values)):
             try:
-                backup_values.append(int(b_values[i]))
+                backups.append(int(b_values[i]))
             except:
                 tkMessageBox.showerror("Error","Inputs to backups must be parameter indexes")
                 raise ValueError("Inputs to backups must be parameter indexes")
