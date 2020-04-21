@@ -243,7 +243,6 @@ def optimizeDecon(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTyp
     [1,1,1,1,1,1,1,1,1]], 
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [float(maxPercent), float(maxPercent), float(maxPercent), float(maxPercent), float(maxPercent), float(maxPercent), float(maxPercent), float(maxPercent), float(maxPercent), float(maxPercent)])
     maxPercent = float(maxPercent)
-    print(maxPercent)
     bnds = ((0,float(maxPercent)), (0, float(maxPercent)), (0, float(maxPercent)), (0, float(maxPercent)), (0, float(maxPercent)), (0, float(maxPercent)), (0, float(maxPercent)), (0, float(maxPercent)), (0, float(maxPercent)))
     result = scipy.optimize.minimize(getRecoveryTime, x0, args, constraints = my_constraints,bounds =bnds)
     return result
@@ -274,7 +273,6 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
     '''
 
     #initialize the kv (virus rate constants) dependent on agent
-    print(backups)
     if agent == "monkeypox":
         R0 = 1.2                    #source: Smith 2013
         time_to_recovery = 20.5     #source: Jezek et al 1988

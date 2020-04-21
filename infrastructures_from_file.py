@@ -128,13 +128,13 @@ def run_file(optimize, orders, coeffs, ks):
         paramTypes = None
         paramIndexes = None
     else:
-        if check_inputs("paramIndexes", pi_values, 9, 0, len(paramTypes)):    
+        if check_inputs("indexes of collected parameters", pi_values, 9, 0, len(paramTypes)):    
             for i in range(0, len(pi_values)):
                 try:
                     paramIndexes.append(int(pi_values[i]))
                 except:
-                    tkMessageBox.showerror("Error","Inputs to paramIndexes must be integers")
-                    raise ValueError("Inputs to paramIndexes must be integers")
+                    tkMessageBox.showerror("Error","Indexes of collected parameters must be integers")
+                    raise ValueError("Indexes of collected parameters must be integers")
 
     infStoichFactor_val = data["infStoichFactor"]
     infStoichFactor = None
@@ -148,20 +148,20 @@ def run_file(optimize, orders, coeffs, ks):
             raise TypeError("infStoichFactor must be a float/decimal value")
 
 
-    printProgress = data["printProgress"]
-    if printProgress == "True":
+    printProgress_val = data["printProgress"]
+    if printProgress_val == "true" or printProgress_val == "True" or int(printProgress_val) == 1:
         printProgress = True
     else:
         printProgress = False
 
-    averaging = data["averaging"]
-    if averaging == "True":
+    averaging_val = data["averaging"]
+    if averaging_val == "true" or averaging_val == "True" or int(averaging_val) == 1:
         averaging = True
     else:
         averaging = False
 
-    intervals = data["intervals"]
-    if intervals == "True":
+    interval_val = data["intervals"]
+    if intervals == "true" or intervals == "True" or int(intervals) == 1:
         intervals = True
     else:
         intervals = False
@@ -185,13 +185,13 @@ def run_file(optimize, orders, coeffs, ks):
         
     remediationFactor_vals = list(data["remediationFactor"])
     remediationFactor = np.zeros(9,dtype=float)
-    if check_inputs("remediationFactor", remediationFactor_vals, 100, 0, 9):
+    if check_inputs("remediation factors", remediationFactor_vals, 100, 0, 9):
         for i in range(0, len(remediationFactor_vals)):
             try:
                 remediationFactor[i] = float(remediationFactor_vals[i])
             except:
-                tkMessageBox.showerror("Error","Inputs to n0 must be float/decimal values")
-                raise ValueError("Inputs to n0 must be float/decimal values")
+                tkMessageBox.showerror("Error","Inputs to remediation factors must be float/decimal values")
+                raise ValueError("Inputs to remediation factors must be float/decimal values")
             
     c_values = list(data["contamination"])
     contamination = np.zeros(9,dtype=float)
@@ -200,63 +200,63 @@ def run_file(optimize, orders, coeffs, ks):
             try:
                 contamination[i] = 100-float(c_values[i])
             except:
-                tkMessageBox.showerror("Error","Inputs to contamination must be float/decimal values")
-                raise ValueError("Inputs to n0 must be float/decimal values")
+                tkMessageBox.showerror("Error","Inputs to initial contamination must be float/decimal values")
+                raise ValueError("Inputs to initial contamination must be float/decimal values")
                 
     b_values = list(data["backups"])
     backups = []
     if b_values[0] == "None" or b_values[0] == "none":
         backups = None
-    elif check_inputs("backups", b_values, 9, 0, len(b_values)):
+    elif check_inputs("backup indexes", b_values, 9, 0, len(b_values)):
         
         for i in range(0, len(b_values)):
             try:
                 backups.append(int(b_values[i]))
             except:
-                tkMessageBox.showerror("Error","Inputs to backups must be parameter indexes")
-                raise ValueError("Inputs to backups must be parameter indexes")
+                tkMessageBox.showerror("Error","Inputs to backup indexes must be parameter indexes")
+                raise ValueError("Inputs to backup indexes must be parameter indexes")
 
     bp_values = list(data["backupPercent"])
     backupPercents = [] 
     if bp_values[0] == "None" or bp_values[0] == "none":
         backupPercents = None
     
-    elif check_inputs("backupPercent", bp_values, 100, 0, len(backups)):
+    elif check_inputs("backup percentages", bp_values, 100, 0, len(backups)):
         for i in range(0, len(bp_values)):
             try:
                 backupPercents.append(float(bp_values[i]))
             except:
-                tkMessageBox.showerror("Error","Inputs to backupPercent must be percentages")
-                raise ValueError("Inputs to backupPercent must be percentages")
+                tkMessageBox.showerror("Error","Inputs to backup percentages must be valid percentages")
+                raise ValueError("Inputs to backup percentages must be percentages")
 
     db_values = list(data["daysBackup"])
     daysBackup = []
     if db_values[0] == "None" or bp_values[0] == "none":
         daysBackup = None
      
-    elif check_inputs("daysBackup", db_values, timeSpan, 0, len(backups)):
+    elif check_inputs("days backup is available", db_values, timeSpan, 0, len(backups)):
         for i in range(0, len(db_values)):
             try:
                 daysBackup.append(float(db_values[i]))
             except:
-                tkMessageBox.showerror("Error","Inputs to daysBackup must be floats")
-                raise ValueError("Inputs to backupPercent_values must be floats")
+                tkMessageBox.showerror("Error","Inputs to days backup is available must be floats")
+                raise ValueError("Inputs to days backup is available must be floats")
 
     depb_values = list(data["depBackup"])
     depBackup = [] 
     if db_values[0] == "None" or depb_values[0] == "none":
         depBackup = None
     
-    elif check_inputs("depBackup", depb_values, timeSpan, 0, len(backups)):
+    elif check_inputs("dependant backups", depb_values, 9, 0, len(backups)):
         for i in range(0, len(depb_values)):
             try:
-                depBackup.append(float(depb_values[i]))
+                depBackup.append(int(depb_values[i]))
             except:
-                tkMessageBox.showerror("Error","Inputs to depBackup must be percentages")
-                raise ValueError("Inputs to depBackup must be percentages")
+                tkMessageBox.showerror("Error","Inputs to dependant backups must be integers")
+                raise ValueError("Inputs to dependant backups must be integers")
 
     neg_values = data["negatives"]
-    if neg_values == "true" or neg_values == "True" or neg_values == "1":
+    if neg_values == "true" or neg_values == "True" or int(neg_values) == 1:
         negatives = True
     else:
         negatives = False

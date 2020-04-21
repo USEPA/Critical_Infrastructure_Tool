@@ -192,7 +192,7 @@ def main():
             else:
                 var2 = tk.IntVar()
             tk.Checkbutton(self, text="Run-average", variable=var2, font=("Arial", 10)).grid(row=13, sticky=tk.W)
-
+            
             if confIntervals == "true" or confIntervals == "True" or confIntervals == "1":
                 var3 = tk.IntVar(value=int(bool(confIntervals)))
             else:
@@ -350,7 +350,7 @@ def main():
             #Buttons
 
             if negatives == "true" or negatives == "True" or negatives == "1":
-                var25 = tk.IntVar(value=int(bool(averaging)))
+                var25 = tk.IntVar(value=int(bool(negatives)))
             else:
                 var25 = tk.IntVar()
             tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=15, sticky=tk.W)
