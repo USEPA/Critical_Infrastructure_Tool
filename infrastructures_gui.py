@@ -147,7 +147,7 @@ def main():
                 data["daysBackup"] = var23.get().split(" ")
                 data["depBackup"] = var24.get().split(" ")
                 data["negatives"] = var25.get()
-                fileLoc = dirpath + "//" + "infrastructure_inputs.json"
+                fileLoc = dirpath + "//" + "infrastructure_inputs.txt"
                 with open(fileLoc, "w") as outfile:
                     json.dump(data, outfile)
                 self.leg = infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
@@ -155,14 +155,15 @@ def main():
                     print(self.leg)
                     
             def runLoaded():
+                print("opening folder")
                 filename = askopenfilename()
-                if ".json" in filename:
+                if ".txt" in filename:
                     n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
                     confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, backups, \
                     backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file(filename)
                     json_data = open(filename)
                     data = json.load(json_data)
-                    with open(dirpath + "//" + "infrastructure_inputs.json", 'w') as outfile:
+                    with open(dirpath + "//" + "infrastructure_inputs.txt", 'w') as outfile:
                         json.dump(data, outfile)
                     refresh()
                 
