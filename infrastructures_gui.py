@@ -15,6 +15,9 @@ else:
   import Tkinter as tk
 import infrastructures_from_file
 import coefficients_from_file
+import tkinter.messagebox as tkMessageBox
+import infrastructures_mapping
+import json
 import os
 if (sys.version_info > (3,0)):
   from tkinter.filedialog import askopenfilename
@@ -120,47 +123,73 @@ def main():
             #print(self.orders, self.coeffs, self.k)
 
             def run(optimize):
-                f = open(dirpath + "//" + "infrastructures_inputs.txt", "w")
-                f.write("n0 "+ str(var5.get())+"\n")
-                f.write("p0 "+ str(var6.get())+"\n")
-                f.write("repair_factors "+ str(var7.get())+"\n")
-                f.write("nLoss "+ str(var8.get())+"\n")
-                f.write("tLoss "+ str(var9.get())+"\n")
-                f.write("timeSpan "+ str(var12.get())+"\n")
-                f.write("nRun "+ str(var10.get())+"\n")
-                f.write("paramTypes "+ str(var13.get())+"\n")
-                f.write("paramIndexes "+ str(var14.get())+"\n")
-                f.write("infStoichFactor "+ str(var15.get())+"\n")
-                f.write("printProgress "+ str(bool(var1.get()))+"\n")
-                f.write("averaging "+ str(bool(var2.get()))+"\n")
-                f.write("intervals "+ str(bool(var3.get()))+"\n")
-                f.write("agent "+ str(var4.get())+"\n")
-                f.write("seedValue "+ str(var16.get())+"\n")
-                f.write("name "+ str(var17.get())+"\n")
-                f.write("remediationFactor "+ str(var18.get())+"\n")
-                f.write("contamination "+ str(var19.get())+"\n")
-                f.write("maxPercent "+ str(var20.get())+"\n")
-                f.write("backups "+ str(var21.get())+"\n")
-                f.write("backupPercent "+ str(var22.get())+"\n")
-                f.write("daysBackup "+ str(var23.get())+"\n")
-                f.write("depBackup "+ str(var24.get())+"\n")
-                f.write("negatives "+ str(var25.get())+"\n")
-                f.close()
+                data = {}
+                data["n0"] = var5.get().split(" ")
+                data["p0"] = var6.get().split(" ")
+                data["repair_factors"] = var7.get().split(" ")
+                data["nLoss"] = var8.get()
+                data["tLoss"] = var9.get()
+                data["timeSpan"] = var12.get()
+                data["nRun"] = var10.get()
+                data["paramTypes"] = var13.get().split(" ")
+                data["paramIndexes"] = var14.get().split(" ")
+                data["infStoichFactor"] = var15.get()
+                data["printProgress"] = var1.get()
+                data["averaging"] = var2.get()
+                data["intervals"] = var3.get()
+                data["agent"] = var4.get()
+                data["seedValue"] = var16.get()
+                data["name"] = var17.get()
+                data["remediationFactor"] = var18.get().split(" ")
+                data["contamination"] = var19.get().split(" ")
+                data["backups"] = var21.get().split(" ")
+                data["backupPercent"] = var22.get().split(" ")
+                data["daysBackup"] = var23.get().split(" ")
+                data["depBackup"] = var24.get().split(" ")
+                data["negatives"] = var25.get()
+                fileLoc = dirpath + "//" + "infrastructures_inputs.txt"
+                with open(fileLoc, "w") as outfile:
+                    json.dump(data, outfile)
                 self.leg = infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
                     print(self.leg)
-
+                    
+            def runLoaded():
+                print("opening folder")
+                filename = askopenfilename()
+                if ".txt" in filename or ".json" in filename:
+                    n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
+                    confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, backups, \
+                    backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file(filename)
+                    json_data = open(filename)
+                    data = json.load(json_data)
+                    with open(dirpath + "//" + "infrastructures_inputs.txt", 'w') as outfile:
+                        json.dump(data, outfile)
+                    refresh()
+                
             def loadCoeff():
                 filename = askopenfilename()
-                self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
+                if ".csv" in filename:
+                    self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
+                else:
+                    tkMessageBox.showerror("Error","Must be CSV file")
+
+            def openGIS():
+                filename = askopenfilename()
+                if ".shp" in filename:
+                    infrastructures_mapping.loadMap(filename)
+                else:
+                    tkMessageBox.showerror("Error","Must be shapefile")
 
             def loadInits():
                 filename = askopenfilename()
                 self.orders, self.coeffs, self.k = efficiencies_from_file.load_file(filename)
                 
+                
             n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
-                confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, maxPercent, backups, \
+                confIntervals, infStoichFactor, agent, seedValue, name, remediationFactor, contaminated, backups, \
                 backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file()
+            
 
             mainframe = tk.Frame.__init__(self,parent)
             label = tk.Label(self, text="Start Page", font=("Arial", 40))
@@ -178,7 +207,7 @@ def main():
             else:
                 var2 = tk.IntVar()
             tk.Checkbutton(self, text="Run-average", variable=var2, font=("Arial", 10)).grid(row=13, sticky=tk.W)
-
+            
             if confIntervals == "true" or confIntervals == "True" or confIntervals == "1":
                 var3 = tk.IntVar(value=int(bool(confIntervals)))
             else:
@@ -241,12 +270,12 @@ def main():
             NLoss.insert(0, nLoss)
             NLoss.grid(row=7, column = 1, sticky=tk.NSEW)
 
-            tk.Label(self, text="Time of additional infrastructure outages \n(if applicable, days): ", font=("Arial", 10)).grid(row=10, column = 2, sticky=tk.W)
+            tk.Label(self, text="Time of additional infrastructure outages \n(if applicable, days): ", font=("Arial", 10)).grid(row=9, column = 2, sticky=tk.W)
             var9 = tk.StringVar()
             TLoss = tk.Entry(self, textvariable=var9)
             TLoss_ttp = CreateToolTip(TLoss, 'Enter additional time outage')
             TLoss.insert(0, tLoss)
-            TLoss.grid(row=10, column = 3, sticky=tk.NSEW)
+            TLoss.grid(row=9, column = 3, sticky=tk.NSEW)
 
             tk.Label(self, text="Number of stochastic runs:", font=("Arial", 10)).grid(row=2, column = 2, sticky=tk.W)
             var10 = tk.StringVar()
@@ -288,12 +317,6 @@ def main():
             SeedValue = tk.Entry(self, textvariable=var16)
             SeedValue.insert(0, seedValue)
             SeedValue.grid(row=7, column = 3, sticky=tk.NSEW)
-
-            tk.Label(self, text="Maximum Percent: ", font=("Arial", 10)).grid(row=9, column = 2, sticky=tk.W)
-            var20 = tk.StringVar()
-            PercentValue= tk.Entry(self, textvariable=var20)
-            PercentValue.insert(0, maxPercent)
-            PercentValue.grid(row=9, column = 3, sticky=tk.NSEW)
 
             tk.Label(self, text="Results Chart Name: ", font=("Arial", 10)).grid(row=8, column = 2, sticky=tk.W)
             var17 = tk.StringVar()
@@ -342,15 +365,16 @@ def main():
             #Buttons
 
             if negatives == "true" or negatives == "True" or negatives == "1":
-                var25 = tk.IntVar(value=int(bool(averaging)))
+                var25 = tk.IntVar(value=int(bool(negatives)))
             else:
                 var25 = tk.IntVar()
             tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=15, sticky=tk.W)
 
-            tk.Button(self, text='Run',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=13, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Quit', bg='#FCB1A0', command=self.destroy, font=("Arial", 14)).grid(row=14, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=12, column=2, sticky=tk.NSEW, columnspan=2)
-            #tk.Button(self, text='Load Initial Values', command= lambda: loadCoeff()).grid(row=19, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=14, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Quit', bg='#FCB1A0', command=self.destroy, font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=13, column=2, sticky=tk.NSEW, columnspan=2)
+            #tk.Button(self, text='Load GIS Data', font=("Arial", 14), bg='#bcbddc', command= lambda: openGIS()).grid(row=12, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc', command= lambda: runLoaded()).grid(row=12, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Optimize', command= lambda: run(True)).grid(row=13, column=0, sticky=tk.NSEW, columnspan=2)
 
             #GUI Spacing
@@ -359,11 +383,17 @@ def main():
             for i in range(0,4):
                 self.grid_columnconfigure(i, weight=1, uniform="bar")
 
+    global app
     app = TKinterWindow()
     app.title("Battelle-Gillespie Infrastructure Model")
     app.mainloop()
 
 if __name__ == '__main__':
+
+    def refresh():
+        app.destroy()
+        leg = main()
     leg = main()
+
 
 

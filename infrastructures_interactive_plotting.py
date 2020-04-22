@@ -38,7 +38,7 @@ def plotting(t,n,lower_bounds,upper_bounds,timeSpan, imageFileName, contam):
                      va='top', size='large')
     figname = imageFileName + ".png"
     fignameDecon = imageFileName + "Decon" + ".png"
-    fig.savefig(figname)
+    fig.savefig("Images/" + figname)
     leg = interactive_legend()
     return fig, ax, leg
 
