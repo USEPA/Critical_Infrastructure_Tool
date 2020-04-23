@@ -19,6 +19,7 @@ import tkinter.messagebox as tkMessageBox
 import infrastructures_mapping
 import json
 import os
+import geopandas
 if (sys.version_info > (3,0)):
   from tkinter.filedialog import askopenfilename
 else:
