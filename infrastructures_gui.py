@@ -16,8 +16,11 @@ else:
 import infrastructures_from_file
 import coefficients_from_file
 import tkinter.messagebox as tkMessageBox
+from pyproj import _datadir, datadir
+from fiona import _shim, schema
 import infrastructures_mapping
 import json
+
 import os
 import geopandas
 if (sys.version_info > (3,0)):
