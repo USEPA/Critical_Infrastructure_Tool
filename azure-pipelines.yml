@@ -32,7 +32,7 @@ steps:
   displayName: 'Install Dependencies'
 
 - script: |
-    pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
+    pyinstaller infrastructures_gui.spec infrastructures_gui.py
   displayName: 'Create Application'
 
 - task: ArchiveFiles@2
