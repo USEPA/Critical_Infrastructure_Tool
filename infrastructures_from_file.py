@@ -206,8 +206,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     backups = []
     if b_values[0] == "None" or b_values[0] == "none":
         backups = None
-    elif check_inputs("backup indexes", b_values, 9, 0, len(b_values)):
-        
+    elif check_inputs("backup indexes", b_values, 9, 0, len(list(data["backupPercent"]))):
         for i in range(0, len(b_values)):
             try:
                 backups.append(int(b_values[i]))
@@ -216,10 +215,13 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
                 raise ValueError("Inputs to backup indexes must be parameter indexes")
 
     bp_values = list(data["backupPercent"])
-    backupPercents = [] 
+    
+    backupPercents = []
     if bp_values[0] == "None" or bp_values[0] == "none":
         backupPercents = None
-    
+    elif backups == None:
+        tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
+        raise ValueError("Dependent backup index cannot equal backup index")
     elif check_inputs("backup percentages", bp_values, 100, 0, len(backups)):
         for i in range(0, len(bp_values)):
             try:
@@ -230,9 +232,11 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     db_values = list(data["daysBackup"])
     daysBackup = []
-    if db_values[0] == "None" or bp_values[0] == "none":
+    if db_values[0] == "None" or db_values[0] == "none":
         daysBackup = None
-     
+    elif backups == None:
+        tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
+        raise ValueError("Dependent backup index cannot equal backup index")
     elif check_inputs("days backup is available", db_values, timeSpan, 0, len(backups)):
         for i in range(0, len(db_values)):
             try:
@@ -243,9 +247,11 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     depb_values = list(data["depBackup"])
     depBackup = [] 
-    if db_values[0] == "None" or depb_values[0] == "none":
+    if depb_values[0] == "None" or depb_values[0] == "none":
         depBackup = None
-    
+    elif backups == None:
+        tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
+        raise ValueError("If backups all None all other backup related inputs must be none")
     elif check_inputs("dependant backups", depb_values, 9, 0, len(backups)):
         for i in range(0, len(depb_values)):
             try:
