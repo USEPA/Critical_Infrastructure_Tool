@@ -29,6 +29,9 @@ steps:
     python -m pip install pandas
     python -m pip install matplotlib
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
+    python -m pip install gdal
+    python -m pip install fiona
+    python -m pip install geopandas
   displayName: 'Install Dependencies'
 
 - script: |
