@@ -29,11 +29,8 @@ steps:
     python -m pip install pandas
     python -m pip install matplotlib
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
-    python -m pip install gdal
-    set GDAL_VERSION=3.0.4
-    echo GDAL Version = %GDAL_VERSION%
-    echo GDAL Data Directory = %GDAL_DATA%
-    python -m pip install fiona
+    python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\GDAL-3.0.4-cp37-cp37m-win_amd64.whl"
+    python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\Fiona-1.8.13-cp37-cp37m-win_amd64.whl"
     python -m pip install geopandas
   displayName: 'Install Dependencies'
 
