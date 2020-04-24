@@ -249,7 +249,11 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     elif check_inputs("dependant backups", depb_values, 9, 0, len(backups)):
         for i in range(0, len(depb_values)):
             try:
-                depBackup.append(int(depb_values[i]))
+                if(int(depb_values[i]) == backups[i]):
+                    tkMessageBox.showerror("Error","Dependent backup index cannot equal backup index")
+                    raise ValueError("Dependent backup index cannot equal backup index")
+                else:
+                    depBackup.append(int(depb_values[i]))
             except:
                 tkMessageBox.showerror("Error","Inputs to dependant backups must be integers")
                 raise ValueError("Inputs to dependant backups must be integers")
