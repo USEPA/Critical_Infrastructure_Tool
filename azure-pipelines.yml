@@ -31,6 +31,8 @@ steps:
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
     python -m pip install gdal
     set GDAL_VERSION=3.0.4
+    echo GDAL Version = %GDAL_VERSION%
+    echo GDAL Data Directory = %GDAL_DATA%
     python -m pip install fiona
     python -m pip install geopandas
   displayName: 'Install Dependencies'
