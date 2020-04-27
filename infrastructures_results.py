@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import statistics
 from scipy.stats import kurtosis, skew
-
+import os
 # def results(t, n, p, nRun, timeSpan, averages, bin_size, paramTypes, paramIndexes, param_vals, agent):
 def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime):
 
@@ -57,6 +57,9 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             plt.title('Parameter Histogram: ' + param_name + ' of ' + sector_name + ' Sector Efficiency')
             plt.xlabel('Parameter Value')
             plt.ylabel('Frequency of Parameter Range')
+            
+            if not os.path.exists("Images"):
+                os.makedirs("Images")
             plt.savefig("Images/" + runName + " " + sector_name)
             #print out distribution statistics as desired
             print("")
