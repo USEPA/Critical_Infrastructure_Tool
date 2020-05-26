@@ -17,7 +17,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     #defaults
     n0 = [100,50,100,100,100,100,100,100, 100]
-    p0 = [699900, 100, 0, 0]
+    #p0 = [699900, 100, 0, 0]
     repair_factors = None
     nLoss = None
     tLoss = None
@@ -49,15 +49,15 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
                 tkMessageBox.showerror("Error","Inputs to n0 must be float/decimal values")
                 raise ValueError("Inputs to n0 must be float/decimal values")
     #reading p0            
-    p_values = list(data["p0"])
-    if check_inputs("p0", p_values, 1E50, 0, 4):
-        p0 = np.zeros(4,dtype=int)
-        for i in range(0, len(p_values)):
-            try:
-                p0[i] = int(p_values[i])
-            except:
-                tkMessageBox.showerror("Error","Inputs to p0 must be integer values")
-                raise ValueError("Inputs to p0 must be integer values")
+##    p_values = list(data["p0"])
+##    if check_inputs("p0", p_values, 1E50, 0, 4):
+##        p0 = np.zeros(4,dtype=int)
+##        for i in range(0, len(p_values)):
+##            try:
+##                p0[i] = int(p_values[i])
+##            except:
+##                tkMessageBox.showerror("Error","Inputs to p0 must be integer values")
+##                raise ValueError("Inputs to p0 must be integer values")
     #reading repair_factors
     
     rf_values = list(data["repair_factors"])
@@ -165,10 +165,10 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     else:
         intervals = False
 
-    agent = data["agent"]
-    if agent != "anthrax" and agent != "ebola" and agent != "monkeypox" and agent != "natural_disaster":
-        tkMessageBox.showerror("Error","Unsupported Agent Name")
-        raise ValueError("Unsupported Agent Name")
+##    agent = data["agent"]
+##    if agent != "anthrax" and agent != "ebola" and agent != "monkeypox" and agent != "natural_disaster":
+##        tkMessageBox.showerror("Error","Unsupported Agent Name")
+##        raise ValueError("Unsupported Agent Name")
 
     seedValue = data["seedValue"]
     if seedValue == "none" or seedValue == "None" or seedValue == "false" or seedValue == "False":
@@ -270,8 +270,8 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     else:
         negatives = False
 
-    leg = infrastructures_v4.infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
-                                             paramIndexes, infStoichFactor, printProgress, averaging, intervals, agent, seedValue, name, remediationFactor, contamination,
+    leg = infrastructures_v4.infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
+                                             paramIndexes, infStoichFactor, printProgress, averaging, intervals, seedValue, name, remediationFactor, contamination,
                                                  backups, backupPercents, daysBackup, depBackup, orders, coeffs, ks, negatives)
 ##    leg = infrastructures_v4.infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
 ##                                       paramIndexes, printProgress, averaging, intervals, seedValue)
@@ -317,7 +317,7 @@ def read_file(fname = "infrastructures_inputs.txt"):
     data = json.load(json_data)
     
     n0String = data["n0"]
-    p0String = data["p0"]
+    #p0String = data["p0"]
     repair_factorsString = data["repair_factors"]
     nLossString = data["nLoss"]
     tLossString = data["tLoss"]
@@ -329,7 +329,7 @@ def read_file(fname = "infrastructures_inputs.txt"):
     averagingString = data["averaging"]
     intervalsString = data["intervals"]
     infStoichFactorString = data["infStoichFactor"]
-    agentString = data["agent"]
+    #agentString = data["agent"]
     seedValueString = data["seedValue"]
     nameString = data["name"]
     remediationString = data["remediationFactor"]
@@ -341,8 +341,8 @@ def read_file(fname = "infrastructures_inputs.txt"):
     negativesString = data["negatives"]
     
 
-    return n0String, p0String, repair_factorsString, nLossString, tLossString, timeSpanString, nRunString, paramTypesString, \
-            paramIndexesString, printProgressString, averagingString, intervalsString, infStoichFactorString, agentString, \
+    return n0String, repair_factorsString, nLossString, tLossString, timeSpanString, nRunString, paramTypesString, \
+            paramIndexesString, printProgressString, averagingString, intervalsString, infStoichFactorString, \
             seedValueString, nameString, remediationString, contamString, backupsString, backupPercentString, daysBackupString, depBackupString, \
             negativesString
     #return n0String, repair_factorsString, nLossString, tLossString, timeSpanString, nRunString, paramTypesString,
