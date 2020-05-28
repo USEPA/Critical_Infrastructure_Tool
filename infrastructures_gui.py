@@ -16,12 +16,13 @@ else:
 import infrastructures_from_file
 import coefficients_from_file
 import tkinter.messagebox as tkMessageBox
-from fiona import _shim, schema
-import infrastructures_mapping
+#from fiona import _shim, schema
+#import infrastructures_mapping
 import json
 
+
 import os
-import geopandas
+#import geopandas
 if (sys.version_info > (3,0)):
   from tkinter.filedialog import askopenfilename
 else:
@@ -186,19 +187,28 @@ def main():
                     self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
                 else:
                     tkMessageBox.showerror("Error","Must be CSV file")
+                    
+##            def showPDF():
+##              
+##              #pdfRoot = tk.Tk()
+##              #v = DocViewer(pdfRoot)
+##              #v.pack(side="top", expand=1, fill="both")
+##              #v.display_file("Instructions.png")
+##              img = ImageTk.PhotoImage(Image.open('Instructions.png'))
 
-            def openGIS():
-                filename = askopenfilename()
-                if ".shp" in filename:
-                    results = infrastructures_mapping.loadMap(filename)
-                else:
-                    tkMessageBox.showerror("Error","Must be shapefile")
-                [water, energy, transport, communication, government, food, emergency, healthcare] = results
-                json_data = open("infrastructures_inputs.txt")
-                data = json.load(json_data)
-                data["n0"] = [water, energy, transport, communication, government, food, emergency, 100, healthcare]
-                with open("infrastructures_inputs.txt", 'w') as outfile:
-                    json.dump(data, outfile)
+
+##            def openGIS():
+##                filename = askopenfilename()
+##                if ".shp" in filename:
+##                    results = infrastructures_mapping.loadMap(filename)
+##                else:
+##                    tkMessageBox.showerror("Error","Must be shapefile")
+##                [water, energy, transport, communication, government, food, emergency, healthcare] = results
+##                json_data = open("infrastructures_inputs.txt")
+##                data = json.load(json_data)
+##                data["n0"] = [water, energy, transport, communication, government, food, emergency, 100, healthcare]
+##                with open("infrastructures_inputs.txt", 'w') as outfile:
+##                    json.dump(data, outfile)
 
             def calcEfficiency(oldVar, increaseVar):
               print(oldVar, increaseVar)
@@ -235,6 +245,12 @@ def main():
                 tkMessageBox.showinfo("Helper", "Communication efficiency can be estimated using the percentage of cell sites that are reported as being down. The FCC website is a good resource for this.")
               elif infrastructure == "government":
                 tkMessageBox.showinfo("Helper", "Government building closures are reported in gsa.gov, and the percentage closed can be used to estimate percent efficiency")
+              elif infrastructure == "agriculture":
+                tkMessageBox.showinfo("Helper", "The best metholodogy for estimating agriculture efficiency is using GIS methods.")
+              elif infrastructure == "emerServ":
+                tkMessageBox.showinfo("Helper", "The best methodology for estimating emergency services is using GIS methods.")
+              elif infrastructure == "waste":
+                tkMessageBox.showinfo("Helper", "The best methodology for estimating waste management is through GIS methods.")                
               elif infrastructure == "healthcare":
                 #healthcare helper
                 tkMessageBox.showinfo("Helper", "Healthcare efficiency can be estimated by using the percentage of available hospital beds, or by the percent increase in waiting time")               
@@ -252,6 +268,7 @@ def main():
             label = tk.Label(self, text="SIRM", font=("Arial", 40))
             label.grid(row=0, sticky=tk.NSEW, columnspan=4)
 
+            #tk.Button(self, text='Help', bg='#FCB1A0', command= lambda: showPDF(), font=("Arial", 14)).grid(row=0, column=4, sticky=tk.NSEW)
             #Checkboxes
             if printProgress == "true" or printProgress == "True" or printProgress == "1":
                 var1 = tk.IntVar(value=int(bool(printProgress)))

@@ -40,13 +40,13 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     
     #n0 calculation
     n_values = list(data["n0"])
-    if check_inputs("n0", n_values, 100, 0, 9):
+    if check_inputs("Initial efficiencies", n_values, 100, 0, 9):
         n0 = np.zeros(9,dtype=int)
         for i in range(0, len(n_values)):
             try:
                 n0[i] = float(n_values[i])
             except:
-                tkMessageBox.showerror("Error","Inputs to n0 must be float/decimal values")
+                tkMessageBox.showerror("Error","Initial efficiencies must be float/decimal values")
                 raise ValueError("Inputs to n0 must be float/decimal values")
     #reading p0            
 ##    p_values = list(data["p0"])
@@ -63,7 +63,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     rf_values = list(data["repair_factors"])
     if rf_values[0] == "None":
         repair_factors = None
-    elif check_inputs("rf_values", rf_values, 100, 0, 9):
+    elif check_inputs("repair factors", rf_values, 100, 0, 9):
         repair_factors = np.zeros(9,dtype=float)
         for i in range(0, len(repair_factors)):
             try:
@@ -102,10 +102,10 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     try:
         nRun = int(data["nRun"])
     except:
-        tkMessageBox.showerror("Error","Input to nRun must be an integer")
+        tkMessageBox.showerror("Error","Number of stochastic runs must be an integer")
         raise TypeError("Input to nRun must be an integer")
     if nRun < 1:
-        tkMessageBox.showerror("Error","nRun must be an integer 1 or greater")
+        tkMessageBox.showerror("Error","Number of runs must be an integer 1 or greater")
         raise ValueError("nRun must be an integer 1 or greater")
 
     pt_values = list(data["paramTypes"])
@@ -143,7 +143,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
         try:
             infStoichFactor = float(infStoichFactor_val)
         except:
-            tkMessageBox.showerror("Error","infStoichFactor must be a float/decimal value")
+            tkMessageBox.showerror("Error","The infinite stoichiometric factor must be a float/decimal value")
             raise TypeError("infStoichFactor must be a float/decimal value")
 
 
@@ -177,7 +177,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
         try:
             seedValue = int(seedValue)
         except:
-            tkMessageBox.showerror("Error","seedValue input must be an integer or 'None'")
+            tkMessageBox.showerror("Error","Seed must be an integer or 'None'")
             raise TypeError("seedValue input must be an integer or 'None'")
     
     name = data["name"]
@@ -189,30 +189,30 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
             try:
                 remediationFactor[i] = float(remediationFactor_vals[i])
             except:
-                tkMessageBox.showerror("Error","Inputs to remediation factors must be float/decimal values")
+                tkMessageBox.showerror("Error","Remediation factors must be float/decimal values")
                 raise ValueError("Inputs to remediation factors must be float/decimal values")
             
     c_values = list(data["contamination"])
     contamination = np.zeros(9,dtype=float)
-    if check_inputs("contamination", c_values, 100, 0, 9):
+    if check_inputs("Initial contaminated infrastructure", c_values, 100, 0, 9):
         for i in range(0, len(c_values)):
             try:
                 contamination[i] = 100-float(c_values[i])
             except:
-                tkMessageBox.showerror("Error","Inputs to initial contamination must be float/decimal values")
-                raise ValueError("Inputs to initial contamination must be float/decimal values")
+                tkMessageBox.showerror("Error","Initial contaminated infrastructure must be float/decimal values")
+                raise ValueError("Inputs to initial contaminated infrastructure must be float/decimal values")
                 
     b_values = list(data["backups"])
     backups = []
     if b_values[0] == "None" or b_values[0] == "none":
         backups = None
-    elif check_inputs("backup indexes", b_values, 9, 0, len(list(data["backupPercent"]))):
+    elif check_inputs("Backup indexes", b_values, 9, 0, len(list(data["backupPercent"]))):
         for i in range(0, len(b_values)):
             try:
                 backups.append(int(b_values[i]))
             except:
-                tkMessageBox.showerror("Error","Inputs to backup indexes must be parameter indexes")
-                raise ValueError("Inputs to backup indexes must be parameter indexes")
+                tkMessageBox.showerror("Error","Backup indexes must be parameter indexes")
+                raise ValueError("Backup indexesmust be parameter indexes")
 
     bp_values = list(data["backupPercent"])
     
@@ -222,12 +222,12 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     elif backups == None:
         tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
         raise ValueError("Dependent backup index cannot equal backup index")
-    elif check_inputs("backup percentages", bp_values, 100, 0, len(backups)):
+    elif check_inputs("Backup percentages", bp_values, 100, 0, len(backups)):
         for i in range(0, len(bp_values)):
             try:
                 backupPercents.append(float(bp_values[i]))
             except:
-                tkMessageBox.showerror("Error","Inputs to backup percentages must be valid percentages")
+                tkMessageBox.showerror("Error","Backup percentages must be valid percentages")
                 raise ValueError("Inputs to backup percentages must be percentages")
 
     db_values = list(data["daysBackup"])
@@ -281,26 +281,30 @@ def check_inputs(inputName, inputs, max, min, length):
     meetsLength = True
     if len(inputs) != length: 
         meetsLength = False
-    meetsMin = all(float(i) >= min for i in inputs)
-    meetsMax = all(float(i) <= max for i in inputs)
-    lengthError = "length of " + inputName + " must be " + str(length)
-    valueError = inputName + " values must be between" + str(min) + " and " + str(max)
-    if meetsLength and meetsMin and meetsMax:
-        return True
-    else:
-        if meetsLength:
-            tkMessageBox.showerror("Error",valueError)
-            raise TypeError(valueError)
+    try:
+        meetsMin = all(float(i) >= min for i in inputs)
+        meetsMax = all(float(i) <= max for i in inputs)
+        lengthError = "length of " + inputName + " must be " + str(length)
+        valueError = inputName + " values must be between" + str(min) + " and " + str(max)
+        if meetsLength and meetsMin and meetsMax:
+            return True
         else:
-            tkMessageBox.showerror("Error",lengthError)
-            raise TypeError(lengthError)
+            if meetsLength:
+                tkMessageBox.showerror("Error",valueError)
+                raise TypeError(valueError)
+            else:
+                tkMessageBox.showerror("Error",lengthError)
+                raise TypeError(lengthError)
+    except:
+        tkMessageBox.showerror("Error","%s must be a float/decimal" % inputName)
+        raise TypeError("%s must be a float/decimal" % inputName)
 
 def check_single_input(inputName, input, max, min):
     try:
         result = float(input)
     except:
-        tkMessageBox.showerror("Error","Input to %s must be a float/decimal" % inputName)
-        raise TypeError("Input to %s must be a float/decimal" % inputName)
+        tkMessageBox.showerror("Error","%s must be a float/decimal" % inputName)
+        raise TypeError("%s must be a float/decimal" % inputName)
         return False
     if float(input) <= min or float(input) >= max:
         tkMessageBox.showerror("Error","%s must be a float/decimal greater than %f and less than %f" % inputName, min, max)

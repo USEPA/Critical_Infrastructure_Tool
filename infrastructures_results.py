@@ -61,7 +61,7 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             if not os.path.exists("Images"):
                 os.makedirs("Images")
             if not os.path.exists("Results"):
-                os.makedirs("Images")
+                os.makedirs("Results")
             plt.savefig("Images/" + runName + " " + sector_name)
             #print out distribution statistics as desired
             print("")
