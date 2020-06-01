@@ -28,6 +28,12 @@ if (sys.version_info > (3,0)):
 else:
   from tkFileDialog import askopenfilename
 
+if (sys.version_info > (3,0)):
+  from tkinter.filedialog import asksaveasfile
+else:
+  from tkFileDialog import asksaveasfile
+
+
 
 class CreateToolTip(object):
     """
@@ -167,6 +173,47 @@ def main():
                 self.leg = infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
                     print(self.leg)
+
+            def saveScenario():
+                data = {}
+                n0List = []
+                n0List.append(waterVar.get())
+                n0List.append(energyVar.get())
+                n0List.append(transportVar.get())
+                n0List.append(communicationsVar.get())
+                n0List.append(governmentVar.get())
+                n0List.append(agricultureVar.get())
+                n0List.append(emerServVar.get())
+                n0List.append(wasteVar.get())
+                n0List.append(healthcareVar.get())
+                data["n0"] = n0List
+                #data["p0"] = var6.get().split(" ")
+                data["repair_factors"] = var7.get().split(" ")
+                data["nLoss"] = var8.get()
+                data["tLoss"] = var9.get()
+                data["timeSpan"] = var12.get()
+                data["nRun"] = var10.get()
+                data["paramTypes"] = var13.get().split(" ")
+                data["paramIndexes"] = var14.get().split(" ")
+                data["infStoichFactor"] = var15.get()
+                data["printProgress"] = var1.get()
+                data["averaging"] = var2.get()
+                data["intervals"] = var3.get()
+                #data["agent"] = var4.get()
+                data["seedValue"] = var16.get()
+                data["name"] = var17.get()
+                data["remediationFactor"] = var18.get().split(" ")
+                data["contamination"] = var19.get().split(" ")
+                data["backups"] = var21.get().split(" ")
+                data["backupPercent"] = var22.get().split(" ")
+                data["daysBackup"] = var23.get().split(" ")
+                data["depBackup"] = var24.get().split(" ")
+                data["negatives"] = var25.get()
+                filename = asksaveasfile(mode='w', defaultextension=".txt")
+                if filename is None:
+                  return
+                json.dump(data, filename)
+                filename.close()
                     
             def runLoaded():
                 print("opening folder")
@@ -518,7 +565,7 @@ def main():
                                         "(6), waste management (7),  healthcare (8)", #healthcare (9), \nchemical (10), " \
                                         #"commercial facilities (11), manufacturing (12), dams (13), defense (14), and nuclear (15).", \
                                         font=("Arial Bold", 10), bg='#F9F8E5', borderwidth=2, relief="groove")
-            note.grid(row=19, column = 0, columnspan = 4, sticky=tk.NSEW)
+            note.grid(row=20, column = 0, columnspan = 4, sticky=tk.NSEW)
 
             #Buttons
 
@@ -526,11 +573,10 @@ def main():
             tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=18, sticky=tk.W, column = 0)
 
             tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Quit', bg='#FCB1A0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Save Scenario', bg='#FCB1A0', command= lambda: saveScenario(), font=("Arial", 14)).grid(row=18, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=17, column=2, sticky=tk.NSEW, columnspan=2)
-            #tk.Button(self, text='Load GIS Data', font=("Arial", 14), bg='#FAD7A0', command= lambda: openGIS()).grid(row=16, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc', command= lambda: runLoaded()).grid(row=16, column=2, sticky=tk.NSEW, columnspan=2)
-            #tk.Button(self, text='Optimize', command= lambda: run(True)).grid(row=13, column=0, sticky=tk.NSEW, columnspan=2)
 
             #GUI Spacing
             for i in range(1,9):
