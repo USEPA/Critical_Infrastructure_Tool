@@ -19,8 +19,8 @@ from scipy.optimize import LinearConstraint
 
 leg = ""
 
-def infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
-                    infStoichFactor, printProgress, averaging, confIntervals, agent, seedValue, imageFileName, remediationFactor, contamination,
+def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
+                    infStoichFactor, printProgress, averaging, confIntervals, seedValue, imageFileName, remediationFactor, contamination,
                     backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives):
 
     '''
@@ -131,15 +131,15 @@ def infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramT
     for i in range (0, nRun):
         if printProgress and nRun > 1:
             print("Run " + str(i))
-            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, 
+            t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan,
                                               infStoichFactor, False, contamination, remediationFactor, backups, 
                                               backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
         elif printProgress:
-            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, 
+            t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, agent, 
                                               infStoichFactor, True, contamination, remediationFactor, backups, 
                                               backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
         else:
-            t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, 
+            t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan,
                                               infStoichFactor, False, contamination, remediationFactor, backups, 
                                               backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
         if averaging and nRun > 1:
@@ -204,8 +204,8 @@ def infrastructures(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramT
     #end program without returning anything
     return leg
 
-def getRecoveryTime(remediationFactor, n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, printProgress, contamination):
-    t, n, p, contam = Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, False, contamination, remediationFactor)
+def getRecoveryTime(remediationFactor, n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, printProgress, contamination):
+    t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, False, contamination, remediationFactor)
     recoveryTimes = []
     for i in range(len(contamination)):
         time_of_min = np.argmin(n[:,i])
@@ -225,7 +225,8 @@ def constraintsFunction(x0, maxPercent):
     return sum(x0) - maxPercent
 
 def optimizeDecon(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
-                    infStoichFactor, printProgress, averaging, confIntervals, agent, seedValue, imageFileName, remediationFactor, contamination, maxPercent):
+                    infStoichFactor, printProgress, averaging, confIntervals, agent, seedValue, imageFileName, remediationFactor,
+                  contamination, maxPercent):
     x0 = [0]*len(remediationFactor)
     for i in range(len(remediationFactor)):
         x0[i] = float(remediationFactor[i])
@@ -258,7 +259,8 @@ def adjustContamination(contamination, remediationFactor, timestep):
             results[c] = 100
     return results
 
-def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infStoichFactor, printProgress, contamination, remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0, negatives):
+def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, printProgress, contamination,
+                    remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0, negatives):
     '''
     This function simulates interconnected infrastructures using the Gillespie
     algorithm to stochastically determine the efficiencies of the water,
@@ -273,22 +275,22 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
     '''
 
     #initialize the kv (virus rate constants) dependent on agent
-    if agent == "monkeypox":
-        R0 = 1.2                    #source: Smith 2013
-        time_to_recovery = 20.5     #source: Jezek et al 1988
-        mortality_rate = 0.098      #source: Hutin et al 2001 (treated!)
-    elif agent == "anthrax":
-        R0 = 0.0                    #anthrax is not infectious
-        time_to_recovery = 22.1     #source: Holty et al 2006
-        mortality_rate = 0.5        #source: FDA 2018 (treated!)
-    elif agent == "ebola":
-        R0 = 1.85                   #source: Althaus 2014
-        time_to_recovery = 17.5     #source: Francesconi et al 2003
-        mortality_rate = 0.5        #source: WHO 2017 (treated!)
-    elif agent == "natural_disaster":
-        R0 = 0.0                   #source: Althaus 2014
-        time_to_recovery = 0.0     #source: Francesconi et al 2003
-        mortality_rate = 0.0        #source: WHO 2017 (treated!)
+##    if agent == "monkeypox":
+##        R0 = 1.2                    #source: Smith 2013
+##        time_to_recovery = 20.5     #source: Jezek et al 1988
+##        mortality_rate = 0.098      #source: Hutin et al 2001 (treated!)
+##    elif agent == "anthrax":
+##        R0 = 0.0                    #anthrax is not infectious
+##        time_to_recovery = 22.1     #source: Holty et al 2006
+##        mortality_rate = 0.5        #source: FDA 2018 (treated!)
+##    elif agent == "ebola":
+##        R0 = 1.85                   #source: Althaus 2014
+##        time_to_recovery = 17.5     #source: Francesconi et al 2003
+##        mortality_rate = 0.5        #source: WHO 2017 (treated!)
+##    elif agent == "natural_disaster":
+    R0 = 0.0                   #source: Althaus 2014
+    time_to_recovery = 0.0     #source: Francesconi et al 2003
+    mortality_rate = 0.0        #source: WHO 2017 (treated!)
 
     kv0 = R0*0.00000003
     kv12sum = time_to_recovery * 0.001
@@ -428,7 +430,7 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
 
     #set the first line of n to be n0, and p to be p0, setting the initial condition
     n[0,:] = n0
-    p[0,:] = p0
+    #p[0,:] = p0
 
     #declare t, printed_t, and index as the current time, time to display on the console for tracking progress, and number of reactions respectively
     t = 0
@@ -444,18 +446,18 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
 
         #if at the first timestep automatically deduct the healthcare efficiency by the number of people who get sick by the number of people who initially get infected. If result is negative, set to be infStoichFactor (small)
         if index == 1:
-            n[index-1][8] -= p[index-1][1]*bed_const
+            #n[index-1][8] -= p[index-1][1]*bed_const
             if n[index-1][8] <= 0:
                 n[index-1][8] = infStoichFactor
 
         #calculate the ratio of healthy people to all people (healthy, sick, immune, dead)
-        healthy_ratio = (p[index-1][0]+p[index-1][2])/sum(p0)
+        #healthy_ratio = (p[index-1][0]+p[index-1][2])/sum(p0)
 
         #define a "repair factor" for each infrastructure that defines the rate at which society works harder to put infrastructures back online, adjusted by ratio of healthy people able to work and the infStoichFactor
         adj_repair_factors = 9*[0.0]
         for i in range(0, len(adj_repair_factors)):
-            adj_repair_factors[i] = (repair_factors[i]/infStoichFactor)*healthy_ratio
-            
+            #adj_repair_factors[i] = (repair_factors[i]/infStoichFactor)*healthy_ratio
+            adj_repair_factors[i] = (repair_factors[i]/infStoichFactor)
         
         #calculate the rates of each infrastructure 'reaction'
         r = 9*[0.0]
@@ -492,6 +494,10 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
                 #r[c] = r[c]*(contamination[c])**contOrder[c]
 
         #calculate the rates of each virus 'reaction'
+        #rv0 = kv0*p[index-1][0]*p[index-1][1]
+        #rv1 = kv1*p[index-1][1]
+        #rv2 = kv2*p[index-1][1]
+
         rv0 = kv0*p[index-1][0]*p[index-1][1]
         rv1 = kv1*p[index-1][1]
         rv2 = kv2*p[index-1][1]
@@ -505,7 +511,7 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
             #truncate the length of the n and t arrays, as nMax reactions were not achieved
             tau = 1
             n = np.delete(n, np.s_[(index):], 0)
-            p = np.delete(p, np.s_[(index):], 0)
+            #p = np.delete(p, np.s_[(index):], 0)
             while (t < timeSpan):
                 if (all(i >= 100 for i in contamination)):
                     break
@@ -535,7 +541,7 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
 
             #truncate the n and t_vals arrays as nMax reactions were not achieved (this is possible unlike the case where no more reacitons can occur)
             n = np.delete(n, np.s_[(index):], 0)
-            p = np.delete(p, np.s_[(index):], 0)
+            #p = np.delete(p, np.s_[(index):], 0)
             t_vals = np.delete(t_vals, np.s_[(index):], 0)
             cResults = np.delete(cResults, np.s_[(index):], 0)
 
@@ -658,10 +664,10 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
                     n[index][i] = contamination[i]
                 else:
                     n[index][i] = test[i]
-            p[index] = p[index-1]
+            #p[index] = p[index-1]
             
         else:
-            p[index] = p[index-1] + v
+            #p[index] = p[index-1] + v
             n[index] = n[index-1]
             #increment or decrement healthcare infrastructure by bed_const depending on if person got sick or left hospital (either due to death or recovery)
             if q > csp[8] and p[index][1] < num_beds:
@@ -679,7 +685,7 @@ def Gillespie_model(n0, p0, repair_factors, nLoss, tLoss, timeSpan, agent, infSt
         index += 1
 
     #return the t and n data to be plotted
-    return t_vals,n,p,cResults
+    return t_vals,n,cResults
 
 if __name__ == '__main__':
     infrastructures_gui.main()

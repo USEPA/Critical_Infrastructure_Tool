@@ -60,20 +60,33 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             
             if not os.path.exists("Images"):
                 os.makedirs("Images")
+            if not os.path.exists("Results"):
+                os.makedirs("Results")
             plt.savefig("Images/" + runName + " " + sector_name)
             #print out distribution statistics as desired
             print("")
+            f = open("Results/" + runName + " " + sector_name + ".txt", "w")
             print(param_name + ' of ' + sector_name + ' Sector Efficiency')
+            f.write(param_name + ' of ' + sector_name + ' Sector Efficiency \n')
             print("Average: "+str(statistics.mean(param_vals[i])))
+            f.write("Average: "+str(statistics.mean(param_vals[i])) + "\n")
             print("Sample SD: "+str(statistics.stdev(param_vals[i])))
+            f.write("Sample SD: "+str(statistics.stdev(param_vals[i])) + "\n")
             print("Min: "+str(min(param_vals[i])))
+            f.write("Min: "+str(min(param_vals[i])) + "\n")
             percentiles = np.array([0.1, 1, 2.5, 5, 10, 25, 50, 75, 90, 95, 97.5, 99, 99.9])
             for j in percentiles:
                 print("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)))
+                f.write("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)) + "\n")
             print("Max: "+str(max(param_vals[i])))
+            f.write("Max: "+str(max(param_vals[i])) + "\n")
             print("Skewness: "+str(skew(param_vals[i])))
+            f.write("Skewness: "+str(skew(param_vals[i])) + "\n")
             print("Kurtosis: "+str(kurtosis(param_vals[i])))
+            f.write("Kurtosis: "+str(kurtosis(param_vals[i])) + "\n")
+            f.close()
 
+            
     #Plot disease outbreak time profiles if applicable (healthy people, sick people, immune people, dead people)
     # if max(p[:,1]) > 1:
     #     plt.figure(figsize=(17,8))
