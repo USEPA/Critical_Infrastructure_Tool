@@ -128,20 +128,21 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         averages = None
         bin_size = None
     #call Gillespie_model nRun times to fetch t and n data for the stochastic solution
+    time_of_recovery_vals = np.zeros((len(n0), nRun), dtype = float)
     for i in range (0, nRun):
         if printProgress and nRun > 1:
             print("Run " + str(i))
             t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan,
                                               infStoichFactor, False, contamination, remediationFactor, backups, 
-                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives, imageFileName)
         elif printProgress:
             t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, agent, 
                                               infStoichFactor, True, contamination, remediationFactor, backups, 
-                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives, imageFileName)
         else:
             t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan,
                                               infStoichFactor, False, contamination, remediationFactor, backups, 
-                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives, imageFileName)
         if averaging and nRun > 1:
             for j in range(0, int(timeSpan/bin_size)):
                 for k in range(0, len(n)):
@@ -150,9 +151,25 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         num_in_bin[j] += 1
                     elif t[k] > j*bin_size+bin_size:
                         break
+        
 
         #if making a histogram, retrieve the desired parameter of each solution and store in param_vals if more than 1 stochastic solution is running
+        sectorRange = list(range(len(n0)))
         if nRun > 1:
+            for m in range(len(sectorRange)):
+                if min(n[:,sectorRange[m]]) >= 100:
+                    continue #leave a zero in the array whenever the sector efficiency never falls below 100%
+                else:
+                    time_of_recover = 0
+                    time_of_min = np.argmin(n[:,sectorRange[m]])
+                    for k in range(time_of_min, len(n[:,sectorRange[m]])):
+                        if n[k][sectorRange[m]] > 100:
+                            time_of_recover = k
+                            break
+                    if time_of_recover == 0:
+                        time_of_recovery_vals[m][i] = timeSpan
+                    else:
+                        time_of_recovery_vals[m][i] = t[time_of_recover]
             for j in range(len(paramTypes)):
                 if paramTypes[j] == "min":
                     param_vals[j][i] = min(n[:,paramIndexes[j]])
@@ -178,6 +195,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         else:
                             param_vals[j][i] = t[time_of_recover]
 
+
     #divide running sums stored in averages and make into run-averages
     if averaging and nRun > 1:
         for i in range(0, int(timeSpan/bin_size)):
@@ -200,6 +218,23 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     else:
         fig, ax, leg = infrastructures_interactive_plotting.plotting(t,n,None, None, timeSpan, imageFileName, contam)
     #fig, ax, leg = infrastructures_interactive_plotting.plotting(t,n,timeSpan)
+
+    
+    #ranking the priorities by coefficients
+    ranked_dict, ranked = prioritizeByConnections(orders, list(range(len(n0))))
+    ranked_dict_rt, ranked_rt = getRecoveryTimeDict(time_of_recovery_vals, sectorRange)
+    f = open("Results/" + imageFileName + "_prioritization.txt", "w")
+    f.write("Rank by strength of connections: \n")
+    i = 1
+    for key, value in ranked_dict:
+        f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ "\n")
+        i += 1
+    f.write("\n Rank by median recovery time: \n")
+    i = 1
+    for key, value in ranked_dict_rt:
+        f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ " days \n")
+        i += 1
+    f.close()
 
     #end program without returning anything
     return leg
@@ -259,8 +294,53 @@ def adjustContamination(contamination, remediationFactor, timestep):
             results[c] = 100
     return results
 
+def get_sector_name(sector):
+    if sector == 0:
+        return "Water and Wastewater Systems"
+    elif sector == 1:
+        return "Energy"
+    elif sector == 2:
+        return "Transportation Systems"
+    elif sector == 3:
+        return "Communications"
+    elif sector == 4:
+        return "Government Facilities"
+    elif sector == 5:
+        return "Food and Agriculture"
+    elif sector == 6:
+        return "Emergency Services"
+    elif sector == 7:
+        return "Waste Management"
+    elif sector == 8:
+        return "Healthcare"
+
+def prioritizeByConnections(orders, sectors):
+    orders = np.transpose(orders)
+    results = {}
+    for i in range(len(sectors)):
+        name = get_sector_name(sectors[i])
+        results[name] = sum(orders[i])
+    results_final = sorted(results.items(), key=lambda x: x[1], reverse=True)
+    ranked = []
+    for key in results_final:
+        ranked.append(key)
+    return results_final, ranked
+
+def getRecoveryTimeDict(recoveryTimes, sectors):
+    results = {}
+    ranked = []
+    for i in range(len(recoveryTimes)):
+        name = get_sector_name(sectors[i])
+        recovery_time = np.percentile(recoveryTimes[i],50)
+        results[name] = recovery_time
+    results_final = sorted(results.items(), key=lambda x: x[1], reverse=True)
+    for key in results_final:
+        ranked.append(key)
+    return results_final, ranked
+
 def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, printProgress, contamination,
-                    remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0, negatives):
+                    remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0,
+                    negatives, imageFileName):
     '''
     This function simulates interconnected infrastructures using the Gillespie
     algorithm to stochastically determine the efficiencies of the water,

@@ -87,6 +87,8 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             f.close()
 
             
+
+            
     #Plot disease outbreak time profiles if applicable (healthy people, sick people, immune people, dead people)
     # if max(p[:,1]) > 1:
     #     plt.figure(figsize=(17,8))

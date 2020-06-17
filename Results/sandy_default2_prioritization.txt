@@ -1,0 +1,21 @@
+Rank by strength of connections: 
+1)Energy : 4.54
+2)Water and Wastewater Systems : 3.23
+3)Transportation Systems : 3.0
+4)Communications : 2.08
+5)Healthcare : 1.23
+6)Government Facilities : 0.38
+7)Food and Agriculture : 0.31
+8)Emergency Services : 0.08
+9)Waste Management : 0.08
+
+ Rank by median recovery time: 
+1)Energy : 27.96 days 
+2)Food and Agriculture : 24.51 days 
+3)Transportation Systems : 19.91 days 
+4)Healthcare : 16.36 days 
+5)Water and Wastewater Systems : 16.33 days 
+6)Communications : 15.93 days 
+7)Emergency Services : 15.67 days 
+8)Government Facilities : 14.4 days 
+9)Waste Management : 11.94 days 
