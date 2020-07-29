@@ -209,15 +209,16 @@ def main():
                 data["daysBackup"] = var23.get().split(" ")
                 data["depBackup"] = var24.get().split(" ")
                 data["negatives"] = var25.get()
-                filename = asksaveasfile(mode='w', defaultextension=".txt")
+                files = [('Text Document', '*.txt'), ('JSON File', '*.json')] 
+                filename = asksaveasfile(filetypes = files, defaultextension = files, mode="w")
                 if filename is None:
                   return
                 json.dump(data, filename)
                 filename.close()
                     
             def runLoaded():
-                print("opening folder")
-                filename = askopenfilename()
+                files = [('Text Document', '*.txt'), ('JSON File', '*.json')] 
+                filename = askopenfilename(filetypes = files, defaultextension = files)
                 if ".txt" in filename or ".json" in filename:
                     n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
                     confIntervals, infStoichFactor, seedValue, name, remediationFactor, contaminated, backups, \
@@ -232,8 +233,7 @@ def main():
                 filename = askopenfilename()
                 if ".csv" in filename:
                     self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
-                else:
-                    tkMessageBox.showerror("Error","Must be CSV file")
+
                     
 ##            def showPDF():
 ##              
@@ -312,7 +312,7 @@ def main():
             
 
             mainframe = tk.Frame.__init__(self,parent)
-            label = tk.Label(self, text="SIRM", font=("Arial", 40))
+            label = tk.Label(self, text="Stochastic Infrastructure Remediation Model", font=("Arial", 40))
             label.grid(row=0, sticky=tk.NSEW, columnspan=4)
 
             #tk.Button(self, text='Help', bg='#FCB1A0', command= lambda: showPDF(), font=("Arial", 14)).grid(row=0, column=4, sticky=tk.NSEW)
@@ -586,7 +586,7 @@ def main():
 
     global app
     app = TKinterWindow()
-    app.title("Battelle-Gillespie Infrastructure Model")
+    app.title("Stochastic Infrastructure Remediation Model")
     app.mainloop()
 
 if __name__ == '__main__':

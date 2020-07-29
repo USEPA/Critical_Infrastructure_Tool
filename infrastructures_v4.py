@@ -13,9 +13,11 @@ import infrastructures_results                    #import self-made module infra
 import infrastructures_gui                        #import self-made module infrastructurees_gui to run from GUI by default
 import infrastructures_interactive_plotting       #import self-made module infrastructurees_interactive_plotting to run interactive plot
 import scipy
+import final_pdf
 import scipy.optimize as optimize
-
+from fpdf import FPDF
 from scipy.optimize import LinearConstraint
+import pandas as pd
 
 leg = ""
 
@@ -226,15 +228,26 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     f = open("Results/" + imageFileName + "_prioritization.txt", "w")
     f.write("Rank by strength of connections: \n")
     i = 1
+    sectors = []
     for key, value in ranked_dict:
         f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ "\n")
         i += 1
-    f.write("\n Rank by median recovery time: \n")
+    f.write("\nRank by median recovery time: \n")
     i = 1
+    results = pd.DataFrame()
+    sectors = []
+    recoveryTimes = []
     for key, value in ranked_dict_rt:
         f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ " days \n")
         i += 1
+        sectors.append(key)
+        recoveryTimes.append(str(round(float(value), 2)))
+    final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName)
+    results["Sectors"] = sectors
+    results["Recovery Times"] = recoveryTimes
+    results.to_csv("Results/" + imageFileName + ".csv")
     f.close()
+    
 
     #end program without returning anything
     return leg
@@ -559,6 +572,7 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
                     if t< backupTime[time_index]:
                         r[i] = r[i]*float(backupE[time_index])**orders[i][j]
                     else:
+                        
                         r[i] = r[i]*(n[index-1][j])**orders[i][j]
                 else:
                     r[i] = r[i]*(n[index-1][j])**orders[i][j]
@@ -719,7 +733,8 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
             v = coeffs[reaction]
             v[reaction] += adj_repair_factors[reaction]
             for b in range(0, len(backupI)):
-                v[int(backupI[b])] = 0
+                if t<daysBackup[int(backupI[b])]:
+                    v[int(backupI[b])] = 0
             if not negatives:
                 for b in range(0, len(coeffs[reaction])):
                     if b != reaction:
