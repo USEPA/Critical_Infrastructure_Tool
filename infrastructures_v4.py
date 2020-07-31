@@ -563,9 +563,10 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
             if depBackup != None:
                 for dp in range(0, len(depBackup)):
                     if int(depBackup[dp]) == i:
-                        backupI = np.append(backupI,backups[dp])
-                        backupE = np.append(backupE,backupPercents[dp])
-                        backupTime = np.append(backupTime, daysBackup[dp])
+                        if (backups[dp]) not in backupI: 
+                            backupI = np.append(backupI,backups[dp])
+                            backupE = np.append(backupE,backupPercents[dp])
+                            backupTime = np.append(backupTime, daysBackup[dp])
             for j in range(0, len(orders[i])):
                 if j in backupI:
                     time_index = np.where(backupI == j)
@@ -726,14 +727,16 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
         #when len(v) is 9, an infrastructure equation is being applied
         if reaction <= 9:
             backupI = []
+            backupDays = []
             if depBackup != None:
                 for dp in range(0, len(depBackup)):
                     if int(depBackup[dp]) == reaction:
                         backupI = np.append(backupI,backups[dp])
+                        backupDays = np.append(backupDays, daysBackup[dp])
             v = coeffs[reaction]
             v[reaction] += adj_repair_factors[reaction]
             for b in range(0, len(backupI)):
-                if t<daysBackup[int(backupI[b])]:
+                if t<backupDays[b]:
                     v[int(backupI[b])] = 0
             if not negatives:
                 for b in range(0, len(coeffs[reaction])):

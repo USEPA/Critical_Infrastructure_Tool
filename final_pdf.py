@@ -1,7 +1,7 @@
 
 from fpdf import FPDF
 
-def createPdf(ranked_dict, ranked_dict_rtm, filename):
+def createPdf(ranked_dict, ranked_dict_rt, filename):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Times', 'B', 12)
