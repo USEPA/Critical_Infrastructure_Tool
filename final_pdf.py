@@ -1,7 +1,9 @@
 
 from fpdf import FPDF
+import PyPDF2
+from PIL import Image
 
-def createPdf(ranked_dict, ranked_dict_rt, filename):
+def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Times', 'B', 12)
@@ -32,4 +34,40 @@ def createPdf(ranked_dict, ranked_dict_rt, filename):
         pdf.cell(width, height, str(data[0]), border=1)
         pdf.cell(width, height, str(data[1]), border=1, ln=1)
         i += 1
-    pdf.output('Results/Report.pdf', 'F')
+
+    #adding sensitivity
+    graph = "Images/" + filename
+    name = graph + ".png"
+    pdf.image(name, w=150)
+    for i in range(len(paramIndexes)):
+        sector_name = getSector(paramIndexes[i])
+        graph = "Images/" + filename + " " + sector_name
+        name = graph + ".png"
+        pdf.image(name, w=150)
+    for g in range(len(sensitivity)):
+        graph = "Sensitivity Images/" + getSector(sensitivity[g]) + " Sensitivity.png"
+        pdf.image(graph, w=150)
+
+        
+    pdf.output('Results/' + filename + "_Report.pdf", 'F')
+
+def getSector(index):
+    if index == 0:
+        return "Water"
+    elif index == 1:
+        return "Energy"
+    elif index == 2:
+        return "Transportation"
+    elif index == 3:
+        return "Communication"
+    elif index == 4:
+        return "Government"
+    elif index == 5:
+        return "Food"
+    elif index == 6:
+        return "Emergency Services"
+    elif index == 7:
+        return "Waste"
+    else:
+        return "Healthcare"
+    

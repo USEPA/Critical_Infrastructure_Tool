@@ -18,6 +18,7 @@ import scipy.optimize as optimize
 from fpdf import FPDF
 from scipy.optimize import LinearConstraint
 import pandas as pd
+import json
 
 leg = ""
 
@@ -115,7 +116,16 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     #seed random number generator if desired
     if seedValue is not None:
         np.random.seed(seedValue)
-
+    sensitivity = []
+    reportname = "report_inputs.txt"
+    data = open(reportname)
+    json_data = json.load(data)
+    for sector in json_data:
+        if(json_data[sector]["sensitivity"]>0):
+            sensitivity.append(json_data[sector]["index"])
+        if(json_data[sector]["graph"]):
+            paramIndexes.append(json_data[sector]["index"])
+            paramTypes.append("recovery_time")     
     #initialize param_vals if more than one stochastic simulation is running
     if nRun > 1:
         param_vals = np.zeros((len(paramTypes), nRun), dtype = float)
@@ -131,6 +141,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         bin_size = None
     #call Gillespie_model nRun times to fetch t and n data for the stochastic solution
     time_of_recovery_vals = np.zeros((len(n0), nRun), dtype = float)
+    
     for i in range (0, nRun):
         if printProgress and nRun > 1:
             print("Run " + str(i))
@@ -153,7 +164,9 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         num_in_bin[j] += 1
                     elif t[k] > j*bin_size+bin_size:
                         break
-        
+        fileLoc = "report_inputs.txt"
+        json_data = open(fileLoc)
+
 
         #if making a histogram, retrieve the desired parameter of each solution and store in param_vals if more than 1 stochastic solution is running
         sectorRange = list(range(len(n0)))
@@ -242,7 +255,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         i += 1
         sectors.append(key)
         recoveryTimes.append(str(round(float(value), 2)))
-    final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName)
+    final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes)
     results["Sectors"] = sectors
     results["Recovery Times"] = recoveryTimes
     results.to_csv("Results/" + imageFileName + ".csv")
