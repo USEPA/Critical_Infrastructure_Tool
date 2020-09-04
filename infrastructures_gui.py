@@ -19,6 +19,8 @@ import tkinter.messagebox as tkMessageBox
 #from fiona import _shim, schema
 #import infrastructures_mapping
 import json
+from inspect import getsourcefile
+from os.path import abspath
 
 
 import os
@@ -127,9 +129,11 @@ def main():
         def __init__(self, parent, controller):
 
             self.leg = None
+            #dir_path = os.path.dirname(os.path.realpath(__file__))
+            dir_path = os.path.dirname(abspath(getsourcefile(lambda:0)))
             dirpath = os.getcwd()
 
-            self.orders, self.coeffs, self.k = coefficients_from_file.load_file(dirpath + "//"+ "default.csv")
+            self.orders, self.coeffs, self.k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
             #print(self.orders, self.coeffs, self.k)
 
             def run(optimize):
@@ -167,7 +171,7 @@ def main():
                 data["daysBackup"] = var23.get().split(" ")
                 data["depBackup"] = var24.get().split(" ")
                 data["negatives"] = var25.get()
-                fileLoc = dirpath + "//" + "infrastructures_inputs.txt"
+                fileLoc = dir_path + "//" + "infrastructures_inputs.txt"
                 with open(fileLoc, "w") as outfile:
                     json.dump(data, outfile)
                 self.leg = infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
@@ -225,7 +229,7 @@ def main():
                     backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file(filename)
                     json_data = open(filename)
                     data = json.load(json_data)
-                    with open(dirpath + "//" + "infrastructures_inputs.txt", 'w') as outfile:
+                    with open(dir_path + "//" + "infrastructures_inputs.txt", 'w') as outfile:
                         json.dump(data, outfile)
                     refresh()
                 

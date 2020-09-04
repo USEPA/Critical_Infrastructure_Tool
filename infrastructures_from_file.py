@@ -12,6 +12,9 @@ import warnings
 import infrastructures_v4
 import tkinter.messagebox as tkMessageBox
 import json
+import os
+from inspect import getsourcefile
+from os.path import abspath
 
 def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
@@ -35,7 +38,9 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     contamination = [0,0,0,0,0,0,0,0,0]
 
     #read file
-    json_data = open(fname)
+    #dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.dirname(abspath(getsourcefile(lambda:0)))
+    json_data = open(dir_path + "//" + fname)
     data = json.load(json_data)
     
     #n0 calculation
@@ -317,7 +322,9 @@ def read_file(fname = "infrastructures_inputs.txt"):
     #This function is only used by infrastructures_gui to prepopulate the entry boxes in the GUI
 
     #read file
-    json_data = open(fname)
+    #dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    json_data = open(dir_path + "//"+fname)
     data = json.load(json_data)
     
     n0String = data["n0"]
