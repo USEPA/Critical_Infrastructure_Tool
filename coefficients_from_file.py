@@ -16,7 +16,7 @@ from inspect import getsourcefile
 
 def load_file(filename):
     dir_path = os.path.dirname(abspath(getsourcefile(lambda:0)))
-    data = pd.read_csv(dir_path + "//"+ "default.csv")
+    data = pd.read_csv("default.csv")
     sectors = data["Sector"]
     numSectors = 9
     finalCoeffs = np.array([[0.0 for x in range(numSectors)] for y in range(numSectors)])

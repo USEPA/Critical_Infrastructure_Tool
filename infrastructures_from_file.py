@@ -324,7 +324,7 @@ def read_file(fname = "infrastructures_inputs.txt"):
     #read file
     #dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    json_data = open(dir_path + "//"+fname)
+    json_data = open(fname)
     data = json.load(json_data)
     
     n0String = data["n0"]

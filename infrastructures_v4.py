@@ -255,7 +255,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         i += 1
         sectors.append(key)
         recoveryTimes.append(str(round(float(value), 2)))
-    final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes)
+    #final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes)
     results["Sectors"] = sectors
     results["Recovery Times"] = recoveryTimes
     results.to_csv("Results/" + imageFileName + ".csv")
