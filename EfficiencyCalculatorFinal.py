@@ -13,6 +13,10 @@ import urllib.request
 import subprocess
 from shutil import copyfile
 
+def wrapArg(s):
+    if len(str(s).split(' ')) <= 1:
+        return s
+    return (f"\"{s}\"")
 
 def getAgri(den, num):
 	if float(num) > 0 and float(den) > 0:
@@ -183,13 +187,14 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         return ((1-results/results2)*100)
 
 def EfficiencyCalculator(ScenarioDataset="dissolved2", Infrastructure_Dataset="HoustonBlocks", OutputPath = "C:/Documents", GUI_Tool_Location = "C:/Documents"):  # EfficiencyCalculator
-
+    arcpy.AddMessage("Entered Calculator") 
     # To allow overwriting outputs change overwriteOutput option to True.
     arcpy.env.overwriteOutput = True
     path_parent = os.path.dirname(arcpy.env.workspace)
-    
+    arcpy.AddMessage("Entered workspace") 
     # Process: Infrastructure Counts (Summary Statistics)
     filepath = os.getcwd()
+    arcpy.AddMessage("Got CMd") 
     # Process: Intersect (Intersect) 
     Affected_Area = arcpy.env.workspace + "\\intersect"
     arcpy.Intersect_analysis(in_features=[[Infrastructure_Dataset, ""], [ScenarioDataset, ""]],
@@ -263,31 +268,42 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Infrastructure_Dataset="H
     arcpy.AddMessage("Waste Efficiency: " + str(round(waste, 2)) + "%")
     #arcpy.AddMessage("Healthcare Efficiency: " + str(round(healthcare_percent, 2)) + "%")
     arcpy.AddMessage("Healthcare Efficiency: " + str(round(hospitals, 2)) + "%")
-
-    fileLoc = GUI_Tool_Location + "//" + "infrastructures_inputs.txt"
-    json_data = open(fileLoc)
+    #GUI_Tool_Location_small = GUI_Tool_Location.replace("\"", "")
+    #arcpy.AddMessage(GUI_Tool_Location_small)
+    #entries = os.listdir(r'{0}'.format(input(GUI_Tool_Location)))
+##    for entry in entries:
+##            arcpy.AddMessage(entry)
+    
+    fileLoc = os.path.join(GUI_Tool_Location, "infrastructures_inputs.txt")
+    json_data = open(str(fileLoc))
     data = json.load(json_data)
     path_parent = os.path.dirname(arcpy.env.workspace)
-    copyfile(fileLoc, path_parent + "//" + "infrastructures_inputs.txt")
-    copyfile(GUI_Tool_Location + "//default.csv", path_parent + "//" + "default.csv")
-    copyfile(GUI_Tool_Location + "//report_inputs.txt", path_parent + "//" + "report_inputs.txt")
+    copyfile(fileLoc, path_parent + "\\" + "infrastructures_inputs.txt")
+    defaultPath = GUI_Tool_Location + "\\default.csv"
+    copyfile(defaultPath, path_parent + "\\" + "default.csv")
+    inputsFile = GUI_Tool_Location + "\\report_inputs.txt"
+    copyfile(inputsFile, path_parent + "\\" + "report_inputs.txt")
     
     n0new = [water_percent, energy_percent, transport_percent, comm, gov,
              agriculture_percent, emergency_percent, waste, healthcare_percent]
 
     data["n0"] = n0new
-    
-    with open(GUI_Tool_Location + "//" + "infrastructures_inputs.txt", "w") as outfile:
+    inputsPath = os.path.join(GUI_Tool_Location, "infrastructures_inputs.txt")
+    arcpy.AddMessage(GUI_Tool_Location)
+    with open(inputsPath, "w") as outfile:
         json.dump(data, outfile)
-    with open(path_parent + "//" + "infrastructures_inputs.txt", "w") as outfile:
+    with open(path_parent + "\\" + "infrastructures_inputs.txt", "w") as outfile:
         json.dump(data, outfile)
-
     #p = subprocess.Popen("C:\Repos\SIRM\InfrastructureRemediation\dist\infrastructures_gui\infrastructures_gui.exe",shell=True)
-    command_prompt = "cmd /k " + GUI_Tool_Location + "\\infrastructures_gui.exe"
+
+    newPath = wrapArg(GUI_Tool_Location +  "\\infrastructures_gui.exe")
+    command_prompt = "cmd /k " + newPath
     os.system(command_prompt)
 
             
 if __name__ == '__main__':
     # Global Environment settings
     with arcpy.EnvManager(scratchWorkspace=arcpy.env.workspace, workspace=arcpy.env.workspace):
-        EfficiencyCalculator(*argv[1:])
+            #EfficiencyCalculator(*(argsFixed))
+            arcpy.AddMessage("Entering Calculator")            
+            EfficiencyCalculator(*argv[1:])
