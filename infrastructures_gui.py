@@ -485,6 +485,13 @@ def main():
             TLoss.insert(0, tLoss)
             TLoss.grid(row=13, column = 3, sticky=tk.NSEW)
 
+            tk.Label(self, text="Days of Remediation: ", font=("Arial", 10)).grid(row=11, column = 0, sticky=tk.W)
+            var9 = tk.StringVar()
+            TLoss = tk.Entry(self, textvariable=var9)
+            TLoss_ttp = CreateToolTip(TLoss, 'Enter additional time outage')
+            TLoss.insert(0, tLoss)
+            TLoss.grid(row=11, column = 1, sticky=tk.NSEW)
+
             tk.Label(self, text="Number of stochastic runs:", font=("Arial", 10)).grid(row=2, column = 2, sticky=tk.W)
             var10 = tk.StringVar()
             NRun = tk.Entry(self, textvariable=var10)
