@@ -95,8 +95,17 @@ class sensitivityAnalysis(object):
         self.steps = steps
 
     def runAnalysis(self):
-        infrastructure_inputs = 
-
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        json_data = open(fname)
+        data = json.load(json_data)
+        start = self.min
+        step = (self.max-self.min)/steps
+        while (start < self.max):
+            data[self.parameter] = start
+            json.dump(data)
+            #run_infrastructure
+            #write to excel file
+            start += step
         
 
 def main():
