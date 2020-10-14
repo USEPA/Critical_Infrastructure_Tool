@@ -100,12 +100,22 @@ class sensitivityAnalysis(object):
         data = json.load(json_data)
         start = self.min
         step = (self.max-self.min)/steps
+        orders, coeffs, k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
+        import os
+        os.rmdir("InterimSensitivity")
         while (start < self.max):
             data[self.parameter] = start
+            name = start
+            if start < 1:
+              name = round(start * 10, 0)
+            data["name"] = self.parameter + "_" + name
             json.dump(data)
+            self.leg = infrastructures_from_file.run_file(False, orders, coeffs, k)
             #run_infrastructure
             #write to excel file
             start += step
+
+    def compileResults(self):
         
 
 def main():

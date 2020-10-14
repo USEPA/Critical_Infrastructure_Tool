@@ -187,14 +187,13 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         return ((1-results/results2)*100)
 
 def EfficiencyCalculator(ScenarioDataset="dissolved2", Infrastructure_Dataset="HoustonBlocks", OutputPath = "C:/Documents", GUI_Tool_Location = "C:/Documents"):  # EfficiencyCalculator
-    arcpy.AddMessage("Entered Calculator") 
+
     # To allow overwriting outputs change overwriteOutput option to True.
     arcpy.env.overwriteOutput = True
     path_parent = os.path.dirname(arcpy.env.workspace)
-    arcpy.AddMessage("Entered workspace") 
+    
     # Process: Infrastructure Counts (Summary Statistics)
     filepath = os.getcwd()
-    arcpy.AddMessage("Got CMd") 
     # Process: Intersect (Intersect) 
     Affected_Area = arcpy.env.workspace + "\\intersect"
     arcpy.Intersect_analysis(in_features=[[Infrastructure_Dataset, ""], [ScenarioDataset, ""]],
@@ -304,6 +303,11 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Infrastructure_Dataset="H
 if __name__ == '__main__':
     # Global Environment settings
     with arcpy.EnvManager(scratchWorkspace=arcpy.env.workspace, workspace=arcpy.env.workspace):
+            argsFixed = argv[1:]
+            for a in range(len(argsFixed)):
+                if a > 1:
+                        argsFixed[a] = wrapArg(argsFixed[a])
+                        
             #EfficiencyCalculator(*(argsFixed))
-            arcpy.AddMessage("Entering Calculator")            
             EfficiencyCalculator(*argv[1:])
+
