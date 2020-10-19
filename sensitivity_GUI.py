@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-report_gui.py
-Created on Sun Jun 25 14:23:05 2019
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
 """
 
 #import statements
@@ -17,6 +12,9 @@ import infrastructures_from_file
 import coefficients_from_file
 import tkinter.messagebox as tkMessageBox
 import json
+import pandas as pd
+import matplotlib.pyplot as plt
+from shutil import copyfile
 
 
 import os
@@ -31,6 +29,7 @@ if (sys.version_info > (3,0)):
 else:
   from tkFileDialog import asksaveasfile
 
+from plotnine import *
 
 
 class CreateToolTip(object):
@@ -87,37 +86,64 @@ class CreateToolTip(object):
             tw.destroy()
 
 class sensitivityAnalysis(object):
-    def __init__(self, inf_name, parameter, value, minval, maxval, steps):
-        self.inf_name = inf_name
+    def __init__(self, parameter, minval, maxval, steps, sector):
         self.parameter = parameter
-        self.min = minval
-        self.max = maxval
-        self.steps = steps
+        self.min = float(minval)
+        self.max = float(maxval)
+        self.steps = int(steps)
+        self.sector = sector
 
-    def runAnalysis(self):
+    def runAnalysis(self, sectors):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        json_data = open(fname)
+        fileLoc = dir_path + "//" + "infrastructures_inputs.txt"
+        temp_file = dir_path + "//" + "infrastructures_inputs_temp.txt"
+        copyfile(fileLoc, temp_file)
+        json_data = open(fileLoc)
         data = json.load(json_data)
         start = self.min
-        step = (self.max-self.min)/steps
+        step = (self.max-self.min)/self.steps
+        print(start)
         orders, coeffs, k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
-        import os
-        os.rmdir("InterimSensitivity")
-        while (start < self.max):
-            data[self.parameter] = start
+        results = pd.DataFrame()
+        sectorInt = sectors.index(self.sector)
+        print(self.steps)
+        for i in range(self.steps):
+            print("looping")
+            if self.parameter == "repair_factors" or self.parameter == "n0":
+              data[self.parameter][sectorInt] = start
+            elif self.parameter == "Days Backup":
+              data["daysBackup"] = [start]*(len(sectors)-1)
+              data["backupPercent"] = [90] * (len(sectors)-1)
+              depBackups = list(range(9))
+              depBackups.pop(sectorInt)
+              data["depBackup"] = depBackups
+              data["backups"] = [sectorInt] * (len(sectors)-1)
+            elif self.parameter == "Efficiency of Backups":
+              data["backupPercent"] = [start]*(len(sectors)-1)
+              data["daysBackup"] = [days_default] * (len(sectors)-1)
+              depBackups = list(range(9))
+              depBackups.pop(sectorInt)
+              data["depBackup"] = depBackups
+              data["backups"] = [sectorInt] * (len(sectors)-1)
             name = start
             if start < 1:
-              name = round(start * 10, 0)
-            data["name"] = self.parameter + "_" + name
-            json.dump(data)
+              name = round(start * 100, 0)
+            data["name"] = self.parameter + "_" + str(name).split(".")[0]
+            with open(fileLoc, "w") as outfile:
+              json.dump(data, outfile)
             self.leg = infrastructures_from_file.run_file(False, orders, coeffs, k)
-            #run_infrastructure
-            #write to excel file
+            result = pd.read_csv(dir_path + "\\Results\\" + data["name"] + ".csv")
+            for i in range(len(result["Sectors"])):
+              new_row = {'Sector': result["Sectors"][i], 'RT': result["Recovery Times"][i], 'Value': start}
+              results = results.append(new_row, ignore_index=True)
             start += step
-
-    def compileResults(self):
-        
-
+        plt.style.use('ggplot')
+        p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time") + geom_point() + geom_line()
+        file_name = self.parameter + "_" + self.sector
+        path_name = dir_path + "\\Sensitivity\\"
+        p.save(filename=file_name, path = path_name)
+        copyfile(temp_file, fileLoc)
+                
 def main():
     LARGE_FONT= ("Verdana", 24)
 
@@ -159,87 +185,134 @@ def main():
             dirpath = os.getcwd()
                 
             self.leg = None
+
+            def run():
+              rf = rf_bool.get()
+              backup_days  = backup_days_bool.get()
+              backup_efficiency = backup_efficiency_bool.get()
+              initial_efficiency = initial_efficiency_bool.get()
+              sectors = sector_list
+              water = water_bool.get()
+              energy = energy_bool.get()
+              transportation = transportation_bool.get()
+              comm = comm_bool.get()
+              gov = gov_bool.get()
+              emer = emer_bool.get()
+              fa = fa_bool.get()
+              waste = waste_bool.get()
+              healthcare = healthcare_bool.get()
+              bools = [water, energy, transportation, comm, gov, emer, fa, waste, healthcare]
+              new_sector_list = []
+              for i in range(len(bools)):
+                if (bools[i])>0:
+                  new_sector_list.append(sectors[i])
+              if rf>0:
+                for sector in new_sector_list:
+                  individual_run = sensitivityAnalysis("repair_factors", rf_range_min.get(),
+                                            rf_range_max.get(), rf_steps.get(), sector)
+                  individual_run.runAnalysis(sectors)
+                  
+              if backup_days>0:
+                for sector in new_sector_list:
+                  individual_run = sensitivityAnalysis("Days Backup", backup_days_range_min.get(),
+                                            backup_days_range_max.get(), backup_days_steps.get(), sector)
+                  individual_run.runAnalysis(sectors)
+                  
+              if backup_efficiency>0:
+                for sector in new_sector_list:
+                  individual_run = sensitivityAnalysis("Efficiency of Backups", backup_efficiency_range_min.get(),
+                                            backup_efficiency_range_max.get(), backup_efficiency_steps.get(), sector)
+                  individual_run.runAnalysis(sectors)
+                  
+              if initial_efficiency>0:
+                for sector in new_sector_list:
+                  individual_run = sensitivityAnalysis("n0", initial_efficiency_range_min.get(),
+                                            initial_efficiency_range_max.get(), initial_efficiency_steps.get(), sector)
+                  individual_run.runAnalysis(sectors)
             
             #bool definitions
             rf_bool = tk.IntVar()
-            inf_stoich = tk.IntVar()
-            backup_days = tk.IntVar()
-            backup_efficiency = tk.IntVar()
-            initial_efficiency = tk.IntVar()
+            backup_days_bool = tk.IntVar()
+            backup_efficiency_bool = tk.IntVar()
+            initial_efficiency_bool = tk.IntVar()
             
-            water_bool = tk.IntVar()
             water_bool = tk.IntVar()
             energy_bool = tk.IntVar()
             transportation_bool = tk.IntVar()
             comm_bool = tk.IntVar()
-            gov_bool = tk.IntVar
+            gov_bool = tk.IntVar()
             emer_bool = tk.IntVar()
             fa_bool = tk.IntVar()
             waste_bool = tk.IntVar()
             healthcare_bool = tk.IntVar()
-
+            bool_list = [water_bool, energy_bool, transportation_bool, comm_bool,
+                         gov_bool, emer_bool, fa_bool, waste_bool, healthcare_bool]
+            sector_list = ["Water", "Energy", "Transportation", "Communications", "Government", "Emergency Services",
+                           "Food and Agriculture", "Waste Management", "Healthcare"]
+            
             #string definitions
-            rf_range = tk.StringVar()
-            inf_stoich_range = tk.StringVar()
-            backup_days_range = tk.StringVar()
-            backup_efficiency_range = tk.StringVar()
-            initial_efficiency_range = tk.StringVar()
+            rf_range_min = tk.StringVar()
+            inf_stoich_range_min = tk.StringVar()
+            backup_days_range_min = tk.StringVar()
+            backup_efficiency_range_min = tk.StringVar()
+            initial_efficiency_range_min = tk.StringVar()
+
+            rf_range_max = tk.StringVar()
+            inf_stoich_range_max = tk.StringVar()
+            backup_days_range_max = tk.StringVar()
+            backup_efficiency_range_max = tk.StringVar()
+            initial_efficiency_range_max = tk.StringVar()
 
             rf_steps = tk.StringVar()
-            inf_stoich_steps = tk.StringVar()
             backup_days_steps = tk.StringVar()
             backup_efficiency_steps = tk.StringVar()
             initial_efficiency_steps = tk.StringVar()
 
             tk.Label(self, text='Parameters to Analyze', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 0)
             tk.Checkbutton(self, text='Repair Factors', var=rf_bool, font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 0)
-            tk.Checkbutton(self, text='Infrastructure Stoichiometric Factor', var=inf_stoich, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 0)
-            tk.Checkbutton(self, text='Days Backup', var=backup_days, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 0)
-            tk.Checkbutton(self, text='Efficiency of Backup', var=backup_efficiency, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 0)
-            tk.Checkbutton(self, text='Initial Efficiency', var=initial_efficiency, font=("Arial", 10)).grid(row=10, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, text='Days Backup', var=backup_days_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, text='Efficiency of Backup', var=backup_efficiency_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, text='Initial Efficiency', var=initial_efficiency_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 0)
 
-            tk.Label(self, text='Parameter Ranges', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 1)
-            tk.Label(self, text='Repair Factors Range:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 1)
-            tk.Label(self, text='Infrastructure Stoichiometric Factor Range:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 1)
-            tk.Label(self, text='Days Backup Range:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 1)
-            tk.Label(self, text='Efficiency of Backup Range:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 1)
-            tk.Label(self, text='Initial Efficiency Range:', font=("Arial", 10)).grid(row=10, sticky=tk.W, column = 1)
+            tk.Label(self, text='Parameter Mins', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 1)
+            tk.Label(self, text='Repair Factors Min:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 1)
+            tk.Label(self, text='Days Backup Min:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 1)
+            tk.Label(self, text='Efficiency of Backup Min:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 1)
+            tk.Label(self, text='Initial Efficiency Min:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 1)
 
-            tk.Entry(self, textvariable=rf_range, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 1)
-            tk.Entry(self, textvariable=inf_stoich_range, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 1)
-            tk.Entry(self, textvariable=backup_days_range, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 1)
-            tk.Entry(self, textvariable=backup_efficiency_range, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 1)
-            tk.Entry(self, textvariable=initial_efficiency_range, font=("Arial", 10)).grid(row=11, sticky=tk.W, column = 1)
+            tk.Entry(self, textvariable=rf_range_min, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 1)
+            tk.Entry(self, textvariable=backup_days_range_min, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 1)
+            tk.Entry(self, textvariable=backup_efficiency_range_min, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 1)
+            tk.Entry(self, textvariable=initial_efficiency_range_min, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 1)
+
+            tk.Label(self, text='Parameter Maxes', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 2)
+            tk.Label(self, text='Repair Factors Max:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 2)
+            tk.Label(self, text='Days Backup Max:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 2)
+            tk.Label(self, text='Efficiency of Backup Max:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 2)
+            tk.Label(self, text='Initial Efficiency Max:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 2)
+
+            tk.Entry(self, textvariable=rf_range_max, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 2)
+            tk.Entry(self, textvariable=backup_days_range_max, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 2)
+            tk.Entry(self, textvariable=backup_efficiency_range_max, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 2)
+            tk.Entry(self, textvariable=initial_efficiency_range_max, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 2)
 
             tk.Label(self, text='Parameter Steps', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 3)
             tk.Label(self, text='Repair Factors Steps:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 3)
-            tk.Label(self, text='Infrastructure Stoichiometric Factor Steps:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 3)
-            tk.Label(self, text='Days Backup Steps:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 3)
-            tk.Label(self, text='Efficiency of Backup Steps:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 3)
-            tk.Label(self, text='Initial Efficiency Steps:', font=("Arial", 10)).grid(row=10, sticky=tk.W, column = 3)
+            tk.Label(self, text='Days Backup Steps:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 3)
+            tk.Label(self, text='Efficiency of Backup Steps:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 3)
+            tk.Label(self, text='Initial Efficiency Steps:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 3)
 
             tk.Entry(self, textvariable=rf_steps, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 3)
-            tk.Entry(self, textvariable=inf_stoich_steps, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 3)
-            tk.Entry(self, textvariable=backup_days_steps, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 3)
-            tk.Entry(self, textvariable=backup_efficiency_steps, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 3)
-            tk.Entry(self, textvariable=initial_efficiency_steps, font=("Arial", 10)).grid(row=11, sticky=tk.W, column = 3)
+            tk.Entry(self, textvariable=backup_days_steps, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 3)
+            tk.Entry(self, textvariable=backup_efficiency_steps, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 3)
+            tk.Entry(self, textvariable=initial_efficiency_steps, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 3)
 
             tk.Label(self, text='Infrastructure Sectors to Analyze:', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Water', var=water_bool, font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Energy', var=energy_bool, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Transportation', var=transportation_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Communications', var=comm_bool, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Government', var=gov_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Food/Agriculture', var=fa_bool, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Emergency Services', var=emer_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Waste Management', var=waste_bool, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 4)
-            tk.Checkbutton(self, text='Healthcare', var=healthcare_bool, font=("Arial", 10)).grid(row=10, sticky=tk.W, column = 4)
+            for i in range(len(sector_list)):
+              tk.Checkbutton(self, text=sector_list[i], var=bool_list[i], font=("Arial", 10)).grid(row=2+i, sticky=tk.W, column = 4)
             #print(self.orders, self.coeffs, self.k)
-            tk.Button(self, text='Run Analysis', bg='#FCB1A0', command= lambda: saveValues(), font=("Arial", 14)).grid(row=18, column=0, sticky=tk.NSEW)
+            tk.Button(self, text='Run Analysis', bg='#FCB1A0', command= lambda: run(), font=("Arial", 14)).grid(row=18, column=0, sticky=tk.NSEW)
             tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=1, sticky=tk.NSEW)
- 
-            
-    
 
     global app
     app = TKinterWindow()
