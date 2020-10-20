@@ -209,7 +209,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
                 
     b_values = list(data["backups"])
     backups = []
-    if b_values[0] == "None" or b_values[0] == "none":
+    if b_values[0] == "None" or b_values[0] == "none" or b_values == None:
         backups = None
     elif check_inputs("Backup indexes", b_values, 9, 0, len(list(data["backupPercent"]))):
         for i in range(0, len(b_values)):
@@ -222,7 +222,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     bp_values = list(data["backupPercent"])
     
     backupPercents = []
-    if bp_values[0] == "None" or bp_values[0] == "none":
+    if bp_values[0] == "None" or bp_values[0] == "none" or bp_values == None:
         backupPercents = None
     elif backups == None:
         tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
@@ -237,7 +237,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     db_values = list(data["daysBackup"])
     daysBackup = []
-    if db_values[0] == "None" or db_values[0] == "none":
+    if db_values[0] == "None" or db_values[0] == "none" or db_values == None:
         daysBackup = None
     elif backups == None:
         tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
@@ -252,7 +252,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     depb_values = list(data["depBackup"])
     depBackup = [] 
-    if depb_values[0] == "None" or depb_values[0] == "none":
+    if depb_values[0] == "None" or depb_values[0] == "none" or depb_values == None:
         depBackup = None
     elif backups == None:
         tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
