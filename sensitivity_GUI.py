@@ -125,13 +125,13 @@ class sensitivityAnalysis(object):
             elif self.parameter == "Efficiency of Backups":
               depBackups = list(range(9))
               depBackups.pop(sectorInt)
-              days = [days_default] * (len(sectors)-1)
+              days = [10] * (len(sectors)-1)
               backs = [sectorInt] * (len(sectors)-1)
               percents = [start]*(len(sectors)-1)
-              data["daysBackup"] = data["daysBackup"].append(days)
-              data["backupPercent"] = data["backupPercent"].append(percents)
-              data["depBackup"] = data["depBackup"].append(depBackups)
-              data["backups"] = data["backups"].append(backs)
+              data["daysBackup"] = days
+              data["backupPercent"] = percents
+              data["depBackup"] = depBackups
+              data["backups"] = backs
             name = start
             if start < 1:
               name = round(start * 100, 0)
@@ -343,7 +343,6 @@ def main():
             db_check = tk.Checkbutton(self, text='Days Backup', var=backup_days_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 0)
             de_check = tk.Checkbutton(self, text='Efficiency of Backup', var=backup_efficiency_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 0)
             ie_check = tk.Checkbutton(self, text='Initial Efficiency', var=initial_efficiency_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 0)
-
 
             tk.Label(self, text='Parameter Mins', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 1)
             rp_min_text = tk.Label(self, text='Repair Factors Min:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 1)
