@@ -12,11 +12,10 @@ import infrastructures_from_file
 import coefficients_from_file
 import tkinter.messagebox as tkMessageBox
 import json
+import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 from shutil import copyfile
-
-
 import os
 #import geopandas
 if (sys.version_info > (3,0)):
@@ -110,8 +109,10 @@ class sensitivityAnalysis(object):
         print(self.steps)
         for i in range(self.steps):
             print("looping")
-            if self.parameter == "repair_factors" or self.parameter == "n0":
-              data[self.parameter][sectorInt] = start
+            if self.parameter == "Repair Factors":
+              data["repair_factors"][sectorInt] = start
+            elif self.parameter == "Initial Efficiency":
+              data["n0"][sectorInt] = start
             elif self.parameter == "Days Backup":
               depBackups = list(range(9))
               depBackups.pop(sectorInt)
@@ -145,11 +146,16 @@ class sensitivityAnalysis(object):
               results = results.append(new_row, ignore_index=True)
             start += step
         plt.style.use('ggplot')
-        p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time") + geom_point() + geom_line()
+        ggt = self.sector + " " + self.parameter + " vs Sector Recovery Times"
+        p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
         file_name = self.parameter + "_" + self.sector
         path_name = dir_path + "\\Sensitivity\\"
         p.save(filename=file_name, path = path_name, verbose = False)
         copyfile(temp_file, fileLoc)
+        splot = sns.lmplot(x='Value', y='RT', hue="Sector", data=results,fit_reg=True)
+        
+        fig = splot.get_figure()
+        fig.savefig("s" + file_name)
                 
 def main():
     LARGE_FONT= ("Verdana", 24)
@@ -278,7 +284,7 @@ def main():
                   new_sector_list.append(sectors[i])
               if rf>0:
                 for sector in new_sector_list:
-                  individual_run = sensitivityAnalysis("repair_factors", rf_range_min.get(),
+                  individual_run = sensitivityAnalysis("Repair Factors", rf_range_min.get(),
                                             rf_range_max.get(), rf_steps.get(), sector)
                   individual_run.runAnalysis(sectors)
                   
@@ -296,7 +302,7 @@ def main():
                   
               if initial_efficiency>0:
                 for sector in new_sector_list:
-                  individual_run = sensitivityAnalysis("n0", initial_efficiency_range_min.get(),
+                  individual_run = sensitivityAnalysis("Initial Efficiency", initial_efficiency_range_min.get(),
                                             initial_efficiency_range_max.get(), initial_efficiency_steps.get(), sector)
                   individual_run.runAnalysis(sectors)
             
