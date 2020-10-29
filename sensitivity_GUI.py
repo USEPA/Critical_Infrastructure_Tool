@@ -4,6 +4,7 @@
 
 #import statements
 import sys
+import numpy as np
 if (sys.version_info > (3, 0)):
   import tkinter as tk
 else:
@@ -16,17 +17,17 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 from shutil import copyfile
+from fpdf import FPDF
+import PyPDF2
+from PIL import Image
 import os
 #import geopandas
 if (sys.version_info > (3,0)):
   from tkinter.filedialog import askopenfilename
-else:
-  from tkFileDialog import askopenfilename
-
-if (sys.version_info > (3,0)):
   from tkinter.filedialog import asksaveasfile
 else:
-  from tkFileDialog import asksaveasfile
+  from tkFileDialog import askopenfilename
+  from tkFileDialog import asksaveasfile 
 
 from plotnine import *
 
@@ -102,32 +103,27 @@ class sensitivityAnalysis(object):
         data = json.load(json_data)
         start = self.min
         step = (self.max-self.min)/self.steps
-        print(start)
         orders, coeffs, k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
         results = pd.DataFrame()
         sectorInt = sectors.index(self.sector)
-        print(self.steps)
         for i in range(self.steps):
             print("looping")
             if self.parameter == "Repair Factors":
               data["repair_factors"][sectorInt] = start
             elif self.parameter == "Initial Efficiency":
               data["n0"][sectorInt] = start
+            depBackups = list(range(9))
+            depBackups.pop(sectorInt)
+            backs = [sectorInt] * (len(sectors)-1)
             elif self.parameter == "Days Backup":
-              depBackups = list(range(9))
-              depBackups.pop(sectorInt)
               days = [start]*(len(sectors)-1)
-              backs = [sectorInt] * (len(sectors)-1)
               percents = [90] * (len(sectors)-1)
               data["daysBackup"] = days
               data["backupPercent"] = percents
               data["depBackup"] = depBackups
               data["backups"] = backs
             elif self.parameter == "Efficiency of Backups":
-              depBackups = list(range(9))
-              depBackups.pop(sectorInt)
               days = [10] * (len(sectors)-1)
-              backs = [sectorInt] * (len(sectors)-1)
               percents = [start]*(len(sectors)-1)
               data["daysBackup"] = days
               data["backupPercent"] = percents
@@ -147,15 +143,27 @@ class sensitivityAnalysis(object):
             start += step
         plt.style.use('ggplot')
         ggt = self.sector + " " + self.parameter + " vs Sector Recovery Times"
+        slope_results = pd.DataFrame()
+        newSectors = list(set(results['Sector']))
+        for i in range(len(newSectors)):
+          sectorResults = results[results.Sector.eq(newSectors[i])]
+          #print(sectorResults)
+          m, b = np.polyfit(sectorResults['Value'], sectorResults['RT'], 1)
+          #print(sectors[i], m,b)
+          new_row = {'Sector': newSectors[i], 'Slope': m, 'Intercept': b}
+          slope_results = slope_results.append(new_row, ignore_index=True)
+             
         p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
         file_name = self.parameter + "_" + self.sector
         path_name = dir_path + "\\Sensitivity\\"
+        #slope_results.to_csv(path_name + file_name + ".csv", columns=["Sector","Slope","Intercept"])
         p.save(filename=file_name, path = path_name, verbose = False)
-        copyfile(temp_file, fileLoc)
-        splot = sns.lmplot(x='Value', y='RT', hue="Sector", data=results,fit_reg=True)
+        slope_results = slope_results.set_index("Sector")
+        createPdf(result, slope_results)
+        sns_plot = sns.heatmap(slope_results["Slope","Intercept"])
+        sns_plot.savefig(path_name + file_name+"_seaborn.png")
+        copyfile(temp_file, fileLoc) 
         
-        fig = splot.get_figure()
-        fig.savefig("s" + file_name)
                 
 def main():
     LARGE_FONT= ("Verdana", 24)
