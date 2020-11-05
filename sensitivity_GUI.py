@@ -15,6 +15,7 @@ import tkinter.messagebox as tkMessageBox
 import json
 import seaborn as sns
 import pandas as pd
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from shutil import copyfile
 from fpdf import FPDF
@@ -86,6 +87,8 @@ class CreateToolTip(object):
         if tw:
             tw.destroy()
 
+
+
 class sensitivityAnalysis(object):
     def __init__(self, parameter, minval, maxval, steps, sector):
         self.parameter = parameter
@@ -93,6 +96,16 @@ class sensitivityAnalysis(object):
         self.max = float(maxval)
         self.steps = int(steps)
         self.sector = sector
+
+    def colorFader(self, c1,c2,mix=0): #fade (linear interpolate) from color c1 (at mix=0) to c2 (mix=1)
+      c1=np.array(mpl.colors.to_rgb(c1))
+      c2=np.array(mpl.colors.to_rgb(c2))
+      return mpl.colors.to_hex((1-mix)*c1 + mix*c2)
+    
+    def hex_to_rgb(self, value):
+      value = value.lstrip('#')
+      lv = len(value)
+      return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
     def runAnalysis(self, sectors):
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -107,14 +120,13 @@ class sensitivityAnalysis(object):
         results = pd.DataFrame()
         sectorInt = sectors.index(self.sector)
         for i in range(self.steps):
-            print("looping")
+            depBackups = list(range(9))
+            depBackups.pop(sectorInt)
+            backs = [sectorInt] * (len(sectors)-1)
             if self.parameter == "Repair Factors":
               data["repair_factors"][sectorInt] = start
             elif self.parameter == "Initial Efficiency":
               data["n0"][sectorInt] = start
-            depBackups = list(range(9))
-            depBackups.pop(sectorInt)
-            backs = [sectorInt] * (len(sectors)-1)
             elif self.parameter == "Days Backup":
               days = [start]*(len(sectors)-1)
               percents = [90] * (len(sectors)-1)
@@ -147,23 +159,55 @@ class sensitivityAnalysis(object):
         newSectors = list(set(results['Sector']))
         for i in range(len(newSectors)):
           sectorResults = results[results.Sector.eq(newSectors[i])]
-          #print(sectorResults)
           m, b = np.polyfit(sectorResults['Value'], sectorResults['RT'], 1)
-          #print(sectors[i], m,b)
           new_row = {'Sector': newSectors[i], 'Slope': m, 'Intercept': b}
           slope_results = slope_results.append(new_row, ignore_index=True)
-             
+        print(slope_results)     
         p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
         file_name = self.parameter + "_" + self.sector
         path_name = dir_path + "\\Sensitivity\\"
-        #slope_results.to_csv(path_name + file_name + ".csv", columns=["Sector","Slope","Intercept"])
         p.save(filename=file_name, path = path_name, verbose = False)
-        slope_results = slope_results.set_index("Sector")
-        createPdf(result, slope_results)
-        sns_plot = sns.heatmap(slope_results["Slope","Intercept"])
-        sns_plot.savefig(path_name + file_name+"_seaborn.png")
-        copyfile(temp_file, fileLoc) 
-        
+        copyfile(temp_file, fileLoc)
+        width= 60
+        height = 10
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font('Times', 'B', 12)
+        graph_name = path_name + file_name + ".png"
+        pdf.image(graph_name)
+        text = "Slope"
+        if self.parameter == "Days Backup":
+          text = "Reduction (days) in recovery time for an increase in 1 day backup"
+        if self.parameter == "Efficiency of Backups":
+          text = "Reduction (days) in recovery time for an increase in 1% backup efficiency"
+        if self.parameter == "Initial Efficiency":
+          text = "Reduction (days) in recovery time for an increase in 1% initial efficiency"
+        if self.parameter == "Repair Factors":
+          text = "Reduction (days) in recovery time for an increase in 0.1 repair factor"
+          
+        data = ["Infrastructure Sector",text ]
+        white = np.array([255, 255, 255])
+        pdf.cell(width, height, str(data[0]), border=1)
+        pdf.cell(135, height, str(data[1]), border=1, ln=1)
+        n = 9
+        c1='white' 
+        c2='green' 
+        slope_max= max(abs(slope_results["Slope"]))
+        #pdf.cell(width, height, str(data[2]), border=1, ln=1)
+        for i in range(len(slope_results["Slope"])):
+          slope = abs(round(float(slope_results["Slope"][i]), 2))
+          if self.parameter == "Repair Factors":
+            slope_max= max(abs(slope_results["Slope"]))/10
+            slope = round(abs(float(slope_results["Slope"][i])), 2)/10
+          color= self.colorFader(c1,c2,slope/slope_max)
+          new_color = self.hex_to_rgb(color)
+          (x1, x2, x3) = new_color
+          pdf.set_fill_color(x1, x2, x3)
+          pdf.cell(width, height, str(slope_results["Sector"][i]), border=1)
+          pdf.cell(135, height, str(round(slope,2)), border=1, ln=1, fill=True, align = 'C')
+          #pdf.cell(width, height,text, border=1, ln=1)
+
+        pdf.output(path_name + file_name + "_Report.pdf", 'F')
                 
 def main():
     LARGE_FONT= ("Verdana", 24)

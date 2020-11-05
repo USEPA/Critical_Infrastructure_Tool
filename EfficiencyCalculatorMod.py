@@ -85,6 +85,8 @@ def getLatName(infrastructures):
         return "CWP_STREET"
     if "Fire" in infrastructures:
         return "ADDRESS"
+    if "Urgent_Care" in infrastructures:
+        return "X"
     # Landfills, Government, Power plants, Urgent Care, Fire Stations, Hospitals, EMC
     return "LATITUDE"
 
@@ -99,6 +101,8 @@ def getLongName(infrastructures):
         return "CWP_CITY"
     if "Fire" in infrastructures:
         return "CITY"
+    if "Urgent_Care" in infrastructures:
+        return "Y"
     # Landfills, Government, Power plants, Urgent Care, Fire Stations, Hospitals, EMC
     return "LONGITUDE"
 
@@ -125,8 +129,6 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
     #rcpy.AddMessage(results)
     newPath = path_parent + "//Results//" + iname + "_contaminated.csv"
     results.to_csv(newPath)
-
-        
 
 def createFarmland(farmland, incident_shapefile, area_of_interest, OutputPath):
         import arcpy
@@ -165,8 +167,10 @@ def createFarmland(farmland, incident_shapefile, area_of_interest, OutputPath):
                                  cluster_tolerance="", output_type="INPUT")
         area1 = 0
         count= 0
-        arcpy.management.AddGeometryAttributes(Input_Features=affected_sector+".shp", Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
-        arcpy.management.AddGeometryAttributes(Input_Features=sector_in_area+".shp", Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
+        arcpy.management.AddGeometryAttributes(Input_Features=affected_sector+".shp", Geometry_Properties=["AREA_GEODESIC"],
+                                               Area_Unit="Square meters")
+        arcpy.management.AddGeometryAttributes(Input_Features=sector_in_area+".shp", Geometry_Properties=["AREA_GEODESIC"],
+                                               Area_Unit="Square meters")
         for row in arcpy.da.SearchCursor(affected_sector+".shp", ["AREA_GEO", "gridcode"]):
                 if int(row[1])<3:
                         count += 1
@@ -181,17 +185,28 @@ def createFarmland(farmland, incident_shapefile, area_of_interest, OutputPath):
         
         
 def getHIFLDlayers(OutputPath):
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/6ac5e325468c4cb9b905f1728d6fbf0f_0.geojson", "Hospital_Locations_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/155761d340764921ab7fb2e88257bd97_0.geojson", "Landfills_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/4b9bac25263047c19e617d7bd7b30701_0.geojson", "Wastewater_Treatment_Plants_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/ee0263bd105d41599be22d46107341c3_0.geojson", "Power_Plants_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/1b6e231f88814aceb30fb6ad3ff86014_0.geojson", "Major_State_Government_Buildings_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0835ba2ed38f494196c14af8407454fb_0.geojson", "Cellular_Towers_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/ec4d868ea1354fc9a85fe35e7db0cffd_0.geojson", "Land_Mobile_Broadcast_Tower_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0ccaf0c53b794eb8ac3d3de6afdb3286_0.geojson", "Fire_Stations_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/335ccc7c0684453fad69d8a64bc89192_0.geojson", "Urgent_Care_Facilities_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/362c9480f12e4587b6a502f9ceedccde_0.geojson", "Emergency_Medical_Center_HIFLD", OutputPath)
-        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/02013eaa0e1e4cc59658fe9e1c7ac703_0.geojson", "Ports_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/6ac5e325468c4cb9b905f1728d6fbf0f_0.geojson",
+                           "Hospital_Locations_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/155761d340764921ab7fb2e88257bd97_0.geojson",
+                           "Landfills_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/4b9bac25263047c19e617d7bd7b30701_0.geojson",
+                           "Wastewater_Treatment_Plants_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/ee0263bd105d41599be22d46107341c3_0.geojson",
+                           "Power_Plants_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/1b6e231f88814aceb30fb6ad3ff86014_0.geojson",
+                           "Major_State_Government_Buildings_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0835ba2ed38f494196c14af8407454fb_0.geojson",
+                           "Cellular_Towers_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/ec4d868ea1354fc9a85fe35e7db0cffd_0.geojson",
+                           "Land_Mobile_Broadcast_Tower_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0ccaf0c53b794eb8ac3d3de6afdb3286_0.geojson",
+                           "Fire_Stations_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/335ccc7c0684453fad69d8a64bc89192_0.geojson",
+                           "Urgent_Care_Facilities_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/362c9480f12e4587b6a502f9ceedccde_0.geojson",
+                           "Emergency_Medical_Center_HIFLD", OutputPath)
+        createLayerFromAPI(r"https://opendata.arcgis.com/datasets/02013eaa0e1e4cc59658fe9e1c7ac703_0.geojson",
+                           "Ports_HIFLD", OutputPath)
         
         
 def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buffer, OutputPath, farmland = False):
@@ -210,29 +225,20 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         arcpy.Intersect_analysis(in_features=[dissolved_sector,ScenarioDataset],
                                  out_feature_class=affected_sector,join_attributes="ALL",
                                  cluster_tolerance="", output_type="INPUT")
-##        arcpy.Intersect_analysis(in_features=[buffered_in_area,ScenarioDataset],
-##                                 out_feature_class=affected_buffered_sector,join_attributes="ALL",
-##                                 cluster_tolerance="", output_type="INPUT")
+
         
         arcpy.management.AddGeometryAttributes(Input_Features=affected_sector+".shp",
                                                Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
         arcpy.management.AddGeometryAttributes(Input_Features=dissolved_sector,
                                                Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
-##        arcpy.management.AddGeometryAttributes(Input_Features=buffered_in_area, Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
-##        arcpy.management.AddGeometryAttributes(Input_Features=affected_buffered_sector+".shp", Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
-
 
         affected_stats = arcpy.env.workspace + "\\affected_stats_"+name
         dissolved_stats = arcpy.env.workspace + "\\dissolved_stats_"+name
-##        buffered_stats = arcpy.env.workspace + "\\buffered_stats_"+name
-##        affected_buffered_stats = arcpy.env.workspace + "\\affected_buffered_stats_"+name
 
-        arcpy.analysis.Statistics(in_table=affected_sector+".shp", out_table=affected_stats, statistics_fields=[["AREA_GEO", "SUM"]], case_field=[])
-        arcpy.analysis.Statistics(in_table=dissolved_sector, out_table=dissolved_stats, statistics_fields=[["AREA_GEO", "SUM"]], case_field=[])
-##        arcpy.analysis.Statistics(in_table=affected_buffered_sector+".shp", out_table=affected_buffered_stats, statistics_fields=[["AREA_GEO", "SUM"]], case_field=[])
-##        arcpy.analysis.Statistics(in_table=buffered_in_area, out_table=buffered_stats, statistics_fields=[["AREA_GEO", "SUM"]], case_field=[])
-        
-        #arcpy.TabulateIntersection_analysis(dissolved_sector, "OBJECTID", ScenarioDataset, affected_sector)
+        arcpy.analysis.Statistics(in_table=affected_sector+".shp", out_table=affected_stats, statistics_fields=[["AREA_GEO", "SUM"]],
+                                  case_field=[])
+        arcpy.analysis.Statistics(in_table=dissolved_sector, out_table=dissolved_stats, statistics_fields=[["AREA_GEO", "SUM"]],
+                                  case_field=[])
         
         cursor = arcpy.da.SearchCursor(affected_stats, "SUM_AREA_GEO")
         results = 0
@@ -245,15 +251,6 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         for row in cursor2:
                 results2 = row[0]
 
-##        cursor3 = arcpy.da.SearchCursor(buffered_stats, "SUM_AREA_GEO")
-##        results3 = 100
-##        for row in cursor3:
-##                results3 = row[0]
-##
-##        cursor4 = arcpy.da.SearchCursor(affected_buffered_stats, "SUM_AREA_GEO")
-##        results4 = 0
-##        for row in cursor4:
-##                results4 = row[0]
         return ((1-results/results2)*100)
 
 def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "contaminated", Infrastructure_Dataset="HoustonBlocks", OutputPath = "C:/Documents", GUI_Tool_Location = "C:/Documents"):  # EfficiencyCalculator
@@ -278,11 +275,13 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     getAffectedInfrastructures(Contaminated_Dataset, "Ports_HIFLD","ports", OutputPath)
     (power_plants) = getPercentage("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
     getAffectedInfrastructures(Contaminated_Dataset, "Power_Plants_HIFLD", "plants", OutputPath)
-    (wastewater) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
+    (wastewater) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,
+                                 ScenarioDataset, "0.5 Mile", OutputPath)
     getAffectedInfrastructures(Contaminated_Dataset, "Wastewater_Treatment_Plants_HIFLD", "wastewater", OutputPath)
     (hospitals) = getPercentage("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
     getAffectedInfrastructures(Contaminated_Dataset, "Hospital_Locations_HIFLD", "hospitals", OutputPath)
-    (gov) = getPercentage("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
+    (gov) = getPercentage("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile",
+                          OutputPath)
     getAffectedInfrastructures(Contaminated_Dataset, "Major_State_Government_Buildings_HIFLD", "government", OutputPath)
     (comm) = getPercentage("cell", "Cellular_Towers_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
     getAffectedInfrastructures(Contaminated_Dataset, "Cellular_Towers_HIFLD", "cell", OutputPath)
@@ -300,29 +299,16 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
             
     # Process: Affected Infrastructure Statistics (Summary Statistics)
 
-##    arcpy.AddMessage("Water Efficiency: " + str(round(wastewater2, 2)) + "%")
-##    arcpy.AddMessage("Energy Efficiency: " + str(round(power_plants2, 2)) + "%")
-##    arcpy.AddMessage("Transport Efficiency: " + str(round(roads2, 2)) + "%")
-##    arcpy.AddMessage("Communications Efficiency: " + str(round(comm2, 2)) + "%")
-##    arcpy.AddMessage("Government Efficiency: " + str(round(gov2, 2)) + "%")
-##    arcpy.AddMessage("Emergency Efficiency: " + str(round(ems2, 2)) + "%")
-##    arcpy.AddMessage("Waste Efficiency: " + str(round(waste2, 2)) + "%")
-##    #arcpy.AddMessage("Healthcare Efficiency: " + str(round(healthcare_percent, 2)) + "%")
-##    arcpy.AddMessage("Healthcare Efficiency: " + str(round(hospitals2, 2)) + "%")
-##
     # Process: Calculate Agriculture Percent (Calculate Value) 
-    #agriculture_percent = getAgri(Agriculture_Count, Agriculture_Count_2_)
     agriculture_percent = farm
 
     # Process: Calculate Water Percent (Calculate Value) 
-    #water_percent = (getWater(Comm4_Count,Comm4_Count_2_) + wastewaster)/2
     water_percent = wastewater
 
     # Process: Calculate Energy Percent (Calculate Value)
     energy_percent = power_plants
 
     # Process: Calculate Transport Percent (Calculate Value) 
-    #transport_percent = getEnergy(Comm4_Count,Comm4_Count_2_, Comm1_Count,Comm1_Count_2_)
     transport_percent = (roads + ports)/2
 
     # Process: Calculate Comm Percent (Calculate Value)
@@ -347,11 +333,6 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     arcpy.AddMessage("Waste Efficiency: " + str(round(waste, 2)) + "%")
     #arcpy.AddMessage("Healthcare Efficiency: " + str(round(healthcare_percent, 2)) + "%")
     arcpy.AddMessage("Healthcare Efficiency: " + str(round(hospitals, 2)) + "%")
-    #GUI_Tool_Location_small = GUI_Tool_Location.replace("\"", "")
-    #arcpy.AddMessage(GUI_Tool_Location_small)
-    #entries = os.listdir(r'{0}'.format(input(GUI_Tool_Location)))
-##    for entry in entries:
-##            arcpy.AddMessage(entry)
     
     fileLoc = os.path.join(GUI_Tool_Location, "infrastructures_inputs.txt")
     json_data = open(str(fileLoc))
@@ -373,7 +354,6 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         json.dump(data, outfile)
     with open(path_parent + "\\" + "infrastructures_inputs.txt", "w") as outfile:
         json.dump(data, outfile)
-    #p = subprocess.Popen("C:\Repos\SIRM\InfrastructureRemediation\dist\infrastructures_gui\infrastructures_gui.exe",shell=True)
 
     newPath = wrapArg(GUI_Tool_Location +  "\\infrastructures_gui.exe")
     command_prompt = "cmd /k " + newPath
