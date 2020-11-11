@@ -15,6 +15,7 @@ from shutil import copyfile
 from arcgis.geometry import Geometry
 from arcgis.geocoding import reverse_geocode
 
+
 def wrapArg(s):
     if len(str(s).split(' ')) <= 1:
         return s
@@ -106,6 +107,12 @@ def getLongName(infrastructures):
     # Landfills, Government, Power plants, Urgent Care, Fire Stations, Hospitals, EMC
     return "LONGITUDE"
 
+def getColumns(infrastructures):
+    if "Wastewater" in infrastructures or "Fire" in infrastructures:
+        return ("Address", "City")
+    return ("Latitude", "Longitude")
+    
+
 def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, OutputPath):
     
     path_parent = os.path.dirname(arcpy.env.workspace)
@@ -116,7 +123,8 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
     latname = getLatName(infrastructures)
     longname = getLongName(infrastructures)
     arcpy.AddMessage(infrastructures)
-    results = pd.DataFrame({"Building Name":[], "Latitude":[], "Longitude":[]})
+    (name1, name2) = getColumns(infrastructures)
+    results = pd.DataFrame({"Building Name":[], name1:[], name2:[]})
     if arcpy.management.GetCount(outPolygons)[0] == "0":
         return
     fdList = [infrastructureName, latname, longname]
@@ -125,7 +133,7 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
         arcpy.AddMessage(f in [field.name for field in arcpy.ListFields(infrastructures)])
     for row in arcpy.da.SearchCursor(outPolygons, [infrastructureName, latname, longname]):
         #arcpy.AddMessage(row)
-        results = results.append({"Building Name": row[0], "Latitude": row[1], "Longitude": row[2]}, ignore_index=True)
+        results = results.append({"Building Name": row[0], name1: row[1], name2: row[2]}, ignore_index=True)
     #rcpy.AddMessage(results)
     newPath = path_parent + "//Results//" + iname + "_contaminated.csv"
     results.to_csv(newPath)
@@ -226,7 +234,6 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
                                  out_feature_class=affected_sector,join_attributes="ALL",
                                  cluster_tolerance="", output_type="INPUT")
 
-        
         arcpy.management.AddGeometryAttributes(Input_Features=affected_sector+".shp",
                                                Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
         arcpy.management.AddGeometryAttributes(Input_Features=dissolved_sector,
