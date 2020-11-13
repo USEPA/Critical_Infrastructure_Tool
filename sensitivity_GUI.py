@@ -30,7 +30,7 @@ else:
   from tkFileDialog import askopenfilename
   from tkFileDialog import asksaveasfile 
 
-from plotnine import *
+#from plotnine import *
 
 
 class CreateToolTip(object):
