@@ -23,7 +23,7 @@ import json
 leg = ""
 
 def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
-                    infStoichFactor, printProgress, averaging, confIntervals, seedValue, imageFileName, remediationFactor, contamination,
+                    infStoichFactor, printProgress, averaging, contaminatedListAvailable, seedValue, imageFileName, remediationFactor, contamination,
                     backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives):
 
     '''
@@ -100,7 +100,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         results from each run are averaged together or if an example
         plot is generated instead to improve performance. Default is True
 
-        confIntervals: a boolean switch that determines whether or not the
+        contaminatedListAvailable: a boolean switch that determines whether or not the
         confidence interval range is plotted or not. Default is True
 
         agent: a string variable that ultimately sets the mortality rates of 
@@ -255,7 +255,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         i += 1
         sectors.append(key)
         recoveryTimes.append(str(round(float(value), 2)))
-    #final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes)
+    final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes, contaminatedListAvailable)
     results["Sectors"] = sectors
     results["Recovery Times"] = recoveryTimes
     results.to_csv("Results/" + imageFileName + ".csv")
@@ -286,7 +286,7 @@ def constraintsFunction(x0, maxPercent):
     return sum(x0) - maxPercent
 
 def optimizeDecon(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
-                    infStoichFactor, printProgress, averaging, confIntervals, agent, seedValue, imageFileName, remediationFactor,
+                    infStoichFactor, printProgress, averaging, contaminatedListAvailable, agent, seedValue, imageFileName, remediationFactor,
                   contamination, maxPercent):
     x0 = [0]*len(remediationFactor)
     for i in range(len(remediationFactor)):

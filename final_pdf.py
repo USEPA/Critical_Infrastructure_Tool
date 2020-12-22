@@ -2,8 +2,10 @@
 from fpdf import FPDF
 import PyPDF2
 from PIL import Image
+import os
+import pandas as pd
 
-def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes):
+def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes, contaminated = False):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font('Times', 'B', 12)
@@ -35,6 +37,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         pdf.cell(width, height, str(data[1]), border=1, ln=1)
         i += 1
 
+    if contaminated:
+        pdf = getInfrastructureList("Results//", pdf, width, height)
     #adding sensitivity
     graph = "Images/" + filename
     name = graph + ".png"
@@ -47,9 +51,20 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     for g in range(len(sensitivity)):
         graph = "Sensitivity Images/" + getSector(sensitivity[g]) + " Sensitivity.png"
         pdf.image(graph, w=150)
-
         
     pdf.output('Results/' + filename + "_Report.pdf", 'F')
+
+def getInfrastructureList(location, pdf, width, height):
+    for filename in os.listdir(location):
+        if filename.endswith(".csv") and "contaminated" in filename:
+            filenames = filename.split("_")
+            building_type = filenames[0]
+            results = pd.read_csv(os.path.join(location, filename))
+            text = "{} {} buildings were contaminated".format(str(len(results)), str(building_type).capitalize())
+            pdf.cell(width, height, text, ln=1)
+    return pdf
+            
+    
 
 def getSector(index):
     if index == 0:

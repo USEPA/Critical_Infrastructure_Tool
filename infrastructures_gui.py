@@ -225,7 +225,7 @@ def main():
                 filename = askopenfilename(filetypes = files, defaultextension = files)
                 if ".txt" in filename or ".json" in filename:
                     n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
-                    confIntervals, infStoichFactor, seedValue, name, remediationFactor, contaminated, backups, \
+                    contaminatedListAvailable, infStoichFactor, seedValue, name, remediationFactor, contaminated, backups, \
                     backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file(filename)
                     json_data = open(filename)
                     data = json.load(json_data)
@@ -311,7 +311,7 @@ def main():
                 self.orders, self.coeffs, self.k = efficiencies_from_file.load_file(filename)
                 
             n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
-                confIntervals, infStoichFactor, seedValue, name, remediationFactor, contaminated, backups, \
+                contaminatedListAvailable, infStoichFactor, seedValue, name, remediationFactor, contaminated, backups, \
                 backupPercent, daysBackup, depBackup, negatives = infrastructures_from_file.read_file()
             
 
@@ -331,13 +331,13 @@ def main():
                 var2 = tk.IntVar(value=int(bool(averaging)))
             else:
                 var2 = tk.IntVar()
-            tk.Checkbutton(self, text="Run-average", variable=var2, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, text="Show Run-average", variable=var2, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 0)
             
-            if confIntervals == "true" or confIntervals == "True" or confIntervals == "1":
-                var3 = tk.IntVar(value=int(bool(confIntervals)))
+            if contaminatedListAvailable == "true" or contaminatedListAvailable == "True" or contaminatedListAvailable == "1":
+                var3 = tk.IntVar(value=int(bool(contaminatedListAvailable)))
             else:
                 var3 = tk.IntVar()
-            tk.Checkbutton(self, text="Confidence Intervals", variable=var3, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, text="Contaminated Infrastructure List Available", variable=var3, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 0)
 
             if negatives == "true" or negatives == "True" or negatives == "1":
                 var25 = tk.IntVar(value=int(bool(negatives)))

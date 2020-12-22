@@ -12,8 +12,10 @@ from shutil import copyfile
 
 def importDataset(Input_Path, Temporary_Output_Path):
     #download_url(r"https://landscape1.arcgis.com/arcgis/rest/services/USA_Roads/MapServer", "USA_Roads")
-    createLayerFromShapefile(Input_Path, "USA_Roads", Temporary_Output_Path)
-    download_url(r"https://landscape11.arcgis.com/arcgis/rest/services/USA_Soils_Farmland_Class/ImageServer", "USA_Soils_Farmland_Class")
+    createLayerFromShapefile(Input_Path+ "\\tl_2016_us_primaryroads.shp", "USA_Roads", Temporary_Output_Path)
+    createLayerFromShapefile(Input_Path+ "\\farms.shp", "USA_Farms", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/636e283fc23645dfaeebdac5d9254776_0.geojson","Industrial_HIFLD", Temporary_Output_Path)
+    #download_url(r"https://landscape11.arcgis.com/arcgis/rest/services/USA_Soils_Farmland_Class/ImageServer", "USA_Soils_Farmland_Class")
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/6ac5e325468c4cb9b905f1728d6fbf0f_0.geojson", "Hospital_Locations_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/155761d340764921ab7fb2e88257bd97_0.geojson", "Landfills_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/4b9bac25263047c19e617d7bd7b30701_0.geojson", "Wastewater_Treatment_Plants_HIFLD", Temporary_Output_Path)
@@ -26,11 +28,19 @@ def importDataset(Input_Path, Temporary_Output_Path):
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/362c9480f12e4587b6a502f9ceedccde_0.geojson", "Emergency_Medical_Center_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/02013eaa0e1e4cc59658fe9e1c7ac703_0.geojson", "Ports_HIFLD", Temporary_Output_Path)
     #createLayerFromAPI(r"https://opendata.arcgis.com/datasets/e720d6671dc54e3084bd079b845e136f_0.geojson", "Primary_Roads_HIFLD", Temporary_Output_Path)
-
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/87376bdb0cb3490cbda39935626f6604_0.geojson", "Public_Schools_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0dfe37d2a68545a699b999804354dacf_0.geojson", "Private_Schools_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/bc7ef39f9d2a4605b9d5aad0e050af11_0.geojson",
+                       "Colleges_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/a4d813c396934fc09d0b801a0c491852_0.geojson",
+                       "Corporate_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/97603afcff00443f874acbe03c9e794a_0.geojson",
+                       "Worship_HIFLD", Temporary_Output_Path)
+        
 def createLayerFromShapefile(Input_Path, name, Temporary_Output_Path):
     path_to_layer= Temporary_Output_Path + "\\"+name + "_layer.lyr"
-    arcpy.MakeFeatureLayer_management(Input_Path + "\\tl_2016_us_primaryroads.shp",name)
-    newlayer = arcpy.SaveToLayerFile_management(name, Input_Path + "\\tl_2016_us_primaryroads.shp", "ABSOLUTE")
+    arcpy.MakeFeatureLayer_management(Input_Path,name)
+    newlayer = arcpy.SaveToLayerFile_management(name, Input_Path, "ABSOLUTE")
     p = arcpy.mp.ArcGISProject("CURRENT")
     m = p.activeMap
     lyr = m.addDataFromPath(newlayer)
