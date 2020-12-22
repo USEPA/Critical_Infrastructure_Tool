@@ -15,6 +15,8 @@ else:
   import Tkinter as tk
 import infrastructures_from_file
 import coefficients_from_file
+import report_GUI
+import sensitivity_GUI
 import tkinter.messagebox as tkMessageBox
 #from fiona import _shim, schema
 #import infrastructures_mapping
@@ -238,6 +240,12 @@ def main():
                 if ".csv" in filename:
                     self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
 
+            def runReports():
+                self.leg = report_GUI.main()
+
+            def runSensitivity():
+                self.leg = sensitivity_GUI.main()
+
                     
 ##            def showPDF():
 ##              
@@ -338,6 +346,19 @@ def main():
             else:
                 var3 = tk.IntVar()
             tk.Checkbutton(self, text="Contaminated Infrastructure List Available", variable=var3, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 0)
+
+            var3 = tk.IntVar(value=int(bool(confIntervals)))
+##            if averaging == "true" or averaging == "True" or averaging == "1":
+##                var2 = tk.IntVar(value=int(bool(averaging)))
+##            else:
+##                var2 = tk.IntVar()
+##            tk.Checkbutton(self, text="Run-average", variable=var2, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 0)
+##            
+##            if confIntervals == "true" or confIntervals == "True" or confIntervals == "1":
+##                var3 = tk.IntVar(value=int(bool(confIntervals)))
+##            else:
+##                var3 = tk.IntVar()
+##            tk.Checkbutton(self, text="Confidence Intervals", variable=var3, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 0)
 
             if negatives == "true" or negatives == "True" or negatives == "1":
                 var25 = tk.IntVar(value=int(bool(negatives)))
@@ -581,13 +602,15 @@ def main():
             #Buttons
 
 
-            tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=18, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 0)
 
             tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Save Scenario', bg='#FCB1A0', command= lambda: saveScenario(), font=("Arial", 14)).grid(row=18, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=17, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc', command= lambda: runLoaded()).grid(row=16, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Select Reports', font=("Arial", 14), bg='#efd566', command= lambda: runReports()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Sensitivity Values', font=("Arial", 14), bg='#61ccc7', command= lambda: runSensitivity()).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
 
             #GUI Spacing
             for i in range(1,9):

@@ -30,7 +30,7 @@ else:
   from tkFileDialog import askopenfilename
   from tkFileDialog import asksaveasfile 
 
-from plotnine import *
+#from plotnine import *
 
 
 class CreateToolTip(object):
@@ -119,6 +119,10 @@ class sensitivityAnalysis(object):
         orders, coeffs, k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
         results = pd.DataFrame()
         sectorInt = sectors.index(self.sector)
+        if (self.min > self.max):
+            tkMessageBox.showerror("Error","Minimum values must be less than maximum values")
+            raise ValueError("Minimum values must be less than maximum values")
+
         for i in range(self.steps):
             depBackups = list(range(9))
             depBackups.pop(sectorInt)
@@ -335,24 +339,47 @@ def main():
                 if (bools[i])>0:
                   new_sector_list.append(sectors[i])
               if rf>0:
+                if ((float(rf_range_min.get()) <= 0) or (float(rf_range_max.get()) <= 0) or (float(rf_range_min.get()) >= 1) or (float(rf_range_max.get()) >= 1)):
+                    tkMessageBox.showerror("Error","Repair factor values must be between 0 and 1")
+                    raise ValueError("Repair factor values must be between 0 and 1")
+                try:
+                   (float(rf_steps.get()))
+                except:
+                    tkMessageBox.showerror("Error","Steps value must be integer")
+                    raise ValueError("Steps value must be integer")
                 for sector in new_sector_list:
                   individual_run = sensitivityAnalysis("Repair Factors", rf_range_min.get(),
                                             rf_range_max.get(), rf_steps.get(), sector)
                   individual_run.runAnalysis(sectors)
                   
               if backup_days>0:
+                try:
+                   (float(backup_days_steps.get()))
+                except:
+                    tkMessageBox.showerror("Error","Steps value must be integer")
+                    raise ValueError("Steps value must be integer")
                 for sector in new_sector_list:
                   individual_run = sensitivityAnalysis("Days Backup", backup_days_range_min.get(),
                                             backup_days_range_max.get(), backup_days_steps.get(), sector)
                   individual_run.runAnalysis(sectors)
                   
               if backup_efficiency>0:
+                try:
+                   (float(backup_efficiency_steps.get()))
+                except:
+                    tkMessageBox.showerror("Error","Steps value must be integer")
+                    raise ValueError("Steps value must be integer")
                 for sector in new_sector_list:
                   individual_run = sensitivityAnalysis("Efficiency of Backups", backup_efficiency_range_min.get(),
                                             backup_efficiency_range_max.get(), backup_efficiency_steps.get(), sector)
                   individual_run.runAnalysis(sectors)
                   
               if initial_efficiency>0:
+                try:
+                   (float(initial_efficiency_steps.get()))
+                except:
+                    tkMessageBox.showerror("Error","Steps value must be integer")
+                    raise ValueError("Steps value must be integer")
                 for sector in new_sector_list:
                   individual_run = sensitivityAnalysis("Initial Efficiency", initial_efficiency_range_min.get(),
                                             initial_efficiency_range_max.get(), initial_efficiency_steps.get(), sector)
