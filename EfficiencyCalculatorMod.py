@@ -328,7 +328,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     #farm_contaminated = round(100-round(createFarmland("USA_Soils_Farmland_Class", Contaminated_Dataset, Infrastructure_Dataset, OutputPath),2),2)
     farm = 100
     (farm) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, ScenarioDataset, "100 Mile", OutputPath)
-    (farm_contaminated) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, Contaminated_Dataset, "100 Mile", OutputPath)
+    (farm_contaminated) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, Contaminated_Dataset, "100 Mile", OutputPath, True)
     getAffectedInfrastructures(Contaminated_Dataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location)        
     # Process: Affected Infrastructure Statistics (Summary Statistics)
 
@@ -497,27 +497,33 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     worship = getArea("worship", "Worship_HIFLD", Infrastructure_Dataset,
                                        ScenarioDataset, "0.25 Mile", OutputPath)
     getAffectedInfrastructures(ScenarioDataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, True)
+
+    agri = getArea("agri", "USA_Farms", Infrastructure_Dataset,
+                                       ScenarioDataset, "100 Mile", OutputPath)
     #roofs = sum(areas)
     #building_exteriors = sum(areas)
     school_areas = public_schools + private_schools + colleges
     industrial_area = industrial + industrial2
     government_area = government
-    columnsList = ["Phase", "Category","Name","Description", "Units", "Constant", "Parameter 1"]
-    rowList = [["Indoor", "Industrial", "Indoor Contamination Breakout",
-               "The area of interior contaminated surface area which is industrial",
-               "m^2", "Constant", industrial_area], ["Indoor", "Commercial", "Indoor Contamination Breakout",
-               "The area of interior contaminated surface area which is commercial",
-               "m^2", "Constant", commerical], ["Indoor", "Religious", "Indoor Contamination Breakout",
-               "The area of interior contaminated surface area which is religious",
-               "m^2", "Constant", worship], ["Indoor", "Education", "Indoor Contamination Breakout",
-               "The area of interior contaminated surface area which is educational",
-               "m^2", "Constant", school_areas], ["Indoor", "Government", "Indoor Contamination Breakout",
-               "The area of interior contaminated surface area which is government",
-               "m^2", "Constant", government_area]]
-    df2 = pd.DataFrame(rowList, columns = columnsList)
-    spreadsheet = spreadsheet.append(df2)
-    new_loc = GUI_Tool_Location + "\\NewDefineScenario.csv"
-    spreadsheet.to_csv(new_loc, index=False) 
+    dicts = {
+        "validPhases":["Indoor", "Indoor", "Indoor", "Indoor", "Indoor", "Indoor"],
+        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural"],
+        "name": ["Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area",
+                 "Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area"],
+        "description":["The area of contaminated surface area which is industrial",
+                       "The area of contaminated surface area which is commercial",
+                       "The area of contaminated surface area which is religious",
+                       "The area of contaminated surface area which is educational",
+                       "The area of contaminated surface area which is government",
+                       "The area of contaminated surface area which is agricultural"],
+        "units":["m^2", "m^2", "m^2", "m^2", "m^2", "m^2"],
+        "value":[industrial_area, commerical, worship, school_areas, government_area, agri]
+        }
+    df2 = pd.DataFrame(dicts)
+    new_loc = GUI_Tool_Location + "\\NewDefineScenario.json"
+    #arcpy.AddMessage(df2)
+    #spreadsheet.reset_index(inplace=True)
+    df2.to_json(new_loc, orient="table")
             
 if __name__ == '__main__':
     # Global Environment settings

@@ -244,7 +244,8 @@ def main():
                 self.leg = report_GUI.main()
 
             def runSensitivity():
-                self.leg = sensitivity_GUI.main()
+                sensitivity_GUI.main()
+                sensitivity_GUI.init()
 
                     
 ##            def showPDF():
@@ -347,7 +348,7 @@ def main():
                 var3 = tk.IntVar()
             tk.Checkbutton(self, text="Contaminated Infrastructure List Available", variable=var3, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 0)
 
-            var3 = tk.IntVar(value=int(bool(confIntervals)))
+            #var3 = tk.IntVar(value=int(bool(confIntervals)))
 ##            if averaging == "true" or averaging == "True" or averaging == "1":
 ##                var2 = tk.IntVar(value=int(bool(averaging)))
 ##            else:

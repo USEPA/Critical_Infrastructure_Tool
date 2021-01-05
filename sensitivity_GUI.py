@@ -30,7 +30,7 @@ else:
   from tkFileDialog import askopenfilename
   from tkFileDialog import asksaveasfile 
 
-#from plotnine import *
+from plotnine import *
 
 
 class CreateToolTip(object):
@@ -100,7 +100,8 @@ class sensitivityAnalysis(object):
     def colorFader(self, c1,c2,mix=0): #fade (linear interpolate) from color c1 (at mix=0) to c2 (mix=1)
       c1=np.array(mpl.colors.to_rgb(c1))
       c2=np.array(mpl.colors.to_rgb(c2))
-      return mpl.colors.to_hex((1-mix)*c1 + mix*c2)
+      print((1-mix)*c1 + mix*c2)
+      return mpl.colors.to_hex(abs((1-mix)*c1 + mix*c2))
     
     def hex_to_rgb(self, value):
       value = value.lstrip('#')
@@ -320,21 +321,23 @@ def main():
 
             def run():
               rf = rf_bool.get()
+              
               backup_days  = backup_days_bool.get()
               backup_efficiency = backup_efficiency_bool.get()
               initial_efficiency = initial_efficiency_bool.get()
               sectors = sector_list
-              water = water_bool.get()
-              energy = energy_bool.get()
-              transportation = transportation_bool.get()
-              comm = comm_bool.get()
-              gov = gov_bool.get()
-              emer = emer_bool.get()
-              fa = fa_bool.get()
-              waste = waste_bool.get()
-              healthcare = healthcare_bool.get()
+              water = self.water_bool.get()
+              energy = self.energy_bool.get()
+              transportation = self.transportation_bool.get()
+              comm = self.comm_bool.get()
+              gov = self.gov_bool.get()
+              emer = self.emer_bool.get()
+              fa = self.fa_bool.get()
+              waste = self.waste_bool.get()
+              healthcare = self.healthcare_bool.get()
               bools = [water, energy, transportation, comm, gov, emer, fa, waste, healthcare]
               new_sector_list = []
+              print(bools)
               for i in range(len(bools)):
                 if (bools[i])>0:
                   new_sector_list.append(sectors[i])
@@ -386,22 +389,22 @@ def main():
                   individual_run.runAnalysis(sectors)
             
             #bool definitions
-            rf_bool = tk.IntVar()
-            backup_days_bool = tk.IntVar()
-            backup_efficiency_bool = tk.IntVar()
-            initial_efficiency_bool = tk.IntVar()
+            rf_bool = tk.BooleanVar()
+            backup_days_bool = tk.BooleanVar()
+            backup_efficiency_bool = tk.BooleanVar()
+            initial_efficiency_bool = tk.BooleanVar()
             
-            water_bool = tk.IntVar()
-            energy_bool = tk.IntVar()
-            transportation_bool = tk.IntVar()
-            comm_bool = tk.IntVar()
-            gov_bool = tk.IntVar()
-            emer_bool = tk.IntVar()
-            fa_bool = tk.IntVar()
-            waste_bool = tk.IntVar()
-            healthcare_bool = tk.IntVar()
-            bool_list = [water_bool, energy_bool, transportation_bool, comm_bool,
-                         gov_bool, emer_bool, fa_bool, waste_bool, healthcare_bool]
+            self.water_bool = tk.BooleanVar()
+            self.energy_bool = tk.BooleanVar()
+            self.transportation_bool = tk.BooleanVar()
+            self.comm_bool = tk.BooleanVar()
+            self.gov_bool = tk.BooleanVar()
+            self.emer_bool = tk.BooleanVar()
+            self.fa_bool = tk.BooleanVar()
+            self.waste_bool = tk.BooleanVar()
+            self.healthcare_bool = tk.BooleanVar()
+            bool_list = [self.water_bool, self.energy_bool, self.transportation_bool, self.comm_bool,
+                         self.gov_bool, self.emer_bool, self.fa_bool, self.waste_bool, self.healthcare_bool]
             sector_list = ["Water", "Energy", "Transportation", "Communications", "Government", "Emergency Services",
                            "Food and Agriculture", "Waste Management", "Healthcare"]
             
