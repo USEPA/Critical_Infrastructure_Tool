@@ -110,9 +110,11 @@ class sensitivityAnalysis(object):
 
     def runAnalysis(self, sectors):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        fileLoc = dir_path + "//" + "infrastructures_inputs.txt"
+        #fileLoc = dir_path + "//" + "infrastructures_inputs.txt"
         temp_file = dir_path + "//" + "infrastructures_inputs_temp.txt"
-        copyfile(fileLoc, temp_file)
+        files = [('Text Document', '*.txt'), ('JSON File', '*.json')] 
+        filename = askopenfilename(filetypes = files, defaultextension = files)
+        copyfile(, temp_file)
         json_data = open(fileLoc)
         data = json.load(json_data)
         start = self.min
@@ -320,11 +322,11 @@ def main():
                   ie_steps.grid_remove()
 
             def run():
-              rf = rf_bool.get()
+              rf = self.rf_bool.get()
               
-              backup_days  = backup_days_bool.get()
-              backup_efficiency = backup_efficiency_bool.get()
-              initial_efficiency = initial_efficiency_bool.get()
+              backup_days  = self.backup_days_bool.get()
+              backup_efficiency = self.backup_efficiency_bool.get()
+              initial_efficiency = self.initial_efficiency_bool.get()
               sectors = sector_list
               water = self.water_bool.get()
               energy = self.energy_bool.get()
@@ -337,6 +339,7 @@ def main():
               healthcare = self.healthcare_bool.get()
               bools = [water, energy, transportation, comm, gov, emer, fa, waste, healthcare]
               new_sector_list = []
+              print(rf, backup_days, backup_efficiency, initial_efficiency)
               print(bools)
               for i in range(len(bools)):
                 if (bools[i])>0:
@@ -389,10 +392,11 @@ def main():
                   individual_run.runAnalysis(sectors)
             
             #bool definitions
-            rf_bool = tk.BooleanVar()
-            backup_days_bool = tk.BooleanVar()
-            backup_efficiency_bool = tk.BooleanVar()
-            initial_efficiency_bool = tk.BooleanVar()
+            self.rf_bool = tk.BooleanVar()
+            self.backup_days_bool = tk.BooleanVar()
+ 
+            self.backup_efficiency_bool = tk.BooleanVar()
+            self.initial_efficiency_bool = tk.BooleanVar()
             
             self.water_bool = tk.BooleanVar()
             self.energy_bool = tk.BooleanVar()
@@ -427,10 +431,10 @@ def main():
             initial_efficiency_steps = tk.StringVar()
 
             tk.Label(self, text='Parameters to Analyze', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 0)
-            rf_check = tk.Checkbutton(self, text='Repair Factors', var=rf_bool, font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 0)
-            db_check = tk.Checkbutton(self, text='Days Backup', var=backup_days_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 0)
-            de_check = tk.Checkbutton(self, text='Efficiency of Backup', var=backup_efficiency_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 0)
-            ie_check = tk.Checkbutton(self, text='Initial Efficiency', var=initial_efficiency_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 0)
+            rf_check = tk.Checkbutton(self, text='Repair Factors', var=self.rf_bool, font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 0)
+            db_check = tk.Checkbutton(self, text='Days Backup', var=self.backup_days_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 0)
+            de_check = tk.Checkbutton(self, text='Efficiency of Backup', var=self.backup_efficiency_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 0)
+            ie_check = tk.Checkbutton(self, text='Initial Efficiency', var=self.initial_efficiency_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 0)
 
             tk.Label(self, text='Parameter Mins', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 1)
             rp_min_text = tk.Label(self, text='Repair Factors Min:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 1)

@@ -218,8 +218,8 @@ def main():
             tk.Checkbutton(self, text='Show Healthcare Recovery Histogram', var=healthcare_graph_bool, font=("Arial", 10)).grid(row=10, sticky=tk.W, column = 1)            
             #print(self.orders, self.coeffs, self.k)
 
-            tk.Button(self, text='Save Report Values', bg='#FCB1A0', command= lambda: saveValues(), font=("Arial", 14)).grid(row=18, column=0, sticky=tk.NSEW)
-            tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=1, sticky=tk.NSEW)
+            #tk.Button(self, text='Save Report Values', bg='#FCB1A0', command= lambda: saveValues(), font=("Arial", 14)).grid(row=18, column=0, sticky=tk.NSEW)
+            #tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=1, sticky=tk.NSEW)
  
             
     
