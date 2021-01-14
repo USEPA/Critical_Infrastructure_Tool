@@ -110,12 +110,12 @@ class sensitivityAnalysis(object):
 
     def runAnalysis(self, sectors):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        #fileLoc = dir_path + "//" + "infrastructures_inputs.txt"
+        fileLoc = dir_path + "//" + "infrastructures_inputs.txt"
         temp_file = dir_path + "//" + "infrastructures_inputs_temp.txt"
         files = [('Text Document', '*.txt'), ('JSON File', '*.json')] 
         filename = askopenfilename(filetypes = files, defaultextension = files)
-        copyfile(, temp_file)
-        json_data = open(fileLoc)
+        copyfile(filename, temp_file)
+        json_data = open(filename)
         data = json.load(json_data)
         start = self.min
         step = (self.max-self.min)/self.steps
@@ -173,7 +173,7 @@ class sensitivityAnalysis(object):
         p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
         file_name = self.parameter + "_" + self.sector
         path_name = dir_path + "\\Sensitivity\\"
-        p.save(filename=file_name, path = path_name, verbose = False)
+        p.save(filename=file_name, path = path_name, verbose = False, device= "jpeg")
         copyfile(temp_file, fileLoc)
         width= 60
         height = 10
@@ -181,7 +181,7 @@ class sensitivityAnalysis(object):
         pdf.add_page()
         pdf.set_font('Times', 'B', 12)
         graph_name = path_name + file_name + ".png"
-        pdf.image(graph_name)
+        pdf.image(graph_name, w = width, h = height)
         text = "Slope"
         if self.parameter == "Days Backup":
           text = "Reduction (days) in recovery time for an increase in 1 day backup"

@@ -23,7 +23,7 @@ import tkinter.messagebox as tkMessageBox
 import json
 from inspect import getsourcefile
 from os.path import abspath
-
+import matplotlib.pyplot as plt
 
 import os
 #import geopandas
@@ -404,7 +404,7 @@ def main():
 
             frame.grid(row=1, column=1, sticky="nsew")
 
-            self.geometry("1200x750")
+            #self.geometry("1200x750")
             
 
             self.show_frame(StartPage)
@@ -911,11 +911,11 @@ def main():
 
             tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Save Scenario', bg='#FCB1A0', command= lambda: saveScenario(), font=("Arial", 14)).grid(row=18, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=17, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc', command= lambda: runLoaded()).grid(row=16, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Select Reports', font=("Arial", 14), bg='#efd566', command= lambda: runReports()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Sensitivity Analysis', font=("Arial", 14), bg='#61ccc7', command= lambda: runSensitivityGUI()).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
+            #tk.Button(self, text='Select Reports', font=("Arial", 14), bg='#efd566', command= lambda: runReports()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
+            #tk.Button(self, text='Sensitivity Analysis', font=("Arial", 14), bg='#61ccc7', command= lambda: runSensitivityGUI()).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
 
             #GUI Spacing
             for i in range(1,9):
