@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes, n0, contaminated = False):
+def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes, n0, nRun, contaminated = False):
     pdf = FPDF()
     pdf.add_page()
     
@@ -23,8 +23,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     pdf.cell(width, 5, ln=1)
     introText4 = "The SIRM examines the interactions of 9 different infrastructure sectors: Water, Energy, Transportation,"
     introText5 = "Communication, Government, Food/Agriculture, Emergency Services, Waste Management and Healthcare."
-    introText6a = "Based on the initial sector operating efficiency after an event, the model calculates an estimated time"
-    introText6b = "for recovery."
+    introText6a = "Based on the initial operating efficiency after the event, the model calculates an estimated time"
+    introText6b = "for recovery for each sector, averaged from a user-defined number of model runs ({}).".format(str(nRun))
     pdf.set_font('Times','', 12)
     pdf.cell(width, 5,introText1, ln=1)
     pdf.cell(width, 5,introText2, ln=1)
@@ -116,7 +116,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         pdf.cell(width, height, "The number and type of contaminated buildings :", ln=1)
         pdf.set_font('Times', '', 12)
         pdf = getInfrastructureList("Contaminated//", pdf, width, 5)
-    disclaimer1 = "The results produced here are estimates and created through the use of the SIRM model."
+    disclaimer1 = "Disclaimer: The results produced here are estimates and created through the use of the SIRM model."
     disclaimer2 = "Point of Contact: Timothy Boe, EPA, Timothy.Boe@epa.gov"
     pdf.cell(width, height,disclaimer1, ln=1)
     pdf.cell(width, height,disclaimer2, ln=1)
