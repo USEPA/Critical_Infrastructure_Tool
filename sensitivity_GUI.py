@@ -13,7 +13,6 @@ import infrastructures_from_file
 import coefficients_from_file
 import tkinter.messagebox as tkMessageBox
 import json
-import seaborn as sns
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -31,6 +30,8 @@ else:
   from tkFileDialog import asksaveasfile 
 
 from plotnine import *
+import shutil
+
 
 
 class CreateToolTip(object):
@@ -173,6 +174,8 @@ class sensitivityAnalysis(object):
         p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
         file_name = self.parameter + "_" + self.sector
         path_name = dir_path + "\\Sensitivity\\"
+        shutil.rmtree(path_name)
+        os.mkdir(path_name)
         p.save(filename=file_name, path = path_name, verbose = False, device= "jpeg")
         copyfile(temp_file, fileLoc)
         width= 60
@@ -181,7 +184,7 @@ class sensitivityAnalysis(object):
         pdf.add_page()
         pdf.set_font('Times', 'B', 12)
         graph_name = path_name + file_name + ".png"
-        pdf.image(graph_name, w = width, h = height)
+        pdf.image(graph_name, width = 120)
         text = "Slope"
         if self.parameter == "Days Backup":
           text = "Reduction (days) in recovery time for an increase in 1 day backup"
