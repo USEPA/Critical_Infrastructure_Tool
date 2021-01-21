@@ -14,6 +14,7 @@ import subprocess
 from shutil import copyfile
 from arcgis.geometry import Geometry
 from arcgis.geocoding import reverse_geocode
+import shutil  
 
 
 def wrapArg(s):
@@ -114,8 +115,11 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
     latname = getLatName(infrastructures)
     longname = getLongName(infrastructures)
     (name1, name2) = getColumns(infrastructures)
-    newPath = GUIPath + "//Results//" + iname + "_contaminated.csv"
-    GISPath = path_parent + "//Results//" + iname + "_contaminated.csv"
+    if os.path.isdir(path_parent + "//Contaminated"):
+        shutil.rmtree(path_parent + "//Contaminated")
+    os.mkdir(path_parent + "//Contaminated")
+    newPath = GUIPath + "//Contaminated//" + iname + "_contaminated.csv"
+    GISPath = path_parent + "//Contaminated//" + iname + "_contaminated.csv"
     if other:
         results = pd.DataFrame({"Building Name":[]})
         if arcpy.management.GetCount(outPolygons)[0] == "0":
@@ -124,7 +128,7 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
             return
         fdList = [infrastructureName]
         for row in arcpy.da.SearchCursor(outPolygons, [infrastructureName]):
-            #arcpy.AddMessage(row)
+            arcpy.AddMessage(row)
             results = results.append({"Building Name": row[0]}, ignore_index=True)
         #rcpy.AddMessage(results)
             results.to_csv(GISPath)
@@ -132,7 +136,7 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
     else: 
         results = pd.DataFrame({"Building Name":[], name1:[], name2:[]})
         if arcpy.management.GetCount(outPolygons)[0] == "0":
-            newPath = GUIPath + "//Results//" + iname + "_contaminated.csv"
+            newPath = GUIPath + "//Contaminated//" + iname + "_contaminated.csv"
             results.to_csv(newPath)
             return
         fdList = [infrastructureName, latname, longname]
@@ -384,6 +388,12 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     copyfile(defaultPath, path_parent + "\\" + "default.csv")
     inputsFile = GUI_Tool_Location + "\\report_inputs.txt"
     copyfile(inputsFile, path_parent + "\\" + "report_inputs.txt")
+
+    SensitivityFolder = GUI_Tool_Location + "\\Sensitivity Images"
+    if os.path.isdir(path_parent + "\\Sensitivity Images"):
+        shutil.rmtree(path_parent + "\\Sensitivity Images")
+
+    destination = shutil.copytree(SensitivityFolder, path_parent + "\\Sensitivity Images")
     
     n0new = [water_percent, energy_percent, transport_percent, comm_percent, government_percent,
              agriculture_percent, emergency_percent, waste, healthcare_percent]
@@ -399,7 +409,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         json.dump(data, outfile)
     with open(path_parent + "\\" + "infrastructures_inputs.txt", "w") as outfile:
         json.dump(data, outfile)
-    fillOut(GUI_Tool_Location + "\\DefineScenario.xlsx", Contaminated_Dataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location)
+    #fillOut(GUI_Tool_Location + "\\DefineScenario.xlsx", Contaminated_Dataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location)
     newPath = wrapArg(GUI_Tool_Location +  "\\infrastructures_gui.exe")
     command_prompt = "cmd /k " + newPath
     os.system(command_prompt)

@@ -16,6 +16,7 @@ else:
 import infrastructures_from_file
 import coefficients_from_file
 import report_GUI
+from shutil import copyfile
 #import sensitivity_GUI
 import tkinter.messagebox as tkMessageBox
 #from fiona import _shim, schema
@@ -24,6 +25,7 @@ import json
 from inspect import getsourcefile
 from os.path import abspath
 import matplotlib.pyplot as plt
+
 
 import os
 #import geopandas
@@ -92,295 +94,6 @@ class CreateToolTip(object):
         if tw:
             tw.destroy()
 
-class sensitivityAnalysis(object):
-    def __init__(self, parameter, minval, maxval, steps, sector):
-        self.parameter = parameter
-        self.min = float(minval)
-        self.max = float(maxval)
-        self.steps = int(steps)
-        self.sector = sector
-
-    def colorFader(self, c1,c2,mix=0): #fade (linear interpolate) from color c1 (at mix=0) to c2 (mix=1)
-      c1=np.array(mpl.colors.to_rgb(c1))
-      c2=np.array(mpl.colors.to_rgb(c2))
-      print((1-mix)*c1 + mix*c2)
-      return mpl.colors.to_hex(abs((1-mix)*c1 + mix*c2))
-    
-    def hex_to_rgb(self, value):
-      value = value.lstrip('#')
-      lv = len(value)
-      return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
-
-    def runAnalysis(self, sectors):
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        fileLoc = dir_path + "//" + "infrastructures_inputs.txt"
-        temp_file = dir_path + "//" + "infrastructures_inputs_temp.txt"
-        files = [('Text Document', '*.txt'), ('JSON File', '*.json')] 
-        #filename = askopenfilename(filetypes = files, defaultextension = files)
-        copyfile(fileLoc, temp_file)
-        json_data = open(fileLoc)
-        data = json.load(json_data)
-        start = self.min
-        step = (self.max-self.min)/self.steps
-        orders, coeffs, k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
-        results = pd.DataFrame()
-        sectorInt = sectors.index(self.sector)
-        if (self.min > self.max):
-            tkMessageBox.showerror("Error","Minimum values must be less than maximum values")
-            raise ValueError("Minimum values must be less than maximum values")
-
-        for i in range(self.steps):
-            depBackups = list(range(9))
-            depBackups.pop(sectorInt)
-            backs = [sectorInt] * (len(sectors)-1)
-            if self.parameter == "Repair Factors":
-              data["repair_factors"][sectorInt] = start
-            elif self.parameter == "Initial Efficiency":
-              data["n0"][sectorInt] = start
-            elif self.parameter == "Days Backup":
-              days = [start]*(len(sectors)-1)
-              percents = [90] * (len(sectors)-1)
-              data["daysBackup"] = days
-              data["backupPercent"] = percents
-              data["depBackup"] = depBackups
-              data["backups"] = backs
-            elif self.parameter == "Efficiency of Backups":
-              days = [10] * (len(sectors)-1)
-              percents = [start]*(len(sectors)-1)
-              data["daysBackup"] = days
-              data["backupPercent"] = percents
-              data["depBackup"] = depBackups
-              data["backups"] = backs
-            name = start
-            if start < 1:
-              name = round(start * 100, 0)
-            data["name"] = self.parameter + "_" + str(name).split(".")[0]
-            with open(fileLoc, "w") as outfile:
-              json.dump(data, outfile)
-            self.leg = infrastructures_from_file.run_file(False, orders, coeffs, k)
-            result = pd.read_csv(dir_path + "\\Results\\" + data["name"] + ".csv")
-            for i in range(len(result["Sectors"])):
-              new_row = {'Sector': result["Sectors"][i], 'RT': result["Recovery Times"][i], 'Value': start}
-              results = results.append(new_row, ignore_index=True)
-            start += step
-        plt.style.use('ggplot')
-        ggt = self.sector + " " + self.parameter + " vs Sector Recovery Times"
-        slope_results = pd.DataFrame()
-        newSectors = list(set(results['Sector']))
-        for i in range(len(newSectors)):
-          sectorResults = results[results.Sector.eq(newSectors[i])]
-          m, b = np.polyfit(sectorResults['Value'], sectorResults['RT'], 1)
-          new_row = {'Sector': newSectors[i], 'Slope': m, 'Intercept': b}
-          slope_results = slope_results.append(new_row, ignore_index=True)
-        print(slope_results)     
-        p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
-        file_name = self.parameter + "_" + self.sector
-        path_name = dir_path + "\\Sensitivity\\"
-        p.save(filename=file_name, path = path_name, verbose = False)
-        copyfile(temp_file, fileLoc)
-        width= 60
-        height = 10
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font('Times', 'B', 12)
-        graph_name = path_name + file_name + ".png"
-        pdf.image(graph_name)
-        text = "Slope"
-        if self.parameter == "Days Backup":
-          text = "Reduction (days) in recovery time for an increase in 1 day backup"
-        if self.parameter == "Efficiency of Backups":
-          text = "Reduction (days) in recovery time for an increase in 1% backup efficiency"
-        if self.parameter == "Initial Efficiency":
-          text = "Reduction (days) in recovery time for an increase in 1% initial efficiency"
-        if self.parameter == "Repair Factors":
-          text = "Reduction (days) in recovery time for an increase in 0.1 repair factor"
-          
-        data = ["Infrastructure Sector",text ]
-        white = np.array([255, 255, 255])
-        pdf.cell(width, height, str(data[0]), border=1)
-        pdf.cell(135, height, str(data[1]), border=1, ln=1)
-        n = 9
-        c1='white' 
-        c2='green' 
-        slope_max= max(abs(slope_results["Slope"]))
-        #pdf.cell(width, height, str(data[2]), border=1, ln=1)
-        for i in range(len(slope_results["Slope"])):
-          slope = abs(round(float(slope_results["Slope"][i]), 2))
-          if self.parameter == "Repair Factors":
-            slope_max= max(abs(slope_results["Slope"]))/10
-            slope = round(abs(float(slope_results["Slope"][i])), 2)/10
-          color= self.colorFader(c1,c2,slope/slope_max)
-          new_color = self.hex_to_rgb(color)
-          (x1, x2, x3) = new_color
-          pdf.set_fill_color(x1, x2, x3)
-          pdf.cell(width, height, str(slope_results["Sector"][i]), border=1)
-          pdf.cell(135, height, str(round(slope,2)), border=1, ln=1, fill=True, align = 'C')
-          #pdf.cell(width, height,text, border=1, ln=1)
-
-        pdf.output(path_name + file_name + "_Report.pdf", 'F')
-
-class sensitivity_GUI():
-  def __init__(self):
-    sensitivity_frame = tk.Tk()
-
-    sensitivity_frame.grid_rowconfigure(20, weight=1)
-    sensitivity_frame.grid_columnconfigure(4, weight=1)
-
-    def runSensitivity():
-      rf = self.rf_bool.get()
-              
-      backup_days  = self.backup_days_bool.get()
-      backup_efficiency = self.backup_efficiency_bool.get()
-      initial_efficiency = self.initial_efficiency_bool.get()
-      sectors = self.sector_list
-      water = self.water_bool.get()
-      energy = self.energy_bool.get()
-      transportation = self.transportation_bool.get()
-      comm = self.comm_bool.get()
-      gov = self.gov_bool.get()
-      emer = self.emer_bool.get()
-      fa = self.fa_bool.get()
-      waste = self.waste_bool.get()
-      healthcare = self.healthcare_bool.get()
-      bools = [water, energy, transportation, comm, gov, emer, fa, waste, healthcare]
-      new_sector_list = []
-      print(rf, backup_days, backup_efficiency, initial_efficiency)
-      print(bools)
-      for i in range(len(bools)):
-        if (bools[i])>0:
-          new_sector_list.append(sectors[i])
-        if rf>0:
-          if ((float(rf_range_min.get()) <= 0) or (float(rf_range_max.get()) <= 0) or (float(rf_range_min.get()) >= 1) or (float(rf_range_max.get()) >= 1)):
-            tkMessageBox.showerror("Error","Repair factor values must be between 0 and 1")
-            raise ValueError("Repair factor values must be between 0 and 1")
-          try:
-            (float(rf_steps.get()))
-          except:
-            tkMessageBox.showerror("Error","Steps value must be integer")
-            raise ValueError("Steps value must be integer")
-          for sector in new_sector_list:
-            individual_run = sensitivityAnalysis("Repair Factors", rf_range_min.get(),
-                                            rf_range_max.get(), rf_steps.get(), sector)
-            individual_run.runAnalysis(sectors)
-                  
-        if backup_days>0:
-          try:
-            (float(backup_days_steps.get()))
-          except:
-            tkMessageBox.showerror("Error","Steps value must be integer")
-            raise ValueError("Steps value must be integer")
-          for sector in new_sector_list:
-            individual_run = sensitivityAnalysis("Days Backup", backup_days_range_min.get(),
-                                            backup_days_range_max.get(), backup_days_steps.get(), sector)
-            individual_run.runAnalysis(sectors)
-                  
-          if backup_efficiency>0:
-            try:
-              (float(backup_efficiency_steps.get()))
-            except:
-              tkMessageBox.showerror("Error","Steps value must be integer")
-              raise ValueError("Steps value must be integer")
-            for sector in new_sector_list:
-              individual_run = sensitivityAnalysis("Efficiency of Backups", backup_efficiency_range_min.get(),
-                                            backup_efficiency_range_max.get(), backup_efficiency_steps.get(), sector)
-              individual_run.runAnalysis(sectors)
-                  
-          if initial_efficiency>0:
-            try:
-              (float(initial_efficiency_steps.get()))
-            except:
-              tkMessageBox.showerror("Error","Steps value must be integer")
-              raise ValueError("Steps value must be integer")
-            for sector in new_sector_list:
-              individual_run = sensitivityAnalysis("Initial Efficiency", initial_efficiency_range_min.get(),
-                                            initial_efficiency_range_max.get(), initial_efficiency_steps.get(), sector)
-              individual_run.runAnalysis(sectors)
-            
-            #bool definitions
-    self.rf_bool = tk.BooleanVar()
-    self.backup_days_bool = tk.BooleanVar()
- 
-    self.backup_efficiency_bool = tk.BooleanVar()
-    self.initial_efficiency_bool = tk.BooleanVar()
-            
-    self.water_bool = tk.BooleanVar()
-    self.energy_bool = tk.BooleanVar()
-    self.transportation_bool = tk.BooleanVar()
-    self.comm_bool = tk.BooleanVar()
-    self.gov_bool = tk.BooleanVar()
-    self.emer_bool = tk.BooleanVar()
-    self.fa_bool = tk.BooleanVar()
-    self.waste_bool = tk.BooleanVar()
-    self.healthcare_bool = tk.BooleanVar()
-    self.bool_list = [self.water_bool, self.energy_bool, self.transportation_bool, self.comm_bool,
-                         self.gov_bool, self.emer_bool, self.fa_bool, self.waste_bool, self.healthcare_bool]
-    self.sector_list = ["Water", "Energy", "Transportation", "Communications", "Government", "Emergency Services",
-                           "Food and Agriculture", "Waste Management", "Healthcare"]
-            
-            #string definitions
-    self.rf_range_min = tk.StringVar()
-    self.inf_stoich_range_min = tk.StringVar()
-    self.backup_days_range_min = tk.StringVar()
-    self.backup_efficiency_range_min = tk.StringVar()
-    self.initial_efficiency_range_min = tk.StringVar()
-
-    self.rf_range_max = tk.StringVar()
-    self.inf_stoich_range_max = tk.StringVar()
-    self.backup_days_range_max = tk.StringVar()
-    self.backup_efficiency_range_max = tk.StringVar()
-    self.initial_efficiency_range_max = tk.StringVar()
-
-    self.rf_steps = tk.StringVar()
-    self.backup_days_steps = tk.StringVar()
-    self.backup_efficiency_steps = tk.StringVar()
-    self.initial_efficiency_steps = tk.StringVar()
-
-    tk.Label(sensitivity_frame, text='Parameters to Analyze', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 0)
-    rf_check = tk.Checkbutton(sensitivity_frame, text='Repair Factors', var=self.rf_bool, font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 0)
-    db_check = tk.Checkbutton(sensitivity_frame, text='Days Backup', var=self.backup_days_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 0)
-    de_check = tk.Checkbutton(sensitivity_frame, text='Efficiency of Backup', var=self.backup_efficiency_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 0)
-    ie_check = tk.Checkbutton(sensitivity_frame, text='Initial Efficiency', var=self.initial_efficiency_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 0)
-
-    tk.Label(sensitivity_frame, text='Parameter Mins', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 1)
-    rp_min_text = tk.Label(sensitivity_frame, text='Repair Factors Min:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 1)
-    bd_min_text = tk.Label(sensitivity_frame, text='Days Backup Min:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 1)
-    be_min_text = tk.Label(sensitivity_frame, text='Efficiency of Backup Min:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 1)
-    ie_min_text = tk.Label(sensitivity_frame, text='Initial Efficiency Min:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 1)
-
-    rp_min = tk.Entry(sensitivity_frame, textvariable=self.rf_range_min, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 1)
-    bd_min = tk.Entry(sensitivity_frame, textvariable=self.backup_days_range_min, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 1)
-    be_min = tk.Entry(sensitivity_frame, textvariable=self.backup_efficiency_range_min, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 1)
-    ie_min = tk.Entry(sensitivity_frame, textvariable=self.initial_efficiency_range_min, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 1)
-
-    tk.Label(sensitivity_frame, text='Parameter Maxes', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 2)
-    rp_max_text = tk.Label(sensitivity_frame, text='Repair Factors Max:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 2)
-    bd_max_text = tk.Label(sensitivity_frame, text='Days Backup Max:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 2)
-    be_max_text = tk.Label(sensitivity_frame, text='Efficiency of Backup Max:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 2)
-    ie_max_text = tk.Label(sensitivity_frame, text='Initial Efficiency Max:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 2)
-
-    rp_max = tk.Entry(sensitivity_frame, textvariable=self.rf_range_max, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 2)
-    bd_max = tk.Entry(sensitivity_frame, textvariable=self.backup_days_range_max, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 2)
-    be_max = tk.Entry(sensitivity_frame, textvariable=self.backup_efficiency_range_max, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 2)
-    ie_max = tk.Entry(sensitivity_frame, textvariable=self.initial_efficiency_range_max, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 2)
-
-    tk.Label(sensitivity_frame, text='Parameter Steps', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 3)
-    rp_steps_text = tk.Label(sensitivity_frame, text='Repair Factors Steps:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 3)
-    bd_steps_text = tk.Label(sensitivity_frame, text='Days Backup Steps:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 3)
-    be_steps_text = tk.Label(sensitivity_frame, text='Efficiency of Backup Steps:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 3)
-    ie_steps_text = tk.Label(sensitivity_frame, text='Initial Efficiency Steps:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 3)
-
-    rp_steps = tk.Entry(sensitivity_frame, textvariable=self.rf_steps, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 3)
-    bd_steps = tk.Entry(sensitivity_frame, textvariable=self.backup_days_steps, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 3)
-    be_steps = tk.Entry(sensitivity_frame, textvariable=self.backup_efficiency_steps, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 3)
-    ie_steps = tk.Entry(sensitivity_frame, textvariable=self.initial_efficiency_steps, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 3)
-
-    tk.Label(sensitivity_frame, text='Infrastructure Sectors to Analyze:', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 4)
-    for i in range(len(self.sector_list)):
-      tk.Checkbutton(sensitivity_frame, text=self.sector_list[i], var=self.bool_list[i], font=("Arial", 10)).grid(row=2+i, sticky=tk.W, column = 4)
-      #print(self.orders, self.coeffs, self.k)
-    tk.Button(sensitivity_frame, text='Run Analysis', bg='#C7FCA0', command= lambda: runSensitivity(), font=("Arial", 14)).grid(row=18, column=3, sticky=tk.NSEW)
-    tk.Button(sensitivity_frame, text='Cancel', bg='#C0C0C0', command=sensitivity_frame.destroy, font=("Arial", 14)).grid(row=18, column=4, sticky=tk.NSEW)
-
 def main():
     LARGE_FONT= ("Verdana", 24)
 
@@ -394,7 +107,7 @@ def main():
             container.pack(side="top", fill="both", expand = True)
 
             container.grid_rowconfigure(20, weight=1)
-            container.grid_columnconfigure(7, weight=1,minsize="600")
+            #container.grid_columnconfigure(5, weight=1,minsize="600")
 
             self.frames = {}
 
@@ -573,8 +286,11 @@ def main():
                 self.leg = report_GUI.main()
 
             def runSensitivityGUI():
-                self.leg = sensitivity_GUI()
-
+              newPath = dirpath + "//dist//sensitivity_GUI//sensitivity_gui.exe"
+              copyfile(dirpath+"//infrastructures_inputs.txt", dirpath + "//dist//sensitivity_GUI//infrastructures_inputs.txt.exe")
+              command_prompt = "cmd /k " + newPath
+              os.system(command_prompt)
+              
             def calcEfficiency(oldVar, increaseVar):
               print(oldVar, increaseVar)
               try:
@@ -691,7 +407,7 @@ def main():
 ##            var5 = tk.StringVar()
 ##            N0 = tk.Entry(self, textvariable=var5)
 ##            N0.insert(0, n0)
-##            N0_ttp = CreateToolTip(N0, 'Enter the efficiency of each infrastructure, each followed by a space. Use the order defined at the bottom.')
+##            N0_ttp = CreateToolTip(N0, 'Enter the efficiency of each infrastructure, each followed by a space. Use the order defined fat the bottom.')
 ##            N0.grid(row=2, column = 3, sticky=tk.NSEW)
 
             tk.Label(self, text="Initial water sector efficiency (%): ", font=("Arial", 10)).grid(row=2, column = 0, sticky=tk.W)         
@@ -902,7 +618,7 @@ def main():
                                         "(6), waste management (7),  healthcare (8)", #healthcare (9), \nchemical (10), " \
                                         #"commercial facilities (11), manufacturing (12), dams (13), defense (14), and nuclear (15).", \
                                         font=("Arial Bold", 10), bg='#F9F8E5', borderwidth=2, relief="groove")
-            note.grid(row=20, column = 0, columnspan = 4, sticky=tk.NSEW)
+            note.grid(row=19, column = 0, columnspan = 6, sticky=tk.NSEW)
 
             #Buttons
 
@@ -911,11 +627,11 @@ def main():
 
             tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Save Scenario', bg='#FCB1A0', command= lambda: saveScenario(), font=("Arial", 14)).grid(row=18, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
+            #tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=17, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc', command= lambda: runLoaded()).grid(row=16, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Select Reports', font=("Arial", 14), bg='#efd566', command= lambda: runReports()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
-            #tk.Button(self, text='Sensitivity Analysis', font=("Arial", 14), bg='#61ccc7', command= lambda: runSensitivityGUI()).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Sensitivity Analysis', font=("Arial", 14), bg='#61ccc7', command= lambda: runSensitivityGUI()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
 
             #GUI Spacing
             for i in range(1,9):

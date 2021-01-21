@@ -146,6 +146,8 @@ def getInfrastructureList(location, pdf, width, height):
     patches, texts, autotexts = ax1.pie(tempresults["Number of Buildings"], labels=tempresults["Building Type"],
             autopct = autopct_format(tempresults["Number of Buildings"]), startangle=90, pctdistance=0.85, labeldistance=1.2)
     ax1.axis('equal')
+    plt.style.use('ggplot')
+    #p = ggplot(tempresults, aes(x='Number of Buildings', fill = 'Building Type'))+ geom_bar() + coord_polar(theta = "y")
     plt.savefig(location + "//PieChart.png", dpi=60, bbox_inches = "tight")
     pdf.image(location + "//PieChart.png")
     return pdf
