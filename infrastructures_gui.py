@@ -93,6 +93,7 @@ class CreateToolTip(object):
         self.tw= None
         if tw:
             tw.destroy()
+      
 
 def main():
     LARGE_FONT= ("Verdana", 24)
@@ -127,6 +128,11 @@ def main():
             frame = self.frames[cont]
             #frame.config(bg="#F7FCF6")
             frame.tkraise()
+        def appClose(self):
+            print('main app close')
+            self.destroy()
+            sys.exit()
+            self.quit()
             
     class StartPage(tk.Frame):
 
@@ -218,7 +224,7 @@ def main():
 
                 with open(dirpath + "//" + "report_inputs.txt", 'w') as outfile:
                         json.dump(data, outfile)
-                self.leg = infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
+                infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
                     print(self.leg)
 
@@ -286,9 +292,11 @@ def main():
                 self.leg = report_GUI.main()
 
             def runSensitivityGUI():
-              newPath = dirpath + "//dist//sensitivity_GUI//sensitivity_gui.exe"
-              copyfile(dirpath+"//infrastructures_inputs.txt", dirpath + "//dist//sensitivity_GUI//infrastructures_inputs.txt.exe")
+              newPath = dirpath + "//sensitivity_GUI.exe"
+              #copyfile(dirpath+"//infrastructures_inputs.txt", dirpath + "//dist//sensitivity_GUI//infrastructures_inputs.txt")
               command_prompt = "cmd /k " + newPath
+              command_prompt = "start /wait cmd /c " + newPath
+              print(command_prompt)
               os.system(command_prompt)
               
             def calcEfficiency(oldVar, increaseVar):
@@ -694,13 +702,17 @@ def main():
     global app
     app = TKinterWindow()
     app.title("Stochastic Infrastructure Remediation Model")
-    app.mainloop()
+    app.protocol("WM_DELETE_WINDOW", app.appClose)
+    done = False
+    while not done:
+      app.mainloop()
 
 if __name__ == '__main__':
 
     def refresh():
         app.destroy()
         leg = main()
+
     leg = main()
 
 

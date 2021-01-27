@@ -264,7 +264,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     
 
     #end program without returning anything
-    return leg
+    #return leg
 
 def getRecoveryTime(remediationFactor, n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, printProgress, contamination):
     t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, False, contamination, remediationFactor)

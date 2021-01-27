@@ -254,6 +254,12 @@ def main():
             frame = self.frames[cont]
             #frame.config(bg="#F7FCF6")
             frame.tkraise()
+
+        def appClose(self):
+            print('main app close')
+            self.destroy()
+            sys.exit()
+            self.quit()
             
     class StartPage(tk.Frame):
 
@@ -480,11 +486,14 @@ def main():
             #print(self.orders, self.coeffs, self.k)
             tk.Button(self, text='Run Analysis', bg='#C7FCA0', command= lambda: run(), font=("Arial", 14)).grid(row=18, column=3, sticky=tk.NSEW)
             tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=4, sticky=tk.NSEW)
-
+        
     global app
     app = TKinterWindow()
     app.title("Report")
+    #app.protocol("WM_DELETE_WINDOW", app.appClose)
     app.mainloop()
+    
+
 
 if __name__ == '__main__':
 

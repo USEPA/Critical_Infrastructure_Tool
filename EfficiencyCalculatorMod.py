@@ -115,9 +115,6 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
     latname = getLatName(infrastructures)
     longname = getLongName(infrastructures)
     (name1, name2) = getColumns(infrastructures)
-    if os.path.isdir(path_parent + "//Contaminated"):
-        shutil.rmtree(path_parent + "//Contaminated")
-    os.mkdir(path_parent + "//Contaminated")
     newPath = GUIPath + "//Contaminated//" + iname + "_contaminated.csv"
     GISPath = path_parent + "//Contaminated//" + iname + "_contaminated.csv"
     if other:
@@ -131,14 +128,14 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
             arcpy.AddMessage(row)
             results = results.append({"Building Name": row[0]}, ignore_index=True)
         #rcpy.AddMessage(results)
-            results.to_csv(GISPath)
-            results.to_csv(newPath)
+        results.to_csv(GISPath)
+        results.to_csv(newPath)
     else: 
         results = pd.DataFrame({"Building Name":[], name1:[], name2:[]})
         if arcpy.management.GetCount(outPolygons)[0] == "0":
-            newPath = GUIPath + "//Contaminated//" + iname + "_contaminated.csv"
+            #newPath = GUIPath + "//Contaminated//" + iname + "_contaminated.csv"
             results.to_csv(newPath)
-            return
+            results.to_csv(GISPath)
         fdList = [infrastructureName, latname, longname]
         for row in arcpy.da.SearchCursor(outPolygons, [infrastructureName, latname, longname]):
             #arcpy.AddMessage(row)
@@ -288,6 +285,12 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
 
     #HIFLD counts
     #getHIFLDlayers(OutputPath)
+    if os.path.isdir(path_parent + "//Contaminated"):
+        shutil.rmtree(path_parent + "//Contaminated")
+    if os.path.isdir(GUI_Tool_Location + "//Contaminated"):
+        shutil.rmtree(GUI_Tool_Location + "//Contaminated")
+    os.mkdir(path_parent + "//Contaminated")
+    os.mkdir(GUI_Tool_Location + "//Contaminated")
     
     (waste) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath),2)
     (waste_contaminated) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True),2)
@@ -394,6 +397,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         shutil.rmtree(path_parent + "\\Sensitivity Images")
 
     destination = shutil.copytree(SensitivityFolder, path_parent + "\\Sensitivity Images")
+
+    sensitivityExe = GUI_Tool_Location + "\\sensitivity_GUI.exe"
+    copyfile(sensitivityExe, path_parent + "\\sensitivity_GUI.exe")
     
     n0new = [water_percent, energy_percent, transport_percent, comm_percent, government_percent,
              agriculture_percent, emergency_percent, waste, healthcare_percent]
@@ -409,8 +415,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         json.dump(data, outfile)
     with open(path_parent + "\\" + "infrastructures_inputs.txt", "w") as outfile:
         json.dump(data, outfile)
-    #fillOut(GUI_Tool_Location + "\\DefineScenario.xlsx", Contaminated_Dataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location)
+    fillOut(GUI_Tool_Location + "\\DefineScenario.xlsx", Contaminated_Dataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location)
     newPath = wrapArg(GUI_Tool_Location +  "\\infrastructures_gui.exe")
+    os.chdir(GUI_Tool_Location)
     command_prompt = "cmd /k " + newPath
     os.system(command_prompt)
     
@@ -532,7 +539,7 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     df2 = pd.DataFrame(dicts)
     new_loc = GUI_Tool_Location + "\\NewDefineScenario.json"
     #arcpy.AddMessage(df2)
-    #spreadsheet.reset_index(inplace=True)
+    spreadsheet.reset_index(inplace=True)
     df2.to_json(new_loc, orient="table")
             
 if __name__ == '__main__':
