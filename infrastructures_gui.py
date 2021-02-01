@@ -295,6 +295,10 @@ def main():
               newPath = dirpath + "//sensitivity_GUI.exe"
               #copyfile(dirpath+"//infrastructures_inputs.txt", dirpath + "//dist//sensitivity_GUI//infrastructures_inputs.txt")
               command_prompt = "cmd /k " + newPath
+              if len(str(newPath).split(' ')) <= 1:
+                  newPath = newPath
+              else:
+                newPath = (f"\"{newPath}\"")
               command_prompt = "start /wait cmd /c " + newPath
               print(command_prompt)
               os.system(command_prompt)

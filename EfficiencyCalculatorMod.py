@@ -106,7 +106,7 @@ def getColumns(infrastructures):
     
 
 def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, OutputPath, GUIPath, other = False):
-    
+    arcpy.AddMessage("Made it to the affected")
     path_parent = os.path.dirname(arcpy.env.workspace)
     outPolygons = OutputPath + "\\contaminated_" + iname +".shp"
     arcpy.Intersect_analysis(in_features=[infrastructures, contaminated_shapefile],
@@ -270,12 +270,10 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         return ((1-results/results2)*100)
 
 def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "contaminated", Infrastructure_Dataset="HoustonBlocks",
-                         OutputPath = "C:/Documents", GUI_Tool_Location = "C:/Documents"):  # EfficiencyCalculator
-
+                         OutputPath = "C://Documents", GUI_Tool_Location = "C://Documents"):  # EfficiencyCalculator
     # To allow overwriting outputs change overwriteOutput option to True.
     arcpy.env.overwriteOutput = True
     path_parent = os.path.dirname(arcpy.env.workspace)
-    
     # Process: Infrastructure Counts (Summary Statistics)
     filepath = os.getcwd()
     # Process: Intersect (Intersect) 
@@ -545,11 +543,13 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
 if __name__ == '__main__':
     # Global Environment settings
     with arcpy.EnvManager(scratchWorkspace=arcpy.env.workspace, workspace=arcpy.env.workspace):
-            argsFixed = argv[1:]
-            for a in range(len(argsFixed)):
-                if a > 1:
-                        argsFixed[a] = wrapArg(argsFixed[a])
+        arcpy.AddMessage("Entering script")
+        argsFixed = argv[1:]
+        for a in range(len(argsFixed)):
+            if a > 1:
+                argsFixed[a] = wrapArg(argsFixed[a])
                         
-            #EfficiencyCalculator(*(argsFixed))
-            EfficiencyCalculator(*argv[1:])
+        #EfficiencyCalculator(*(argsFixed))
+        arcpy.AddMessage("Entering script")
+        EfficiencyCalculator(*argv[1:])
 

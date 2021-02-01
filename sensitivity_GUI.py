@@ -485,7 +485,7 @@ def main():
               tk.Checkbutton(self, text=sector_list[i], var=bool_list[i], font=("Arial", 10)).grid(row=2+i, sticky=tk.W, column = 4)
             #print(self.orders, self.coeffs, self.k)
             tk.Button(self, text='Run Analysis', bg='#C7FCA0', command= lambda: run(), font=("Arial", 14)).grid(row=18, column=3, sticky=tk.NSEW)
-            tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=4, sticky=tk.NSEW)
+            #tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=4, sticky=tk.NSEW)
         
     global app
     app = TKinterWindow()
