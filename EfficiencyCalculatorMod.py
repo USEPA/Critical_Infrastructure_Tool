@@ -106,7 +106,7 @@ def getColumns(infrastructures):
     
 
 def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, OutputPath, GUIPath, other = False):
-    arcpy.AddMessage("Made it to the affected")
+    #arcpy.AddMessage("Made it to the affected")
     path_parent = os.path.dirname(arcpy.env.workspace)
     outPolygons = OutputPath + "\\contaminated_" + iname +".shp"
     arcpy.Intersect_analysis(in_features=[infrastructures, contaminated_shapefile],
@@ -125,7 +125,7 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
             return
         fdList = [infrastructureName]
         for row in arcpy.da.SearchCursor(outPolygons, [infrastructureName]):
-            arcpy.AddMessage(row)
+            #arcpy.AddMessage(row)
             results = results.append({"Building Name": row[0]}, ignore_index=True)
         #rcpy.AddMessage(results)
         results.to_csv(GISPath)
@@ -401,10 +401,10 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     
     n0new = [water_percent, energy_percent, transport_percent, comm_percent, government_percent,
              agriculture_percent, emergency_percent, waste, healthcare_percent]
-    arcpy.AddMessage(n0new)
+    #arcpy.AddMessage(n0new)
     contamnew = [water_percent_contaminated, energy_percent_contaminated, transport_percent_contaminated, comm_contaminated, gov_contaminated,
              agriculture_percent_contaminated, emergency_percent_contaminated, waste_contaminated, healthcare_percent_contaminated]
-    arcpy.AddMessage(contamnew)
+    #arcpy.AddMessage(contamnew)
     data["n0"] = n0new
     data["contamination"] = contamnew
     inputsPath = os.path.join(GUI_Tool_Location, "infrastructures_inputs.txt")
@@ -467,7 +467,7 @@ def getArea(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buffer, Ou
             results = row[0]
             count +=1
         area_contaminated = results
-        arcpy.AddMessage(name+ " " + str(area_contaminated))
+        #arcpy.AddMessage(name+ " " + str(area_contaminated))
         return area_contaminated
 
 def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location):
@@ -543,13 +543,13 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
 if __name__ == '__main__':
     # Global Environment settings
     with arcpy.EnvManager(scratchWorkspace=arcpy.env.workspace, workspace=arcpy.env.workspace):
-        arcpy.AddMessage("Entering script")
+        #arcpy.AddMessage("Entering script")
         argsFixed = argv[1:]
         for a in range(len(argsFixed)):
             if a > 1:
                 argsFixed[a] = wrapArg(argsFixed[a])
                         
         #EfficiencyCalculator(*(argsFixed))
-        arcpy.AddMessage("Entering script")
+        #arcpy.AddMessage("Entering script")
         EfficiencyCalculator(*argv[1:])
 
