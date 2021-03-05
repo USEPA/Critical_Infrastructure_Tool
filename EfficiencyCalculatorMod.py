@@ -359,7 +359,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
 
     # Process: Calculate Government Percent (Calculate Value) 
     government_percent = round(gov, 2)
-    government_percent_contaminated = 100-round(gov_contaminated, 2)
+    government_percent_contaminated = round(100-round(gov_contaminated, 2), 2)
 
     # Process: Calculate Emergency Percent (Calculate Value) 
     emergency_percent = round((fire + ems)/2, 2)
@@ -521,7 +521,7 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     industrial_area = industrial + industrial2
     government_area = government
     dicts = {
-        "validPhases":["Indoor", "Indoor", "Indoor", "Indoor", "Indoor", "Indoor"],
+        "validPhases":[["Indoor"], ["Indoor"], ["Indoor"], ["Indoor"], ["Indoor"], ["Indoor"]],
         "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural"],
         "name": ["Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area",
                  "Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area"],
@@ -539,6 +539,10 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     #arcpy.AddMessage(df2)
     spreadsheet.reset_index(inplace=True)
     df2.to_json(new_loc, orient="table")
+    #fixed_json = json.loads(new_loc)
+    #new_json = fixed_json["data"]
+    #arcpy.AddMessage(new_json)
+    #new_json.to_json(new_loc, orient="table")
             
 if __name__ == '__main__':
     # Global Environment settings
@@ -552,4 +556,5 @@ if __name__ == '__main__':
         #EfficiencyCalculator(*(argsFixed))
         #arcpy.AddMessage("Entering script")
         EfficiencyCalculator(*argv[1:])
+
 

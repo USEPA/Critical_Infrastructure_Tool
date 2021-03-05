@@ -117,8 +117,9 @@ def main():
             self.frames[StartPage] = frame
 
             frame.grid(row=1, column=1, sticky="nsew")
-
+            frame.configure(bg='#f3f2f1')
             #self.geometry("1200x750")
+            
             
 
             self.show_frame(StartPage)
@@ -142,7 +143,6 @@ def main():
             #dir_path = os.path.dirname(os.path.realpath(__file__))
             dir_path = os.path.dirname(abspath(getsourcefile(lambda:0)))
             dirpath = os.getcwd()
-
             self.orders, self.coeffs, self.k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
             #print(self.orders, self.coeffs, self.k)
 
@@ -367,7 +367,7 @@ def main():
                 var1 = tk.IntVar(value=int(bool(printProgress)))
             else:
                 var1 = tk.IntVar()
-            tk.Checkbutton(self, text="Print Progress", variable=var1, font=("Arial", 10)).grid(row=15, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, bg='#f3f2f1',text="Print Progress", variable=var1, font=("Arial", 10)).grid(row=15, sticky=tk.W, column = 0)
 
             if averaging == "true" or averaging == "True" or averaging == "1":
                 var2 = tk.IntVar(value=int(bool(averaging)))
@@ -379,7 +379,7 @@ def main():
                 var3 = tk.IntVar(value=int(bool(contaminatedListAvailable)))
             else:
                 var3 = tk.IntVar()
-            tk.Checkbutton(self, text="Contaminated Infrastructure List Available", variable=var3, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, bg='#f3f2f1',text="Contaminated Infrastructure List Available", variable=var3, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 0)
 
             #var3 = tk.IntVar(value=int(bool(confIntervals)))
 ##            if averaging == "true" or averaging == "True" or averaging == "1":
@@ -422,7 +422,7 @@ def main():
 ##            N0_ttp = CreateToolTip(N0, 'Enter the efficiency of each infrastructure, each followed by a space. Use the order defined fat the bottom.')
 ##            N0.grid(row=2, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Initial water sector efficiency (%): ", font=("Arial", 10)).grid(row=2, column = 0, sticky=tk.W)         
+            tk.Label(self, text="Initial water sector efficiency (%): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=2, column = 0, sticky=tk.W)         
             waterVar = tk.StringVar()
             water = tk.Entry(self, textvariable=waterVar)
             water.insert(0, n0[0])
@@ -430,7 +430,7 @@ def main():
             water.grid(row=2, column = 1, sticky=tk.NSEW)
             tk.Button(self, text="...", command= lambda: openHelper('water')).grid(row=2, column=1, sticky=tk.E)
 
-            tk.Label(self, text="Initial energy sector efficiency (%): ", font=("Arial", 10)).grid(row=3, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial energy sector efficiency (%): ", bg='#f3f2f1',  font=("Arial", 10)).grid(row=3, column = 0, sticky=tk.W)
             energyVar = tk.StringVar()
             energy = tk.Entry(self, textvariable=energyVar)
             energy.insert(0, n0[1])
@@ -438,7 +438,7 @@ def main():
             energy.grid(row=3, column = 1, sticky=tk.NSEW)
             tk.Button(self, text="...", command= lambda: openHelper('energy')).grid(row=3, column=1, sticky=tk.E)
 
-            tk.Label(self, text="Initial transportation sector efficiency (%): ", font=("Arial", 10)).grid(row=4, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial transportation sector efficiency (%): ",bg='#f3f2f1', font=("Arial", 10)).grid(row=4, column = 0, sticky=tk.W)
             transportVar = tk.StringVar()
             transport = tk.Entry(self, textvariable=transportVar)
             transport.insert(0, n0[2])
@@ -446,7 +446,7 @@ def main():
             transport.grid(row=4, column = 1, sticky=tk.NSEW)
             tk.Button(self, text="...", command= lambda: openHelper('transport')).grid(row=4, column=1, sticky=tk.E)
 
-            tk.Label(self, text="Initial communications sector efficiency (%): ", font=("Arial", 10)).grid(row=5, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial communications sector efficiency (%): ",bg='#f3f2f1', font=("Arial", 10)).grid(row=5, column = 0, sticky=tk.W)
             communicationsVar = tk.StringVar()
             communications = tk.Entry(self, textvariable=communicationsVar)
             communications.insert(0, n0[3])
@@ -454,7 +454,7 @@ def main():
             communications.grid(row=5, column = 1, sticky=tk.NSEW)
             tk.Button(self, text="...", command= lambda: openHelper('communications')).grid(row=5, column=1, sticky=tk.E)
 
-            tk.Label(self, text="Initial government sector efficiency (%): ", font=("Arial", 10)).grid(row=6, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial government sector efficiency (%): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=6, column = 0, sticky=tk.W)
             governmentVar = tk.StringVar()
             government = tk.Entry(self, textvariable=governmentVar)
             government.insert(0, n0[4])
@@ -462,7 +462,7 @@ def main():
             government.grid(row=6, column = 1, sticky=tk.NSEW)
             tk.Button(self, text="...", command= lambda: openHelper('government')).grid(row=6, column=1, sticky=tk.E)
 
-            tk.Label(self, text="Initial food and agriculture sector efficiency (%): ", font=("Arial", 10)).grid(row=7, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial food and agriculture sector efficiency (%): ",bg='#f3f2f1', font=("Arial", 10)).grid(row=7, column = 0, sticky=tk.W)
             agricultureVar = tk.StringVar()
             agriculture = tk.Entry(self, textvariable=agricultureVar)
             agriculture.insert(0, n0[5])
@@ -471,7 +471,7 @@ def main():
             tk.Button(self, text="...", command= lambda: openHelper('agriculture')).grid(row=7, column=1, sticky=tk.E)
 
 
-            tk.Label(self, text="Initial emergency services sector efficiency (%): ", font=("Arial", 10)).grid(row=8, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial emergency services sector efficiency (%): ",bg='#f3f2f1', font=("Arial", 10)).grid(row=8, column = 0, sticky=tk.W)
             emerServVar = tk.StringVar()
             emerServ = tk.Entry(self, textvariable=emerServVar)
             emerServ.insert(0, n0[6])
@@ -480,7 +480,7 @@ def main():
             tk.Button(self, text="...", command= lambda: openHelper('emerServ')).grid(row=8, column=1, sticky=tk.E)
 
 
-            tk.Label(self, text="Initial waste management sector efficiency (%): ", font=("Arial", 10)).grid(row=9, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial waste management sector efficiency (%): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=9, column = 0, sticky=tk.W)
             wasteVar = tk.StringVar()
             waste = tk.Entry(self, textvariable=wasteVar)
             waste.insert(0, n0[7])
@@ -489,7 +489,7 @@ def main():
             tk.Button(self, text="...", command= lambda: openHelper('waste')).grid(row=9, column=1, sticky=tk.E)
 
 
-            tk.Label(self, text="Initial healthcare sector efficiency (%): ", font=("Arial", 10)).grid(row=10, column = 0, sticky=tk.W)
+            tk.Label(self, text="Initial healthcare sector efficiency (%): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=10, column = 0, sticky=tk.W)
             healthcareVar = tk.StringVar()
             healthcare = tk.Entry(self, textvariable=healthcareVar)
             healthcare.insert(0, n0[8])
@@ -497,7 +497,7 @@ def main():
             healthcare.grid(row=10, column = 1, sticky=tk.NSEW)
             tk.Button(self, text="...", command= lambda: openHelper('healthcare')).grid(row=10, column=1, sticky=tk.E)
 
-            tk.Label(self, text="Initial contaminated infrastructure (%): ", font=("Arial", 10)).grid(row=13, column = 0, sticky=tk.W)
+            tk.Label(self, bg='#f3f2f1',text="Initial contaminated infrastructure (%): ", font=("Arial", 10)).grid(row=13, column = 0, sticky=tk.W)
             var19 = tk.StringVar()
             C0 = tk.Entry(self, textvariable=var19)
             C0.insert(0, contaminated)
@@ -511,56 +511,56 @@ def main():
 ##            P0.insert(0, p0)
 ##            P0.grid(row=12, column = 1, sticky=tk.NSEW)
 
-            tk.Label(self, text="Repair Factors: ", font=("Arial", 10)).grid(row=1, column = 0, sticky=tk.W)
+            tk.Label(self, text="Repair Factors: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=1, column = 0, sticky=tk.W)
             var7 = tk.StringVar()
             Repair_factors = tk.Entry(self, textvariable=var7)
             Repair_factors_ttp = CreateToolTip(Repair_factors, 'Enter the repair factor of each infrastructure, each followed by a space. Use the order defined at the bottom. ')
             Repair_factors.insert(0, repair_factors)
             Repair_factors.grid(row=1, column = 1, sticky=tk.NSEW)
 
-            tk.Label(self, text="Remediation Factor (%/day): ", font=("Arial", 10)).grid(row=12, column = 0, sticky=tk.W)
+            tk.Label(self, text="Remediation Factor (%/day): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=12, column = 0, sticky=tk.W)
             var18 = tk.StringVar()
             Remediation_factor = tk.Entry(self, textvariable=var18)
             Remediation_factor_ttp = CreateToolTip(Remediation_factor, 'Enter the % decontaminated per day of each infrastructure, each followed by a space. Use the order defined at the bottom')
             Remediation_factor.insert(0, remediationFactor)
             Remediation_factor.grid(row=12, column = 1, sticky=tk.NSEW)
 
-            tk.Label(self, text="Amounts of additional infrastructure outages \n(if applicable, %): ", font=("Arial", 10)).grid(row=12, column = 2, sticky=tk.W)
+            tk.Label(self, text="Amounts of additional infrastructure outages \n(if applicable, %): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=12, column = 2, sticky=tk.W)
             var8 = tk.StringVar()
             NLoss = tk.Entry(self, textvariable=var8)
             NLoss_ttp = CreateToolTip(NLoss, 'Enter additional percent outages')
             NLoss.insert(0, nLoss)
             NLoss.grid(row=12, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Time of additional infrastructure outages \n(if applicable, days): ", font=("Arial", 10)).grid(row=13, column = 2, sticky=tk.W)
+            tk.Label(self, text="Time of additional infrastructure outages \n(if applicable, days): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=13, column = 2, sticky=tk.W)
             var9 = tk.StringVar()
             TLoss = tk.Entry(self, textvariable=var9)
             TLoss_ttp = CreateToolTip(TLoss, 'Enter additional time outage')
             TLoss.insert(0, tLoss)
             TLoss.grid(row=13, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Days of Remediation: ", font=("Arial", 10)).grid(row=11, column = 0, sticky=tk.W)
+            tk.Label(self, text="Days of Remediation: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=11, column = 0, sticky=tk.W)
             var9 = tk.StringVar()
             TLoss = tk.Entry(self, textvariable=var9)
             TLoss_ttp = CreateToolTip(TLoss, 'Enter additional time outage')
             TLoss.insert(0, tLoss)
             TLoss.grid(row=11, column = 1, sticky=tk.NSEW)
 
-            tk.Label(self, text="Number of stochastic runs:", font=("Arial", 10)).grid(row=2, column = 2, sticky=tk.W)
+            tk.Label(self, text="Number of stochastic runs:", bg='#f3f2f1',font=("Arial", 10)).grid(row=2, column = 2, sticky=tk.W)
             var10 = tk.StringVar()
             NRun = tk.Entry(self, textvariable=var10)
             NRun_ttp = CreateToolTip(NRun, 'Enter the number of runs')
             NRun.insert(0, nRun)
             NRun.grid(row=2, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Simulation Length (days): ", font=("Arial", 10)).grid(row=3, column = 2, sticky=tk.W)
+            tk.Label(self, text="Simulation Length (days): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=3, column = 2, sticky=tk.W)
             var12 = tk.StringVar()
             TimeSpan = tk.Entry(self, textvariable=var12)
             TimeSpan_ttp = CreateToolTip(TimeSpan, 'Enter the total time of the simulation')
             TimeSpan.insert(0, timeSpan)
             TimeSpan.grid(row=3, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Parameters to be collected (min, max, average, \nrecover_time(write rt in entry box), final_val): ",
+            tk.Label(self, text="Parameters to be collected (min, max, average, \nrecover_time(write rt in entry box), final_val): ",bg='#f3f2f1',
                      font=("Arial", 10)).grid(row=4, column = 2, sticky=tk.W)
             var13 = tk.StringVar()
             ParamTypes = tk.Entry(self, textvariable=var13)
@@ -568,55 +568,55 @@ def main():
             ParamTypes.insert(0, paramTypes)
             ParamTypes.grid(row=4, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Infrastructure indexes of collected parameters: ", font=("Arial", 10)).grid(row=5, column = 2, sticky=tk.W)
+            tk.Label(self, text="Infrastructure indexes of collected parameters: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=5, column = 2, sticky=tk.W)
             var14 = tk.StringVar()
             ParamIndexes = tk.Entry(self, textvariable=var14)
             ParamIndexes_ttp = CreateToolTip(ParamIndexes, 'Enter the indexes of the infrastructures you wish to see the above summary statistics for, each followed by a space')
             ParamIndexes.insert(0, paramIndexes)
             ParamIndexes.grid(row=5, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Infrastructure Stoichiometric Factor: ", font=("Arial", 10)).grid(row=6, column = 2, sticky=tk.W)
+            tk.Label(self, text="Infrastructure Stoichiometric Factor: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=6, column = 2, sticky=tk.W)
             var15 = tk.StringVar()
             InfStoichFactor = tk.Entry(self, textvariable=var15)
             InfStoichFactor_ttp = CreateToolTip(InfStoichFactor, 'Enter the overall Infrastructure Stoichiometric Factor ')
             InfStoichFactor.insert(0, infStoichFactor)
             InfStoichFactor.grid(row=6, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Seed: ", font=("Arial", 10)).grid(row=7, column = 2, sticky=tk.W)
+            tk.Label(self, text="Seed: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=7, column = 2, sticky=tk.W)
             var16 = tk.StringVar()
             SeedValue = tk.Entry(self, textvariable=var16)
             SeedValue.insert(0, seedValue)
             SeedValue.grid(row=7, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Results Chart Name: ", font=("Arial", 10)).grid(row=1, column = 2, sticky=tk.W)
+            tk.Label(self, text="Results Chart Name: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=1, column = 2, sticky=tk.W)
             var17 = tk.StringVar()
             ChartName = tk.Entry(self, textvariable=var17)
             ChartName_ttp = CreateToolTip(ChartName, 'Enter the name of the scenario (no spaces)')
             ChartName.insert(0, name)
             ChartName.grid(row=1, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Backup infrastructure indexes of parameters: ", font=("Arial", 10)).grid(row=8, column = 2, sticky=tk.W)
+            tk.Label(self, text="Backup infrastructure indexes of parameters: ",bg='#f3f2f1', font=("Arial", 10)).grid(row=8, column = 2, sticky=tk.W)
             var21 = tk.StringVar()
             Backup = tk.Entry(self, textvariable=var21)
             Backup_ttp = CreateToolTip(Backup, 'Enter the index of any backup infrastructures, each followed by a space. Keep the same order between the backup inputs. You will need to have individual entries for each dependant infrastructure, even if the same infrastructure is a backup')
             Backup.insert(0, backups)
             Backup.grid(row=8, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Backup infrastructure efficiency (%): ", font=("Arial", 10)).grid(row=9, column = 2, sticky=tk.W)
+            tk.Label(self, text="Backup infrastructure efficiency (%): ", bg='#f3f2f1',font=("Arial", 10)).grid(row=9, column = 2, sticky=tk.W)
             var22 = tk.StringVar()
             BackupPercent = tk.Entry(self, textvariable=var22)
             BackupPercent_ttp = CreateToolTip(BackupPercent, 'Enter the percent efficiency of any backup infrastructures, each followed by a space. Keep the same order between the backup inputs. You will need to have individual entries for each dependant infrastructure, even if the same infrastructure is a backup')
             BackupPercent.insert(0, backupPercent)
             BackupPercent.grid(row=9, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Days backup is available: ", font=("Arial", 10)).grid(row=10, column = 2, sticky=tk.W)
+            tk.Label(self, text="Days backup is available: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=10, column = 2, sticky=tk.W)
             var23 = tk.StringVar()
             BackupDays = tk.Entry(self, textvariable=var23)
             BackupDays_ttp = CreateToolTip(BackupDays, 'Enter the number of days the backup is available for each dependant infrastructure, each followed by a space. Keep the same order between the backup inputs. You will need to have individual entries for each dependant infrastructure, even if the same infrastructure is a backup')
             BackupDays.insert(0, daysBackup)
             BackupDays.grid(row=10, column = 3, sticky=tk.NSEW)
 
-            tk.Label(self, text="Dependant infrastructure indexes of parameters: ", font=("Arial", 10)).grid(row=11, column = 2, sticky=tk.W)
+            tk.Label(self, text="Dependant infrastructure indexes of parameters: ", bg='#f3f2f1',font=("Arial", 10)).grid(row=11, column = 2, sticky=tk.W)
             var24 = tk.StringVar()
             DepBackup = tk.Entry(self, textvariable=var24)
             DepBackup_ttp = CreateToolTip(DepBackup, 'Enter the indexes of the infrastructures dependant on the above backups. Keep the same order between the backup inputs')
@@ -624,7 +624,7 @@ def main():
             DepBackup.grid(row=11, column = 3, sticky=tk.NSEW)
             
             #Index Note
-            note = tk.Label(self, text="Infrastructure indexes (used in initial infrastructure sector efficiencies, repair factors, " \
+            note = tk.Label(self,text="Infrastructure indexes (used in initial infrastructure sector efficiencies, repair factors, " \
                                         "and infrastructure indexes of parameters) are water (0), energy (1), transport services (2), " \
                                         "\ncommunications services (3), government facilities (4), food and agriculture (5), emergency services " \
                                         "(6), waste management (7),  healthcare (8)", #healthcare (9), \nchemical (10), " \
@@ -635,15 +635,20 @@ def main():
             #Buttons
 
 
-            tk.Checkbutton(self, text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 0)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Reduce Parent Efficiency', var=var25, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 0)
 
-            tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False), font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Save Scenario', bg='#FCB1A0', command= lambda: saveScenario(), font=("Arial", 14)).grid(row=18, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Run GUI Scenario',bg='#C7FCA0',command= lambda: run(False),
+                      font=("Arial", 14)).grid(row=15, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Save Scenario', bg='#FCB1A0', command= lambda: saveScenario(),
+                      font=("Arial", 14)).grid(row=18, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC', command= lambda: loadCoeff()).grid(row=17, column=2, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc', command= lambda: runLoaded()).grid(row=16, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='#A0D4FC',
+                      command= lambda: loadCoeff()).grid(row=17, column=2, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Load Scenario', font=("Arial", 14), bg='#bcbddc',
+                      command= lambda: runLoaded()).grid(row=16, column=2, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Select Reports', font=("Arial", 14), bg='#efd566', command= lambda: runReports()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Sensitivity Analysis', font=("Arial", 14), bg='#61ccc7', command= lambda: runSensitivityGUI()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Sensitivity Analysis', font=("Arial", 14),
+                      bg='#61ccc7', command= lambda: runSensitivityGUI()).grid(row=18, column=0, sticky=tk.NSEW, columnspan=2)
 
             #GUI Spacing
             for i in range(1,9):
@@ -670,33 +675,36 @@ def main():
             healthcare_bool = tk.IntVar()
             healthcare_graph_bool = tk.IntVar()
 
-            tk.Label(self, text='Report Value Selection', font=("Arial", 12)).grid(row=0, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Water Sensitivity', var=water_bool, font=("Arial", 10)).grid(row=1, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Water Recovery Histogram', var=water_graph_bool, font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 5)
+            tk.Label(self, bg='#f3f2f1',text='Report Value Selection', borderwidth=2,relief="groove",
+                     font=("Arial", 12)).grid(row=0, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Water Sensitivity', var=water_bool,
+                           font=("Arial", 10)).grid(row=1, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Water Recovery Histogram', var=water_graph_bool,
+                           font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Energy Sensitivity', var=energy_bool, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Energy Recovery Histogram', var=energy_graph_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Energy Sensitivity', var=energy_bool, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Energy Recovery Histogram', var=energy_graph_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Transportation Sensitivity', var=transportation_bool, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Transportation Recovery Histogram', var=transportation_graph_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Transportation Sensitivity', var=transportation_bool, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Transportation Recovery Histogram', var=transportation_graph_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Communications Sensitivity', var=comm_bool, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Communications Recovery Histogram', var=comm_graph_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Communications Sensitivity', var=comm_bool, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Communications Recovery Histogram', var=comm_graph_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Government Sensitivity', var=gov_bool, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Government Recovery Histogram', var=gov_graph_bool, font=("Arial", 10)).grid(row=10, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Government Sensitivity', var=gov_bool, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Government Recovery Histogram', var=gov_graph_bool, font=("Arial", 10)).grid(row=10, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Food/Agriculture Sensitivity', var=fa_bool, font=("Arial", 10)).grid(row=11, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Food/Agriculture Recovery Histogram', var=fa_graph_bool, font=("Arial", 10)).grid(row=12, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Food/Agriculture Sensitivity', var=fa_bool, font=("Arial", 10)).grid(row=11, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Food/Agriculture Recovery Histogram', var=fa_graph_bool, font=("Arial", 10)).grid(row=12, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Emergency Services Sensitivity', var=emer_bool, font=("Arial", 10)).grid(row=13, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Emergency Services Recovery Histogram', var=emer_graph_bool, font=("Arial", 10)).grid(row=14, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Emergency Services Sensitivity', var=emer_bool, font=("Arial", 10)).grid(row=13, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Emergency Services Recovery Histogram', var=emer_graph_bool, font=("Arial", 10)).grid(row=14, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Waste Management Sensitivity', var=waste_bool, font=("Arial", 10)).grid(row=15, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Waste Management Recovery Histogram', var=waste_graph_bool, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Waste Management Sensitivity', var=waste_bool, font=("Arial", 10)).grid(row=15, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Waste Management Recovery Histogram', var=waste_graph_bool, font=("Arial", 10)).grid(row=16, sticky=tk.W, column = 5)
 
-            tk.Checkbutton(self, text='Show Healthcare Sensitivity', var=healthcare_bool, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 5)
-            tk.Checkbutton(self, text='Show Healthcare Recovery Histogram', var=healthcare_graph_bool, font=("Arial", 10)).grid(row=18, sticky=tk.W, column = 5)            
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Healthcare Sensitivity', var=healthcare_bool, font=("Arial", 10)).grid(row=17, sticky=tk.W, column = 5)
+            tk.Checkbutton(self, bg='#f3f2f1',text='Show Healthcare Recovery Histogram', var=healthcare_graph_bool, font=("Arial", 10)).grid(row=18, sticky=tk.W, column = 5)            
             #print(self.orders, self.coeffs, self.k)
 
             #tk.Button(self, text='Save Report Values', bg='#FCB1A0', command= lambda: saveValues(), font=("Arial", 14)).grid(row=18, column=5, sticky=tk.NSEW)
@@ -706,6 +714,7 @@ def main():
     global app
     app = TKinterWindow()
     app.title("Stochastic Infrastructure Remediation Model")
+    app.configure(background = '#f3f2f1')
     app.protocol("WM_DELETE_WINDOW", app.appClose)
     done = False
     while not done:
