@@ -10,7 +10,9 @@ import subprocess
 from shutil import copyfile
 
 
-def importDataset(Input_Path, Temporary_Output_Path):
+def importDataset(Temporary_Output_Path):
+    desc = arcpy.Describe("SIRM 2_2.tbx")
+    Input_Path = desc.path + "\\Input Shapefiles"
     #download_url(r"https://landscape1.arcgis.com/arcgis/rest/services/USA_Roads/MapServer", "USA_Roads")
     createLayerFromShapefile(Input_Path+ "\\tl_2016_us_primaryroads.shp", "USA_Roads", Temporary_Output_Path)
     createLayerFromShapefile(Input_Path+ "\\farms.shp", "USA_Farms", Temporary_Output_Path)

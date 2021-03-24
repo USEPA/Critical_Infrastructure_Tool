@@ -105,7 +105,7 @@ def getColumns(infrastructures):
     return ("Latitude", "Longitude")
     
 
-def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, OutputPath, GUIPath, other = False):
+def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, OutputPath, GUIPath, addition, other = False):
     #arcpy.AddMessage("Made it to the affected")
     path_parent = os.path.dirname(arcpy.env.workspace)
     outPolygons = OutputPath + "\\contaminated_" + iname +".shp"
@@ -115,8 +115,8 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
     latname = getLatName(infrastructures)
     longname = getLongName(infrastructures)
     (name1, name2) = getColumns(infrastructures)
-    newPath = GUIPath + "//Contaminated//" + iname + "_contaminated.csv"
-    GISPath = path_parent + "//Contaminated//" + iname + "_contaminated.csv"
+    newPath = GUIPath + "//"  + addition + "//"  + iname + "_contaminated.csv"
+    GISPath = path_parent +"//"  + addition + "//"  + iname + "_contaminated.csv"
     if other:
         results = pd.DataFrame({"Building Name":[]})
         if arcpy.management.GetCount(outPolygons)[0] == "0":
@@ -273,6 +273,10 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
                          OutputPath = "C://Documents", GUI_Tool_Location = "C://Documents"):  # EfficiencyCalculator
     # To allow overwriting outputs change overwriteOutput option to True.
     arcpy.env.overwriteOutput = True
+    desc = arcpy.Describe("SIRM Tool.tbx")
+    GUI_Tool_Location = desc.path + "\\infrastructures_gui"
+    OutputPath = desc.path + "\\temp_output"
+    arcpy.AddMessage("Path:      " + desc.path)
     path_parent = os.path.dirname(arcpy.env.workspace)
     # Process: Infrastructure Counts (Summary Statistics)
     filepath = os.getcwd()
@@ -282,92 +286,182 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
                              out_feature_class=Affected_Area, join_attributes="ALL", cluster_tolerance="", output_type="INPUT")
 
     #HIFLD counts
-    #getHIFLDlayers(OutputPath)
+    #aprx = arcpy.mp.ArcGISProject('CURRENT')
+    #Layout = aprx.listMaps()[0]
+    #arcpy.AddMessage(Layout)
+    #Layout.exportToPDF(GUI_Tool_Location + "\\Mapping.pdf")
+    #aprx = arcpy.mp.ArcGISProject("CURRENT")
+    #m = aprx.listMaps()[0]
+    #layerSet = m.listLayers()[0]
+    #layoutwork = aprx.listLayouts()[0]
+    #layoutwork.exportToPDF(GUI_Tool_Location + "//Mapping.pdf", resolution = 300)
+    aprx = arcpy.mp.ArcGISProject("CURRENT")
+    mapping = aprx.listMaps()[0]
+    mapping.defaultView.exportToPNG(GUI_Tool_Location + "//Results//Mapping.png", width = 1400, height = 1000)
+    
     if os.path.isdir(path_parent + "//Contaminated"):
         shutil.rmtree(path_parent + "//Contaminated")
     if os.path.isdir(GUI_Tool_Location + "//Contaminated"):
         shutil.rmtree(GUI_Tool_Location + "//Contaminated")
+    if os.path.isdir(path_parent + "//Overall"):
+        shutil.rmtree(path_parent + "//Overall")
+    if os.path.isdir(GUI_Tool_Location + "//Overall"):
+        shutil.rmtree(GUI_Tool_Location + "//Overall")
+    if os.path.isdir(path_parent + "//Affected"):
+        shutil.rmtree(path_parent + "//Affected")
+    if os.path.isdir(GUI_Tool_Location + "//Affected"):
+        shutil.rmtree(GUI_Tool_Location + "//Affected")
     os.mkdir(path_parent + "//Contaminated")
     os.mkdir(GUI_Tool_Location + "//Contaminated")
-    
-    (waste) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath),2)
-    (waste_contaminated) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True),2)
-    getAffectedInfrastructures(Contaminated_Dataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location)
-    (ports) = getPercentage("ports", "Ports_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
-    (ports_contaminated) = getPercentage("ports", "Ports_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Ports_HIFLD","port", OutputPath, GUI_Tool_Location)
-    (power_plants) = getPercentage("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
-    (power_plants_contaminated) = getPercentage("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Power_Plants_HIFLD", "power_plant", OutputPath, GUI_Tool_Location)
-    (wastewater) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,
-                                 ScenarioDataset, "0.5 Mile", OutputPath)
-    (wastewater_contaminated) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,
+    os.mkdir(path_parent + "//Affected")
+    os.mkdir(GUI_Tool_Location + "//Affected")
+    os.mkdir(path_parent + "//Overall")
+    os.mkdir(GUI_Tool_Location + "//Overall")
+    if arcpy.Exists(Contaminated_Dataset):
+        (waste_contaminated) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True),2)
+        getAffectedInfrastructures(Contaminated_Dataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Contaminated")
+        (ports_contaminated) = getPercentage("ports", "Ports_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Ports_HIFLD","ports", OutputPath, GUI_Tool_Location, "Contaminated")
+        (power_plants_contaminated) = getPercentage("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Power_Plants_HIFLD", "power_plant", OutputPath, GUI_Tool_Location, "Contaminated")
+        (wastewater_contaminated) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,
                                  Contaminated_Dataset, "0.5 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Wastewater_Treatment_Plants_HIFLD", "wastewater", OutputPath, GUI_Tool_Location)
+        getAffectedInfrastructures(Contaminated_Dataset, "Wastewater_Treatment_Plants_HIFLD", "wastewater", OutputPath, GUI_Tool_Location, "Contaminated")
+        (hospitals_contaminated) = getPercentage("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Hospital_Locations_HIFLD", "hospital", OutputPath, GUI_Tool_Location, "Contaminated")
+        (gov_contaminated) = getPercentage("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile",
+                          OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Major_State_Government_Buildings_HIFLD", "government", OutputPath, GUI_Tool_Location, "Contaminated")
+        (comm_contaminated) = getPercentage("cell", "Cellular_Towers_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Cellular_Towers_HIFLD", "cell", OutputPath, GUI_Tool_Location, "Contaminated")
+        (broadcast_contaminated) = getPercentage("broad", "Land_Mobile_Broadcast_Tower_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Land_Mobile_Broadcast_Tower_HIFLD", "broadcast", OutputPath, GUI_Tool_Location, "Contaminated")
+        (ems_contaminated) = getPercentage("ems", "Emergency_Medical_Center_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Emergency_Medical_Center_HIFLD", "eMS", OutputPath, GUI_Tool_Location, "Contaminated")
+        (roads_contaminated) = getPercentage("roads", "USA_Roads", Infrastructure_Dataset, Contaminated_Dataset, "0.25 Mile", OutputPath, True)
+        (fire_contaminated) = getPercentage("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Fire_Stations_HIFLD", "fire_station", OutputPath, GUI_Tool_Location, "Contaminated")
+        (farm_contaminated) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, Contaminated_Dataset, "100 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Industrial_HIFLD","industrial", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Public_Schools_HIFLD","public_schools", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Private_Schools_HIFLD","private_schools", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Colleges_HIFLD","colleges", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        
+    (waste) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath),2)
+    getAffectedInfrastructures(ScenarioDataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Affected")
+    
+    (ports) = getPercentage("ports", "Ports_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
+    getAffectedInfrastructures(ScenarioDataset, "Ports_HIFLD","ports", OutputPath, GUI_Tool_Location, "Contaminated")
+    
+    
+    (power_plants) = getPercentage("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
+    getAffectedInfrastructures(ScenarioDataset, "Power_Plants_HIFLD","plants", OutputPath, GUI_Tool_Location, "Affected")
+    
+    
+    (wastewater) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.5 Mile", OutputPath)
+    getAffectedInfrastructures(ScenarioDataset, "Wastewater_Treatment_Plants_HIFLD","wastewater", OutputPath, GUI_Tool_Location, "Affected")
+    getAffectedInfrastructures(Infrastructure_Dataset, "Wastewater_Treatment_Plants_HIFLD","wastewater", OutputPath, GUI_Tool_Location, "Overall")
+                                 
     (hospitals) = getPercentage("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
-    (hospitals_contaminated) = getPercentage("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Hospital_Locations_HIFLD", "hospital", OutputPath, GUI_Tool_Location)
+    getAffectedInfrastructures(ScenarioDataset, "Hospital_Locations_HIFLD","hospitals", OutputPath, GUI_Tool_Location, "Affected")
+    getAffectedInfrastructures(Infrastructure_Dataset, "Hospital_Locations_HIFLD","hospitals", OutputPath, GUI_Tool_Location, "Overall")
+
     (gov) = getPercentage("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile",
                           OutputPath)
-    (gov_contaminated) = getPercentage("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile",
-                          OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Major_State_Government_Buildings_HIFLD", "government", OutputPath, GUI_Tool_Location)
+    getAffectedInfrastructures(ScenarioDataset, "Major_State_Government_Buildings_HIFLD","government", OutputPath, GUI_Tool_Location, "Affected")
+    getAffectedInfrastructures(Infrastructure_Dataset, "Major_State_Government_Buildings_HIFLD","government", OutputPath, GUI_Tool_Location, "Overall")
+
+
     (comm) = getPercentage("cell", "Cellular_Towers_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
-    (comm_contaminated) = getPercentage("cell", "Cellular_Towers_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Cellular_Towers_HIFLD", "cell", OutputPath, GUI_Tool_Location)
+    getAffectedInfrastructures(ScenarioDataset, "Cellular_Towers_HIFLD","cell", OutputPath, GUI_Tool_Location, "Affected")
+    getAffectedInfrastructures(Infrastructure_Dataset, "Cellular_Towers_HIFLD","cell", OutputPath, GUI_Tool_Location, "Overall")
+
     (broadcast) = getPercentage("broad", "Land_Mobile_Broadcast_Tower_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
-    (broadcast_contaminated) = getPercentage("broad", "Land_Mobile_Broadcast_Tower_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Land_Mobile_Broadcast_Tower_HIFLD", "broadcast", OutputPath, GUI_Tool_Location)
+    getAffectedInfrastructures(ScenarioDataset, "Land_Mobile_Broadcast_Tower_HIFLD","broad", OutputPath, GUI_Tool_Location, "Affected")
+    getAffectedInfrastructures(Infrastructure_Dataset, "Land_Mobile_Broadcast_Tower_HIFLD","broad", OutputPath, GUI_Tool_Location, "Overall")
+
     comm = (comm + broadcast)/2
     (roads) = getPercentage("roads", "USA_Roads", Infrastructure_Dataset, ScenarioDataset, "0.25 Mile", OutputPath)
-    (roads_contaminated) = getPercentage("roads", "USA_Roads", Infrastructure_Dataset, Contaminated_Dataset, "0.25 Mile", OutputPath, True)
+
     #getAffectedInfrastructures(Contaminated_Dataset, "USA_Roads", "roads", OutputPath)
     (fire) = getPercentage("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
-    (fire_contaminated) = getPercentage("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Fire_Stations_HIFLD", "fire_station", OutputPath, GUI_Tool_Location)
+
     (ems) = getPercentage("ems", "Emergency_Medical_Center_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
-    (ems_contaminated) = getPercentage("ems", "Emergency_Medical_Center_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Emergency_Medical_Center_HIFLD", "eMS", OutputPath, GUI_Tool_Location, GUI_Tool_Location)
+
+    #additional infrastructures
+    
+    getAffectedInfrastructures(ScenarioDataset, "Industrial_HIFLD","industrial", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Industrial_HIFLD","industrial", OutputPath, GUI_Tool_Location, "Overall", True)
+
+    
+    getAffectedInfrastructures(ScenarioDataset, "Public_Schools_HIFLD","public_schools", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Public_Schools_HIFLD","public_schools", OutputPath, GUI_Tool_Location, "Overall", True)
+
+    
+    getAffectedInfrastructures(ScenarioDataset, "Private_Schools_HIFLD","private_schools", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Private_Schools_HIFLD","private_schools", OutputPath, GUI_Tool_Location, "Overall", True)
+
+    
+    getAffectedInfrastructures(ScenarioDataset, "Colleges_HIFLD","colleges", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Colleges_HIFLD","colleges", OutputPath, GUI_Tool_Location, "Overall", True)
+
+    
+    getAffectedInfrastructures(ScenarioDataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, "Overall", True)
+
+
+    getAffectedInfrastructures(ScenarioDataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, "Overall", True)  
+
 
     #farm = round(createFarmland("USA_Soils_Farmland_Class", ScenarioDataset, Infrastructure_Dataset, OutputPath),2)
     #farm_contaminated = round(100-round(createFarmland("USA_Soils_Farmland_Class", Contaminated_Dataset, Infrastructure_Dataset, OutputPath),2),2)
     farm = 100
     (farm) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, ScenarioDataset, "100 Mile", OutputPath)
-    (farm_contaminated) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, Contaminated_Dataset, "100 Mile", OutputPath, True)
-    getAffectedInfrastructures(Contaminated_Dataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location)        
+     
     # Process: Affected Infrastructure Statistics (Summary Statistics)
 
     # Process: Calculate Agriculture Percent (Calculate Value) 
     agriculture_percent = round(farm, 2)
-    agriculture_percent_contaminated = round(farm_contaminated, 2)
+    if arcpy.Exists(Contaminated_Dataset):
+        agriculture_percent_contaminated = round(farm_contaminated, 2)
 
     # Process: Calculate WaterPercent (Calculate Value) 
     water_percent = round(wastewater, 2)
-    water_percent_contaminated = round(wastewater_contaminated,2)
+    if arcpy.Exists(Contaminated_Dataset):
+        water_percent_contaminated = round(wastewater_contaminated,2)
 
     # Process: Calculate Energy Percent (Calculate Value)
     energy_percent = round(power_plants, 2)
-    energy_percent_contaminated = round(power_plants_contaminated, 2)
+    if arcpy.Exists(Contaminated_Dataset):
+        energy_percent_contaminated = round(power_plants_contaminated, 2)
 
     # Process: Calculate Transport Percent (Calculate Value) 
     transport_percent = round((roads + ports)/2, 2)
-    transport_percent_contaminated = round((roads_contaminated + ports_contaminated)/2, 2)
+    if arcpy.Exists(Contaminated_Dataset):
+        transport_percent_contaminated = round((roads_contaminated + ports_contaminated)/2, 2)
 
     # Process: Calculate Comm Percent (Calculate Value)
     comm_percent = round(comm, 2)
-    comm_percent_contaminated = round(comm_contaminated,2)
+    if arcpy.Exists(Contaminated_Dataset):
+        comm_percent_contaminated = round(comm_contaminated,2)
 
     # Process: Calculate Government Percent (Calculate Value) 
     government_percent = round(gov, 2)
-    government_percent_contaminated = round(100-round(gov_contaminated, 2), 2)
+    if arcpy.Exists(Contaminated_Dataset):
+        government_percent_contaminated = 100-round(gov_contaminated, 2)
 
     # Process: Calculate Emergency Percent (Calculate Value) 
     emergency_percent = round((fire + ems)/2, 2)
-    emergency_percent_contaminated = round((fire_contaminated + ems_contaminated)/2,2)
+    if arcpy.Exists(Contaminated_Dataset):
+        emergency_percent_contaminated = round((fire_contaminated + ems_contaminated)/2,2)
 
     # Process: Calculate Healthcare Percent (Calculate Value)
     healthcare_percent = round(hospitals,2)
-    healthcare_percent_contaminated = round(hospitals_contaminated,2)
+    if arcpy.Exists(Contaminated_Dataset):
+        healthcare_percent_contaminated = round(hospitals_contaminated,2)
 
     arcpy.AddMessage("Water Efficiency: " + str(round(water_percent, 2)) + "%")
     arcpy.AddMessage("Energy Efficiency: " + str(round(energy_percent, 2)) + "%")
@@ -402,8 +496,10 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     n0new = [water_percent, energy_percent, transport_percent, comm_percent, government_percent,
              agriculture_percent, emergency_percent, waste, healthcare_percent]
     #arcpy.AddMessage(n0new)
-    contamnew = [water_percent_contaminated, energy_percent_contaminated, transport_percent_contaminated, comm_contaminated, gov_contaminated,
+    if arcpy.Exists(Contaminated_Dataset):
+        contamnew = [water_percent_contaminated, energy_percent_contaminated, transport_percent_contaminated, comm_contaminated, gov_contaminated,
              agriculture_percent_contaminated, emergency_percent_contaminated, waste_contaminated, healthcare_percent_contaminated]
+    else: contamnew = [0,0,0,0,0,0,0,0,0]
     #arcpy.AddMessage(contamnew)
     data["n0"] = n0new
     data["contamination"] = contamnew
@@ -415,6 +511,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         json.dump(data, outfile)
     fillOut(GUI_Tool_Location + "\\DefineScenario.xlsx", Contaminated_Dataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location)
     newPath = wrapArg(GUI_Tool_Location +  "\\infrastructures_gui.exe")
+
     os.chdir(GUI_Tool_Location)
     command_prompt = "cmd /k " + newPath
     os.system(command_prompt)
@@ -488,30 +585,26 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
                                        ScenarioDataset, "0.5 Mile", OutputPath)
     industrial2 = getArea("industrial", "Industrial_HIFLD", Infrastructure_Dataset,
                                        ScenarioDataset, "0.5 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Industrial_HIFLD","industrial", OutputPath, GUI_Tool_Location, True)    
+
     #Schools
 
-    public_schools = getArea("public_schools", "Public_Schools_HIFLD", Infrastructure_Dataset,
-                                       ScenarioDataset, "0.5 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Public_Schools_HIFLD","public_schools", OutputPath, GUI_Tool_Location, True) 
+    public_schools = getArea("public_schools", "Public_Schools_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.5 Mile", OutputPath)
+
     private_schools = getArea("private_schools", "Private_Schools_HIFLD", Infrastructure_Dataset,
                                        ScenarioDataset, "0.5 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Private_Schools_HIFLD","private_schools", OutputPath, GUI_Tool_Location, True) 
+
     colleges = getArea("colleges", "Colleges_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Colleges_HIFLD","colleges", OutputPath, GUI_Tool_Location, True)
+ 
     #Commercial
 
-    commerical = getArea("corporate", "Corporate_HIFLD", Infrastructure_Dataset,
-                                       ScenarioDataset, "1 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, True)     
+    commerical = getArea("corporate", "Corporate_HIFLD", Infrastructure_Dataset,ScenarioDataset, "1 Mile", OutputPath)
+ 
     #Water
     #Add water dataset?
 
     #Religious
 
-    worship = getArea("worship", "Worship_HIFLD", Infrastructure_Dataset,
-                                       ScenarioDataset, "0.25 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, True)
+    worship = getArea("worship", "Worship_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.25 Mile", OutputPath) 
 
     agri = getArea("agri", "USA_Farms", Infrastructure_Dataset,
                                        ScenarioDataset, "100 Mile", OutputPath)
@@ -521,7 +614,7 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     industrial_area = industrial + industrial2
     government_area = government
     dicts = {
-        "validPhases":[["Indoor"], ["Indoor"], ["Indoor"], ["Indoor"], ["Indoor"], ["Indoor"]],
+        "validPhases":["Indoor", "Indoor", "Indoor", "Indoor", "Indoor", "Indoor"],
         "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural"],
         "name": ["Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area",
                  "Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area"],
@@ -539,10 +632,6 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     #arcpy.AddMessage(df2)
     spreadsheet.reset_index(inplace=True)
     df2.to_json(new_loc, orient="table")
-    #fixed_json = json.loads(new_loc)
-    #new_json = fixed_json["data"]
-    #arcpy.AddMessage(new_json)
-    #new_json.to_json(new_loc, orient="table")
             
 if __name__ == '__main__':
     # Global Environment settings
