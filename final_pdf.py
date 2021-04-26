@@ -42,13 +42,11 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     introText2 = "The SIRM's mechanics are based on the Gillespie Algorithm of stochastically modeling chemical kinetic systems, "
     introText3 = "with adjustments made to suit the modeling of infrastructure remediation after an event that incapacitates"
     introText3b = "infrastructure sectors (e.g. a CBRN event)."
-    pdf.cell(width, 5, ln=1)
     introText4 = "The SIRM examines the interactions of 9 different infrastructure sectors: Water, Energy, Transportation,"
     introText5 = "Communication, Government, Food/Agriculture, Emergency Services, Waste Management and Healthcare."
     introText6a = "Based on the initial operating efficiency after the event, the model calculates an estimated time"
     introText6b = "for recovery for each sector, averaged from a user-defined number of model runs ({}).".format(str(nRun))
     pdf.set_font('Times','', 12)
-    pdf.cell(width, 5,introText1, ln=1)
     pdf.cell(width, 5,introText2, ln=1)
     pdf.cell(width, 5,introText3, ln=1)
     pdf.cell(width, 5,introText3b, ln=1)
@@ -58,9 +56,9 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     pdf.cell(width, 5,introText6a, ln=1)
     pdf.cell(width, 5,introText6b, ln=1)
     pdf.cell(width, 5, ln=1)
+    pdf.cell(width, 5,introText1, ln=1)
     pdf.cell(width, height, "A map of the scenario is depicted below", ln=1)
     pdf.image("Results//Mapping.png", w=180)
-
     pdf.set_font('Times', 'B', 12)
     pdf.cell(width, height,"Initial Inputs", ln=1)
     pdf.cell(width, 5, ln=1)
@@ -78,19 +76,26 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         pdf.cell(60, height, str(sector_list[i]), border=1)
         pdf.cell(60, height, str(n0[i]), border=1)
         if len(contamination) > 0:
-            pdf.cell(60, height, str(100-contamination[i]), border=1, ln=1)
+            pdf.cell(60, height, str(round((100-contamination[i]),1)), border=1, ln=1)
         else:
             pdf.cell(60, height, str(0), border=1, ln=1)
     pdf.cell(width, 5, ln=1)
     pdf.set_font('Times', 'B', 12)
+    pdf.set_font('Times', 'B', 12)
+    pdf.cell(width, height, "The number and type of affected buildings/infrastructure :", ln=1)
+    pdf.set_font('Times', '', 12)
+    pdf.cell(width, 5, "Based on the map information, the tool produces a list of affected buildings/infrastructure. ", ln=1)
+    pdf.cell(width, 5,"Some are affected by outages, while others may require decontamination.", ln=1)         
+    pdf.set_font('Times', '', 12)
+    pdf = getInfrastructureList("Contaminated//", pdf, width, 5, "Affected//", contaminated)
+    pdf.set_font('Times', 'B', 12)
     pdf.cell(width, height,"Results", ln=1)
-    pdf.cell(width, 5, ln=1)
+    pdf.cell(width, 2, ln=1)
     pdf.set_font('Times','', 12)
     pdf.cell(width, 5, 'The SIRM tool outputs the following set of results, which are provided in this report: \n', ln=1)
     pdf.cell(width, 5, '1) The suggested prioritization of sector remediation\n', ln=1)
     pdf.cell(width, 5, '2) Various charts of the results\n', ln=1)
     pdf.cell(width, 5, '3) Requested sensitivity analyses\n', ln=1)
-    pdf.cell(width, 5, '4) (optional) If it is a contamination event, the number and types of contaminated buildings will be listed as well. \n', ln=1)
     pdf.set_font('Times', 'B', 12)
     pdf.cell(width, height, 'Estimated Infrastructure Sector Prioritization Based on Strength of Infrastructure Connections: \n', ln=1)
     i = 1
@@ -164,14 +169,6 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     for g in range(len(sensitivity)):
         graph = "Sensitivity Images/" + getSector(sensitivity[g]) + " Sensitivity.png"
         pdf.image(graph, w=150)
-    if contaminated:
-        pdf.set_font('Times', 'B', 12)
-        pdf.cell(width, height, "The number and type of affected buildings :", ln=1)
-        pdf.set_font('Times', '', 12)
-        pdf.cell(width, 5, "The tool also produced a list of affected buildings. Some are affected by outages, while others may require", ln=1)
-        pdf.cell(width, 5,"decontamination.", ln=1)         
-        pdf.set_font('Times', '', 12)
-        pdf = getInfrastructureList("Contaminated//", pdf, width, 5, "Affected//")
     disclaimer1 = "Disclaimer: The results produced here are estimates and created through the use of the SIRM model."
     disclaimer1b = "the tool doesn’t account for auxiliary infrastructure such as power lines, water pipes, etc."
     disclamer1c = "that may impact operations/recovery."
@@ -180,30 +177,31 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     pdf.cell(width, height,disclaimer2, ln=1)
     pdf.output('Results/' + filename + "_Report.pdf", 'F')
 
-def getInfrastructureList(location, pdf, width, height, location2, location3 = "Overall//"):
-    data ={"Building Type": [], "Number of Contaminated Buildings": []}
-    dataAffected ={"Building Type": [], "Number of Affected Buildings": []}
-    dataOverall = {"Building Type": [], "Number of Buildings": []}
+def getInfrastructureList(location, pdf, width, height, location2, contaminated, location3 = "Overall//"):
+    data ={"Building Type": [], "Number of Contaminated buildings/infrastructure": []}
+    dataAffected ={"Building Type": [], "Number of Affected buildings/infrastructure": []}
+    dataOverall = {"Building Type": [], "Total number of buildings/infrastructure": []}
     tempresults = pd.DataFrame(data)
     tempresults2 = pd.DataFrame(dataAffected)
     tempresults3 = pd.DataFrame(dataOverall)
     pdf.cell(width, 5,ln=1)
-    pdf.cell(width, height, "Number of buildings requiring decontamination:", ln=1)
-    for filename in os.listdir(location):
-        if filename.endswith(".csv") and "contaminated" in filename:
-            filenames = filename.split("_c")
-            building_type = filenames[0]
-            building_type = building_type.split("_")
-            building_type = ' '.join(building_type)
-            results = pd.read_csv(os.path.join(location, filename))
-            text = "{} : {}".format(str(building_type).capitalize(),
-                                    str(len(results)))
-            pdf.cell(width, height, text, ln=1)
-            if len(results)>0:
-                new_row = {"Building Type": str(building_type).capitalize(), "Number of Contaminated Buildings":len(results)}
-                tempresults = tempresults.append(new_row, ignore_index=True)
+    pdf.cell(width, height, "Number of buildings/infrastructure requiring decontamination:", ln=1)
+    if contaminated:
+        for filename in os.listdir(location):
+            if filename.endswith(".csv") and "contaminated" in filename:
+                filenames = filename.split("_c")
+                building_type = filenames[0]
+                building_type = building_type.split("_")
+                building_type = ' '.join(building_type)
+                results = pd.read_csv(os.path.join(location, filename))
+                text = "{} : {}".format(str(building_type).capitalize(),
+                                        str(len(results)))
+                pdf.cell(width, height, text, ln=1)
+                if len(results)>0:
+                    new_row = {"Building Type": str(building_type).capitalize(), "Number of Contaminated buildings/infrastructure":len(results)}
+                    tempresults = tempresults.append(new_row, ignore_index=True)
     pdf.cell(width, height, ln=1)
-    pdf.cell(width, height, "Number of affected buildings:", ln=1)
+    pdf.cell(width, height, "Number of affected buildings/infrastructure:", ln=1)
     for filename in os.listdir(location2):
         if filename.endswith(".csv") and "contaminated" in filename:
             filenames = filename.split("_c")
@@ -215,10 +213,10 @@ def getInfrastructureList(location, pdf, width, height, location2, location3 = "
                                     str(len(results)))
             pdf.cell(width, height, text, ln=1)
             if len(results)>0:
-                new_row = {"Building Type": str(building_type).capitalize(), "Number of Affected Buildings":len(results)}
+                new_row = {"Building Type": str(building_type).capitalize(), "Number of Affected buildings/infrastructure":len(results)}
                 tempresults2 = tempresults2.append(new_row, ignore_index=True)
     pdf.cell(width, height, ln=1)
-    pdf.cell(width, height, "Total buildings in area:", ln=1)
+    pdf.cell(width, height, "Total buildings/infrastructure in area:", ln=1)
     for filename in os.listdir(location3):
         if filename.endswith(".csv") and "contaminated" in filename:
             filenames = filename.split("_c")
@@ -230,7 +228,7 @@ def getInfrastructureList(location, pdf, width, height, location2, location3 = "
                                     str(len(results)))
             pdf.cell(width, height, text, ln=1)
             if len(results)>0:
-                new_row = {"Building Type": str(building_type).capitalize(), "Number of Buildings":len(results)}
+                new_row = {"Building Type": str(building_type).capitalize(), "Total number of buildings/infrastructure":len(results)}
                 tempresults3 = tempresults3.append(new_row, ignore_index=True)
     fig1, ax1 = plt.subplots()
     #print(tempresults)
@@ -238,17 +236,20 @@ def getInfrastructureList(location, pdf, width, height, location2, location3 = "
             #autopct = autopct_format(tempresults["Number of Buildings"]), startangle=90, pctdistance=0.85, labeldistance=1.2)
     ax1.axis('equal')
     #plt.style.use('ggplot')
-    result = pd.merge(tempresults, tempresults2, on="Building Type")
-    finalresult = pd.merge(tempresults3, result, on="Building Type")
+    if contaminated and len(tempresults) > 0:
+        result = pd.merge(tempresults, tempresults2, on="Building Type")
+        finalresult = pd.merge(tempresults3, result, on="Building Type")
+    else:
+        finalresult = pd.merge(tempresults3, tempresults2, on="Building Type")
     #p = ggplot(finalresult, aes(x='Building Type', y='Number of Contaminated Buildings',fill = 'Building Type'))+ geom_col() + geom_col(aes(y='Number of Affected Buildings',x = 'Building Type', fill = 'Building Type')) + geom_col(aes(y='Number of Buildings', x = 'Building Type', fill = 'Building Type'))
     
     font = {'family' : 'normal',
-        'size'   : 12}
+        'size'   : 10}
     plt.rc('font', **font)
     
     p = finalresult.groupby('Building Type').mean().plot(kind='bar')
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    plt.xticks(rotation = 45)
+    plt.xticks(rotation = -45, fontsize=8)
     plt.tight_layout()
     rcParams.update({'figure.autolayout': True})
     p.get_figure().savefig('ColumnChart.png')

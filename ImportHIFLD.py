@@ -11,7 +11,7 @@ from shutil import copyfile
 
 
 def importDataset(Temporary_Output_Path):
-    desc = arcpy.Describe("SIRM 2_2.tbx")
+    desc = arcpy.Describe("SIRM Tool.tbx")
     Input_Path = desc.path + "\\Input Shapefiles"
     #download_url(r"https://landscape1.arcgis.com/arcgis/rest/services/USA_Roads/MapServer", "USA_Roads")
     createLayerFromShapefile(Input_Path+ "\\tl_2016_us_primaryroads.shp", "USA_Roads", Temporary_Output_Path)
@@ -139,3 +139,4 @@ def getLayerStyle(name, lyr):
 if __name__ == '__main__':
     with arcpy.EnvManager(scratchWorkspace=arcpy.env.workspace, workspace=arcpy.env.workspace):
         importDataset(*argv[1:])
+
