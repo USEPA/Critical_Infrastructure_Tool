@@ -341,7 +341,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         (broadcast_contaminated) = getPercentage("broad", "Land_Mobile_Broadcast_Tower_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "1 Mile", OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Land_Mobile_Broadcast_Tower_HIFLD", "broadcast_towers", OutputPath, GUI_Tool_Location, "Contaminated")
         (ems_contaminated) = getPercentage("ems", "Emergency_Medical_Center_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
-        getAffectedInfrastructures(Contaminated_Dataset, "Emergency_Medical_Center_HIFLD", "emergency_EMS", OutputPath, GUI_Tool_Location, "Contaminated")
+        getAffectedInfrastructures(Contaminated_Dataset, "Emergency_Medical_Center_HIFLD", "emergency_(EMS)", OutputPath, GUI_Tool_Location, "Contaminated")
         (roads_contaminated) = getPercentage("roads", "USA_Roads", Infrastructure_Dataset, Contaminated_Dataset, "0.25 Mile", OutputPath, True)
         (fire_contaminated) = getPercentage("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Fire_Stations_HIFLD", "fire_stations", OutputPath, GUI_Tool_Location, "Contaminated")
@@ -397,8 +397,8 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     getAffectedInfrastructures(Infrastructure_Dataset, "Fire_Stations_HIFLD","fire_stations", OutputPath, GUI_Tool_Location, "Overall", True)
 
     (ems) = getPercentage("ems", "Emergency_Medical_Center_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Emergency_Medical_Center_HIFLD","emergency_EMS", OutputPath, GUI_Tool_Location, "Affected", True)
-    getAffectedInfrastructures(Infrastructure_Dataset, "Emergency_Medical_Center_HIFLD","emergency_EMS", OutputPath, GUI_Tool_Location, "Overall", True)
+    getAffectedInfrastructures(ScenarioDataset, "Emergency_Medical_Center_HIFLD","emergency_(EMS)", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Emergency_Medical_Center_HIFLD","emergency_(EMS)", OutputPath, GUI_Tool_Location, "Overall", True)
 
     #additional infrastructures
     
@@ -461,7 +461,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     # Process: Calculate Government Percent (Calculate Value) 
     government_percent = round(gov, 2)
     if arcpy.Exists(Contaminated_Dataset):
-        government_percent_contaminated = 100-round(gov_contaminated, 2)
+        government_percent_contaminated = round(gov_contaminated, 2)
 
     # Process: Calculate Emergency Percent (Calculate Value) 
     emergency_percent = round((fire + ems)/2, 2)
@@ -472,6 +472,10 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     healthcare_percent = round(hospitals,2)
     if arcpy.Exists(Contaminated_Dataset):
         healthcare_percent_contaminated = round(hospitals_contaminated,2)
+
+    waste_percent = round(waste,2)
+    if arcpy.Exists(Contaminated_Dataset):
+        waste_percent_contaminated = round(waste_contaminated,2)
 
     arcpy.AddMessage("Water Efficiency: " + str(round(water_percent, 2)) + "%")
     arcpy.AddMessage("Energy Efficiency: " + str(round(energy_percent, 2)) + "%")
@@ -504,11 +508,11 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     copyfile(sensitivityExe, path_parent + "\\sensitivity_GUI.exe")
     
     n0new = [water_percent, energy_percent, transport_percent, comm_percent, government_percent,
-             agriculture_percent, emergency_percent, waste, healthcare_percent]
+             agriculture_percent, emergency_percent, waste_percent, healthcare_percent]
     #arcpy.AddMessage(n0new)
     if arcpy.Exists(Contaminated_Dataset):
-        contamnew = [water_percent_contaminated, energy_percent_contaminated, transport_percent_contaminated, comm_contaminated, gov_contaminated,
-             agriculture_percent_contaminated, emergency_percent_contaminated, waste_contaminated, healthcare_percent_contaminated]
+        contamnew = [water_percent_contaminated, energy_percent_contaminated, transport_percent_contaminated, comm_percent_contaminated, government_percent_contaminated,
+             agriculture_percent_contaminated, emergency_percent_contaminated, waste_percent_contaminated, healthcare_percent_contaminated]
     else: contamnew = [0,0,0,0,0,0,0,0,0]
     #arcpy.AddMessage(contamnew)
     data["n0"] = n0new
@@ -588,7 +592,6 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     for row in cursor:
         area += row[0]
     spreadsheet.loc[spreadsheet.Description == "The total outdoor surface area contaminated", "Parameter 1"] = area
-    
     #Government
     government = getArea("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset,
                                        ScenarioDataset, "0.5 Mile", OutputPath)
@@ -599,12 +602,12 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
 
     #Schools
 
-    public_schools = getArea("public_schools", "Public_Schools_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.1 Mile", OutputPath)
+    public_schools = getArea("public_schools", "Public_Schools_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.5 Mile", OutputPath)
 
     private_schools = getArea("private_schools", "Private_Schools_HIFLD", Infrastructure_Dataset,
-                                       ScenarioDataset, "0.1 Mile", OutputPath)
+                                       ScenarioDataset, "0.5 Mile", OutputPath)
 
-    colleges = getArea("colleges", "Colleges_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath)
+    colleges = getArea("colleges", "Colleges_HIFLD", Infrastructure_Dataset, ScenarioDataset, "1 Mile", OutputPath)
  
     #Commercial
 
@@ -616,25 +619,22 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     #Religious
     
 
-    worship = getArea("worship", "Worship_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.1 Mile", OutputPath) 
+    worship = getArea("worship", "Worship_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.25 Mile", OutputPath) 
 
     agri = getArea("agri", "USA_Farms", Infrastructure_Dataset,
-                                       ScenarioDataset, "10 Mile", OutputPath)
+                                       ScenarioDataset, "100 Mile", OutputPath)
 
     industrial2 = getArea("industrial", "Industrial_HIFLD", Infrastructure_Dataset,
                                        ScenarioDataset, "0.5 Mile", OutputPath)
     #roofs = sum(areas)
     #building_exteriors = sum(areas)
     school_areas = public_schools + private_schools + colleges
-    arcpy.AddMessage(public_schools)
-    arcpy.AddMessage(private_schools)
-    arcpy.AddMessage(colleges)
     industrial_area = industrial + industrial2
     government_area = government
     dicts = {
         "validPhases":["Indoor", "Indoor", "Indoor", "Indoor", "Indoor", "Indoor"],
-        "category":["Industrial","Commercial","Religious","Educational", "Government","Agricultural"],
-        "name": ["Indoor Contamination Breakout","Indoor Contamination Area","Indoor Contamination Area",
+        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural"],
+        "name": ["Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area",
                  "Indoor Contamination Area","Indoor Contamination Area","Indoor Contamination Area"],
         "description":["The area of contaminated surface area which is industrial",
                        "The area of contaminated surface area which is commercial",
@@ -643,24 +643,13 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
                        "The area of contaminated surface area which is government",
                        "The area of contaminated surface area which is agricultural"],
         "units":["m^2", "m^2", "m^2", "m^2", "m^2", "m^2"],
-        "distribution type":["Constant", "Constant", "Constant", "Constant", "Constant", "Constant"],
-        "value":[industrial_area/area, commerical/area, worship/area, school_areas/area, government_area/area, agri/area]
+        "value":[industrial_area, commerical, worship, school_areas, government_area, agri]
         }
-    spreadsheet.loc[spreadsheet.Description == "The fraction of interior contaminated surface area which is commercial", "Parameter 1"] = commerical/area
-    spreadsheet.loc[spreadsheet.Description == "The fraction of interior contaminated surface area which is industrial", "Parameter 1"] = industrial/area
-    spreadsheet.loc[spreadsheet.Description == "The fraction of interior contaminated surface area which is agricultural", "Parameter 1"] = agri/area
-    spreadsheet.loc[spreadsheet.Description == "The fraction of interior contaminated surface area which is religious", "Parameter 1"] = worship/area
-    spreadsheet.loc[spreadsheet.Description == "The fraction of interior contaminated surface area which is government", "Parameter 1"] = government_area/area
-    spreadsheet.loc[spreadsheet.Description == "The fraction of interior contaminated surface area which is educational", "Parameter 1"] = school_areas/area
     df2 = pd.DataFrame(dicts)
     new_loc = GUI_Tool_Location + "\\NewDefineScenario.json"
     #arcpy.AddMessage(df2)
     spreadsheet.reset_index(inplace=True)
-    #df2.to_json(new_loc, orient="records", indent=0, lines = True)
-    new_loc = GUI_Tool_Location + "\\NewDefineScenario.xlsx"
-    #arcpy.AddMessage(df2)
-    spreadsheet = spreadsheet.iloc[: , 1:]
-    spreadsheet.to_excel(new_loc, sheet_name = "Extent of Contamination",index=False)
+    df2.to_json(new_loc, orient="table", indent=0)
             
 if __name__ == '__main__':
     # Global Environment settings
@@ -674,6 +663,7 @@ if __name__ == '__main__':
         #EfficiencyCalculator(*(argsFixed))
         #arcpy.AddMessage("Entering script")
         EfficiencyCalculator(*argv[1:])
+
 
 
 

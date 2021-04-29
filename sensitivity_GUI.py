@@ -175,9 +175,6 @@ class sensitivityAnalysis(object):
         p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
         file_name = self.parameter + "_" + self.sector
         path_name = dir_path + "\\Sensitivity\\"
-        if os.path.isdir(path_name):
-          shutil.rmtree(path_name)
-        os.mkdir(path_name)
         p.save(filename=file_name, path = path_name, verbose = False, device= "jpeg")
         copyfile(temp_file, fileLoc)
         width= 60
@@ -334,6 +331,11 @@ def main():
 
             def run():
               rf = self.rf_bool.get()
+              dir_path = os.path.dirname(os.path.realpath(__file__))
+              path_name = dir_path + "\\Sensitivity\\"
+              if os.path.isdir(path_name):
+                shutil.rmtree(path_name)
+              os.mkdir(path_name)
               
               backup_days  = self.backup_days_bool.get()
               backup_efficiency = self.backup_efficiency_bool.get()
