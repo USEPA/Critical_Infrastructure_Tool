@@ -255,6 +255,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         i += 1
         sectors.append(key)
         recoveryTimes.append(str(round(float(value), 2)))
+    ## call task 5
     final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes, n0,nRun, timeSpan, contamination, 
                         contaminatedListAvailable)
     results["Sectors"] = sectors

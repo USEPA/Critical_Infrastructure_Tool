@@ -274,7 +274,11 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
         negatives = True
     else:
         negatives = False
-
+    # if TASK 5 is checked
+    #read remediation
+    #Call task 5
+    #find total number of work days
+    # remediation factor = [timeSpan/workdays]
     leg = infrastructures_v4.infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
                                              paramIndexes, infStoichFactor, printProgress, averaging, intervals, seedValue, name, remediationFactor, contamination,
                                                  backups, backupPercents, daysBackup, depBackup, orders, coeffs, ks, negatives)
