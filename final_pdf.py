@@ -57,7 +57,7 @@ def avg(arr,token):
             cat_count3=cat_count3+1
             count=count+1
             zeta=zeta+1
-            
+
         elif zeta == 2:
             totalChar=totalChar+entry
             cat_count2=cat_count2+1
@@ -268,6 +268,7 @@ def array_for_Chart(arr,token,numrealization):
 def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes, n0, nRun, timeSpan, contamination, contaminated = False):
     pdf = FPDF()
     pdf.add_page()
+    
     pdf.set_fill_color(204, 255, 204)
     width= 70
     height = 10
@@ -313,8 +314,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
     Mapping_File_Path=Path("Results//Mapping.png")
     if Mapping_File_Path.exists():
-        pdf.cell(width, height, "A map of the scenario is depicted below", ln=1)
-        pdf.image("Results//Mapping.png", w=180)
+    pdf.cell(width, height, "A map of the scenario is depicted below", ln=1)
+    pdf.image("Results//Mapping.png", w=180)
     else:
         pdf.set_font('Times', '', 14)
         message="GIS data not available"
@@ -363,7 +364,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     prior1 = "The first prioritization is based on how tightly linked an infrastructure is to other infrastructure sectors."
     prior2 = "The higher the connection strength, the more other infrastructure sectors are dependant on that infrastructure."
     prior3 = "Infrastructures with more dependancies will be prioritized in this ranking."
-    data = ["Infrastructure Sector", "Connection Strength"] 
+    
+    data = ["Infrastructure Sector", "Connection Strength"]
     pdf.cell(width, 5, prior1,ln=1)
     pdf.cell(width, 5, prior2,ln=1)
     pdf.cell(width, 5, prior3,ln=1)
@@ -382,6 +384,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     prior2 = "Infrastructures with longer average recovery times will be prioritized in this ranking."
     pdf.cell(width, 5, prior1,ln=1)
     pdf.cell(width, 5, prior2, ln=1)
+    
     data = ["Infrastructure Sector", "Recovery Time (days)"]
     pdf.cell(width, height, str(data[0]), border=1, fill = True)
     pdf.cell(width, height, str(data[1]), border=1, ln=1, fill = True)
@@ -412,6 +415,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         sector_name = getSector(paramIndexes[i])
         graph = "Images/" + filename + " " + sector_name
         name = graph + ".png"
+        
         pdf.image(name, w=150)
     pdf.set_font('Times', 'B', 12)
     pdf.cell(width, height, "Requested Sensitivity Analyses", ln=1)
@@ -855,7 +859,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
             tkMessageBox.showinfo("Helper","your filepath is not valid and/or does not exists review your input and try again check the help button for a file path example report is generated in in Results/"+ filename + "_Report.pdf")
             pdf.output('Results/' + filename + "_Report.pdf", 'F')
     else:
-        pdf.output('Results/' + filename + "_Report.pdf", 'F')
+    pdf.output('Results/' + filename + "_Report.pdf", 'F')
 
 def getInfrastructureList(location, pdf, width, height, location2, contaminated, location3 = "Overall//"):
     data ={"Building Type": [], "Number of Contaminated buildings/infrastructure": []}
