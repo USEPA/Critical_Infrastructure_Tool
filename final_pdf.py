@@ -449,7 +449,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         f = open("C:\\locations\\assemble.txt", "r")
         execute1=f.read()
         f.close()
-        execute=master_path+"\\WideAreaDecon\\Battelle.EPA.WideAreaDecon.Launcher\\bin\\Debug\\netcoreapp3.1\\Battelle.EPA.WideAreaDecon.Launcher.exe"
+        execute=master_path+'\\Launcher\\Battelle.EPA.WideAreaDecon.Launcher.exe'
+        
         fileLoc = master_path+"\\JobRequest.json"
         f=open(fileLoc)
         task5json=json.load(f)
@@ -497,19 +498,20 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]=SIRM["data"][4]["value"]
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]=SIRM["data"][3]["value"]
         print(master_path)
-       
-
-##        #subprocess.call( execute ,check, startupinfo=si) #### CHECK HERE
+      
         real=open(master_path+"\\realizations.txt","r")
         number=real.read()
         real.close()
         task5json["numberRealizations"]=number
-        with open('newJobRequest.json', 'w') as myfile:
+        with open(master_path+'\\Launcher\\newJobRequest.json', 'w') as myfile:
             json.dump(task5json,myfile)
-        _path=master_path+"\\newJobRequest.json"
-        result = subprocess.run([execute,_path],startupinfo=si)
- 
-        with open(master_path+"\\WideAreaDecon\\Battelle.EPA.WideAreaDecon.Launcher\\bin\\Debug\\netcoreapp3.1\\Task 2 Results.json") as f: ## CHECK HERE
+        try:
+          _path=master_path+"\\newJobRequest.json"
+          cmd=[execute]
+          subprocess.check_output("cmd/k"+execute)
+        except subprocess.CalledProcessError as e:
+          print (e)
+        with open(master_path+"\\Task 2 Results.json") as f: ## CHECK HERE
             task2=json.load(f)
         numrealization=len(task2)
         indexjson=numrealization-1
