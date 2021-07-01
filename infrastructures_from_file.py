@@ -13,6 +13,9 @@ import infrastructures_v4
 import tkinter.messagebox as tkMessageBox
 import json
 import os
+import numpy
+import pathlib
+import os.path
 from inspect import getsourcefile
 from os.path import abspath
 
@@ -274,11 +277,15 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
         negatives = True
     else:
         negatives = False
-    # if TASK 5 is checked
-    #read remediation
-    #Call task 5
-    #find total number of work days
-    # remediation factor = [timeSpan/workdays]
+    json_path="check.json"
+    file = pathlib.Path(json_path)
+    if file.exists() :
+          with open(json_path) as f:
+            data=json.load(f)
+            check=data["check"]
+    if check=="True":
+        print(" ")
+        #remediationFactor=timeSpan
     leg = infrastructures_v4.infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
                                              paramIndexes, infStoichFactor, printProgress, averaging, intervals, seedValue, name, remediationFactor, contamination,
                                                  backups, backupPercents, daysBackup, depBackup, orders, coeffs, ks, negatives)
