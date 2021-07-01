@@ -10,9 +10,13 @@ import warnings
 import infrastructures_v4
 import pandas as pd
 import tkinter.messagebox as tkMessageBox
+import os
+from os.path import abspath
+from inspect import getsourcefile
 
 def load_file(filename):
-    data = pd.read_csv(filename)
+    dir_path = os.path.dirname(abspath(getsourcefile(lambda:0)))
+    data = pd.read_csv("default.csv")
     sectors = data["Sector"]
     numSectors = 9
     finalCoeffs = np.array([[0.0 for x in range(numSectors)] for y in range(numSectors)])

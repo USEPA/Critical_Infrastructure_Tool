@@ -13,14 +13,17 @@ import infrastructures_results                    #import self-made module infra
 import infrastructures_gui                        #import self-made module infrastructurees_gui to run from GUI by default
 import infrastructures_interactive_plotting       #import self-made module infrastructurees_interactive_plotting to run interactive plot
 import scipy
+import final_pdf
 import scipy.optimize as optimize
-
+from fpdf import FPDF
 from scipy.optimize import LinearConstraint
+import pandas as pd
+import json
 
 leg = ""
 
 def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
-                    infStoichFactor, printProgress, averaging, confIntervals, seedValue, imageFileName, remediationFactor, contamination,
+                    infStoichFactor, printProgress, averaging, contaminatedListAvailable, seedValue, imageFileName, remediationFactor, contamination,
                     backups, backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives):
 
     '''
@@ -97,7 +100,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         results from each run are averaged together or if an example
         plot is generated instead to improve performance. Default is True
 
-        confIntervals: a boolean switch that determines whether or not the
+        contaminatedListAvailable: a boolean switch that determines whether or not the
         confidence interval range is plotted or not. Default is True
 
         agent: a string variable that ultimately sets the mortality rates of 
@@ -113,7 +116,16 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     #seed random number generator if desired
     if seedValue is not None:
         np.random.seed(seedValue)
-
+    sensitivity = []
+    reportname = "report_inputs.txt"
+    data = open(reportname)
+    json_data = json.load(data)
+    for sector in json_data:
+        if(json_data[sector]["sensitivity"]>0):
+            sensitivity.append(json_data[sector]["index"])
+        if(json_data[sector]["graph"]):
+            paramIndexes.append(json_data[sector]["index"])
+            paramTypes.append("recovery_time")     
     #initialize param_vals if more than one stochastic simulation is running
     if nRun > 1:
         param_vals = np.zeros((len(paramTypes), nRun), dtype = float)
@@ -128,20 +140,22 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         averages = None
         bin_size = None
     #call Gillespie_model nRun times to fetch t and n data for the stochastic solution
+    time_of_recovery_vals = np.zeros((len(n0), nRun), dtype = float)
+    
     for i in range (0, nRun):
         if printProgress and nRun > 1:
             print("Run " + str(i))
             t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan,
                                               infStoichFactor, False, contamination, remediationFactor, backups, 
-                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives, imageFileName)
         elif printProgress:
             t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, agent, 
                                               infStoichFactor, True, contamination, remediationFactor, backups, 
-                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives, imageFileName)
         else:
             t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan,
                                               infStoichFactor, False, contamination, remediationFactor, backups, 
-                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives)
+                                              backupPercent, daysBackup, depBackup, orders, coeffs, ks, negatives, imageFileName)
         if averaging and nRun > 1:
             for j in range(0, int(timeSpan/bin_size)):
                 for k in range(0, len(n)):
@@ -150,9 +164,27 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         num_in_bin[j] += 1
                     elif t[k] > j*bin_size+bin_size:
                         break
+        fileLoc = "report_inputs.txt"
+        json_data = open(fileLoc)
+
 
         #if making a histogram, retrieve the desired parameter of each solution and store in param_vals if more than 1 stochastic solution is running
+        sectorRange = list(range(len(n0)))
         if nRun > 1:
+            for m in range(len(sectorRange)):
+                if min(n[:,sectorRange[m]]) >= 100:
+                    continue #leave a zero in the array whenever the sector efficiency never falls below 100%
+                else:
+                    time_of_recover = 0
+                    time_of_min = np.argmin(n[:,sectorRange[m]])
+                    for k in range(time_of_min, len(n[:,sectorRange[m]])):
+                        if n[k][sectorRange[m]] > 100:
+                            time_of_recover = k
+                            break
+                    if time_of_recover == 0:
+                        time_of_recovery_vals[m][i] = timeSpan
+                    else:
+                        time_of_recovery_vals[m][i] = t[time_of_recover]
             for j in range(len(paramTypes)):
                 if paramTypes[j] == "min":
                     param_vals[j][i] = min(n[:,paramIndexes[j]])
@@ -178,6 +210,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         else:
                             param_vals[j][i] = t[time_of_recover]
 
+
     #divide running sums stored in averages and make into run-averages
     if averaging and nRun > 1:
         for i in range(0, int(timeSpan/bin_size)):
@@ -201,8 +234,37 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
         fig, ax, leg = infrastructures_interactive_plotting.plotting(t,n,None, None, timeSpan, imageFileName, contam)
     #fig, ax, leg = infrastructures_interactive_plotting.plotting(t,n,timeSpan)
 
+    
+    #ranking the priorities by coefficients
+    ranked_dict, ranked = prioritizeByConnections(orders, list(range(len(n0))))
+    ranked_dict_rt, ranked_rt = getRecoveryTimeDict(time_of_recovery_vals, sectorRange)
+    f = open("Results/" + imageFileName + "_prioritization.txt", "w")
+    f.write("Rank by strength of connections: \n")
+    i = 1
+    sectors = []
+    for key, value in ranked_dict:
+        f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ "\n")
+        i += 1
+    f.write("\nRank by median recovery time: \n")
+    i = 1
+    results = pd.DataFrame()
+    sectors = []
+    recoveryTimes = []
+    for key, value in ranked_dict_rt:
+        f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ " days \n")
+        i += 1
+        sectors.append(key)
+        recoveryTimes.append(str(round(float(value), 2)))
+    final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes, n0,nRun, timeSpan, contamination, 
+                        contaminatedListAvailable)
+    results["Sectors"] = sectors
+    results["Recovery Times"] = recoveryTimes
+    results.to_csv("Results/" + imageFileName + ".csv")
+    f.close()
+    
+
     #end program without returning anything
-    return leg
+    #return leg
 
 def getRecoveryTime(remediationFactor, n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, printProgress, contamination):
     t, n, contam = Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, False, contamination, remediationFactor)
@@ -225,7 +287,7 @@ def constraintsFunction(x0, maxPercent):
     return sum(x0) - maxPercent
 
 def optimizeDecon(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
-                    infStoichFactor, printProgress, averaging, confIntervals, agent, seedValue, imageFileName, remediationFactor,
+                    infStoichFactor, printProgress, averaging, contaminatedListAvailable, agent, seedValue, imageFileName, remediationFactor,
                   contamination, maxPercent):
     x0 = [0]*len(remediationFactor)
     for i in range(len(remediationFactor)):
@@ -259,8 +321,53 @@ def adjustContamination(contamination, remediationFactor, timestep):
             results[c] = 100
     return results
 
+def get_sector_name(sector):
+    if sector == 0:
+        return "Water and Wastewater Systems"
+    elif sector == 1:
+        return "Energy"
+    elif sector == 2:
+        return "Transportation Systems"
+    elif sector == 3:
+        return "Communications"
+    elif sector == 4:
+        return "Government Facilities"
+    elif sector == 5:
+        return "Food and Agriculture"
+    elif sector == 6:
+        return "Emergency Services"
+    elif sector == 7:
+        return "Waste Management"
+    elif sector == 8:
+        return "Healthcare"
+
+def prioritizeByConnections(orders, sectors):
+    orders = np.transpose(orders)
+    results = {}
+    for i in range(len(sectors)):
+        name = get_sector_name(sectors[i])
+        results[name] = sum(orders[i])
+    results_final = sorted(results.items(), key=lambda x: x[1], reverse=True)
+    ranked = []
+    for key in results_final:
+        ranked.append(key)
+    return results_final, ranked
+
+def getRecoveryTimeDict(recoveryTimes, sectors):
+    results = {}
+    ranked = []
+    for i in range(len(recoveryTimes)):
+        name = get_sector_name(sectors[i])
+        recovery_time = np.percentile(recoveryTimes[i],50)
+        results[name] = recovery_time
+    results_final = sorted(results.items(), key=lambda x: x[1], reverse=True)
+    for key in results_final:
+        ranked.append(key)
+    return results_final, ranked
+
 def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, printProgress, contamination,
-                    remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0, negatives):
+                    remediationFactor, backups, backupPercents, daysBackup, depBackup, orders0, coeffs0, ks0,
+                    negatives, imageFileName):
     '''
     This function simulates interconnected infrastructures using the Gillespie
     algorithm to stochastically determine the efficiencies of the water,
@@ -470,15 +577,17 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
             if depBackup != None:
                 for dp in range(0, len(depBackup)):
                     if int(depBackup[dp]) == i:
-                        backupI = np.append(backupI,backups[dp])
-                        backupE = np.append(backupE,backupPercents[dp])
-                        backupTime = np.append(backupTime, daysBackup[dp])
+                        if (backups[dp]) not in backupI: 
+                            backupI = np.append(backupI,backups[dp])
+                            backupE = np.append(backupE,backupPercents[dp])
+                            backupTime = np.append(backupTime, daysBackup[dp])
             for j in range(0, len(orders[i])):
                 if j in backupI:
                     time_index = np.where(backupI == j)
                     if t< backupTime[time_index]:
                         r[i] = r[i]*float(backupE[time_index])**orders[i][j]
                     else:
+                        
                         r[i] = r[i]*(n[index-1][j])**orders[i][j]
                 else:
                     r[i] = r[i]*(n[index-1][j])**orders[i][j]
@@ -632,14 +741,17 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
         #when len(v) is 9, an infrastructure equation is being applied
         if reaction <= 9:
             backupI = []
+            backupDays = []
             if depBackup != None:
                 for dp in range(0, len(depBackup)):
                     if int(depBackup[dp]) == reaction:
                         backupI = np.append(backupI,backups[dp])
+                        backupDays = np.append(backupDays, daysBackup[dp])
             v = coeffs[reaction]
             v[reaction] += adj_repair_factors[reaction]
             for b in range(0, len(backupI)):
-                v[int(backupI[b])] = 0
+                if t<backupDays[b]:
+                    v[int(backupI[b])] = 0
             if not negatives:
                 for b in range(0, len(coeffs[reaction])):
                     if b != reaction:

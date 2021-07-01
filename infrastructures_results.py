@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import statistics
+import json
 from scipy.stats import kurtosis, skew
 import os
 # def results(t, n, p, nRun, timeSpan, averages, bin_size, paramTypes, paramIndexes, param_vals, agent):
@@ -63,6 +64,7 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             if not os.path.exists("Results"):
                 os.makedirs("Results")
             plt.savefig("Images/" + runName + " " + sector_name)
+            plt.close()
             #print out distribution statistics as desired
             print("")
             f = open("Results/" + runName + " " + sector_name + ".txt", "w")
@@ -85,6 +87,7 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             print("Kurtosis: "+str(kurtosis(param_vals[i])))
             f.write("Kurtosis: "+str(kurtosis(param_vals[i])) + "\n")
             f.close()
+                  
 
             
     #Plot disease outbreak time profiles if applicable (healthy people, sick people, immune people, dead people)

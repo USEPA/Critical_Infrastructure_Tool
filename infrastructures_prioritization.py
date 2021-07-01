@@ -29,20 +29,12 @@ def get_sector_name(sector):
         return "Waste Management"
 
 
-def prioritizations(t, n, lower_bounds, upper_bounds, weightings):
+def prioritizations(t, n, orders, lower_bounds, upper_bounds, weightings):
 
     scores = np.zeros([8], dtype=float)
     loss_time = np.zeros([8], dtype=float)
     connectivity = np.zeros([8], dtype=float)
     #connectivity defined as sum of children subsectors
-    orders = np.array([[0.000, 0.556, 0.111, 0.000, 0.000, 0.000, 0.000, 0.111], \
-                        [0.000, 0.000, 0.111, 0.222, 0.111, 0.000, 0.000, 0.000], \
-                        [0.000, 0.667, 0.000, 0.111, 0.000, 0.000, 0.000, 0.000], \
-                        [0.000, 0.556, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000], \
-                        [1.000, 0.667, 0.222, 0.556, 0.000, 0.222, 0.000, 0.000], \
-                        [0.000, 0.000, 0.222, 0.000, 0.222, 0.000, 0.000, 0.000], \
-                        [0.000, 0.222, 0.222, 0.778, 0.000, 0.000, 0.000, 0.000], \
-                        [0.111, 0.111, 0.222, 0.000, 0.000, 0.000, 0.000, 0.000]])
     orders = np.transpose(orders)
     for i in range(0, len(connectivity)):
         connectivity[i] = sum(orders[i])
