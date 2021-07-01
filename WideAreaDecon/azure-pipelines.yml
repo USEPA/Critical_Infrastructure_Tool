@@ -1,0 +1,55 @@
+name: $(Date:yyyy-MM-dd-hh-mm-ss)$(Rev:.r)-$(DeploymentName)
+
+resources:
+  repositories:
+  - repository: templates
+    type: git
+    name: BuildSupport/YamlTemplates
+    ref: 'refs/heads/master'
+
+trigger:
+- master
+- master_dev
+
+variables:
+  netCoreVersion: '3.1.x'
+
+jobs:
+# https://wp-abattfs01.milky-way.battelle.org/EPA/BuildSupport/_git/YamlTemplates?path=%2FDotNetCore%2FdefaultPipeline.yml&version=GBmaster
+- template: DotNetCore/defaultPipeline.yml@templates
+  parameters:
+    netCoreVersion: $(netCoreVersion)
+    serviceProjects: 'Battelle.EPA.WideAreaDecon.API/Battelle.EPA.WideAreaDecon.API.csproj'
+    testProjects: 'Battelle.EPA.WideAreaDecon.API.Tests/Battelle.EPA.WideAreaDecon.API.Tests.csproj'
+
+- job: Test_Typescript
+  pool: 'LongBuilds'
+  steps:
+  - task: UseNode@1
+    inputs:
+      version: '12.x'
+  - task: Npm@1
+    inputs:
+      command: 'install'
+      workingDir: 'Battelle.EPA.WideAreaDecon.Client'
+  - task: Npm@1
+    inputs:
+      command: 'custom'
+      workingDir: 'Battelle.EPA.WideAreaDecon.Client'
+      customCommand: 'run test'
+
+- job: Package_Installation_Files
+  pool: 'default'
+  steps:
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: 'InstallerFiles'
+      includeRootFolder: true
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/InstallerFiles.zip'
+      replaceExistingArchive: true
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'installationFiles'
+      publishLocation: 'Container'

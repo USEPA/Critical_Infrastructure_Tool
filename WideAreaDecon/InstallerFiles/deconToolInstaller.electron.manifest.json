@@ -1,0 +1,49 @@
+{
+  "executable": "Battelle.EPA.WideAreaDecon.API",
+  "description": "Wide Area Decontamination Tool",
+  "name": "Wide Area Decon",
+  "author": "Battelle Memorial Institute",
+  "splashscreen": {
+    "imageFile": ""
+  },
+  "singleInstance": true,
+  "cacheDirectory": "resources/cache",
+  "build": {
+    "appId": "com.electron.Battelle.WideAreaDeconTool.app",
+    "productName": "Wide Area Decon",
+    "copyright": "Copyright � 2020",
+    "buildVersion": "0.0.4",
+    "compression": "maximum",
+    "directories": {
+      "output": "",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "epaLogo.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/epaLogo.ico",
+      "uninstallerIcon": "build/epaLogo.ico",
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": true
+    },
+    "icon": "epaLogo.ico",
+    "extraResources": [],
+    "files": [
+      {
+        "from": "./ElectronHostHook/node_modules",
+        "to": "ElectronHostHook/node_modules",
+        "filter": [
+          "**/*"
+        ]
+      },
+      "**/*"
+    ]
+  }
+
+}

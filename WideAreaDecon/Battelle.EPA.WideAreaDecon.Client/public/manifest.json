@@ -1,0 +1,10 @@
+{
+  "name": "wide-area-decon-tool",
+  "short_name": "wide-area-decon-tool",
+  "icons": [
+  ],
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#4DBA87"
+}

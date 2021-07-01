@@ -1,0 +1,24 @@
+AEROSOL
+none 
+
+FOAM SPRAY
+Water-Temp - fixed
+Water-ConcDose - fixed
+UndergroundNonCarpet-Temp - fixed - why is this the same as "Water-Temp"
+UndergroundNonCarpet-ConcDose - fixed - why is this the same as "Water-ConcDose"
+UndergroundMisc-Temp - fixed - why is this the same as "Water-Temp"
+UndergroundMisc-ConcDose - fixed - why is this the same as "Water-ConcDose"
+
+
+FUMIGATION
+HVAC-ConcDose - not enough differentiation for 2 D uniform X-dependent, will just use uniform
+HVAC-H202 - fixed
+IndoorNonCarpet-H202 - fixed
+Roofing-H202 - doesn't make sense to decrease efficacy range when increasing H202 - lack of sufficient data - use uniform range
+UndergroundNonCarpet-H202 - fixed
+
+LIQUID SUSPENSION
+Changed all to uniform - the distribution was not specific to temp
+
+LIQUID WIPE
+Changed all to uniform - the distribution was not specific to contact time

@@ -161,7 +161,110 @@ def avgtotal(arr):
             count=count+1
     avg=sum_total/count
     return avg
+  
+def array_for_Chart(arr,token,numrealization):
+    print(numrealization)
+    if token=="days":
+      i=0
+      index=0
+      index2=0
+      index3=0
+      index4=0
+      index5=0
+      zeta=0
+      PreDecon=[]
+      PreDecon=[0 for i in range(7*numrealization)]
+      PostDecon=[]
+      PostDecon=[0 for i in range(7*numrealization)]
+      totalChar=[]
+      totalChar=[0 for i in range(7*numrealization)]
+      source=[]
+      source=[0 for i in range(7*numrealization)]
+      Decon=[]
+      Decon=[0 for i in range(7*numrealization)]
+      for entry in arr:
+        if zeta == 0:
+  
+            PreDecon[index]=entry
+            index=index+1
+            zeta=zeta+1
+        elif zeta == 1:
+            PostDecon[index2]=entry
+            index2=index2+1
+            zeta=zeta+1
+        elif zeta == 2:
+            totalChar[index3]=entry
+            index3=index3+1
+            zeta=zeta+1
+           
+        elif zeta == 3 :
+            source[index4]=entry
+            index4=index4+1
+           
+            zeta=zeta+1
+        else:
+            Decon[index5]=entry
+            index5=index5+1
+            zeta=0
+      return PreDecon,PostDecon,totalChar,source,Decon
+    else:
+      i=0
+      index=0
+      index2=0
+      index3=0
+      index4=0
+      index5=0
+      index6=0
+      PreDecon=[]
+      PreDecon=[0 for i in range(7*numrealization)]
+      PostDecon=[]
+      PostDecon=[0 for i in range(7*numrealization)]
+      totalChar=[]
+      totalChar=[0 for i in range(7*numrealization)]
+      source=[]
+      source=[0 for i in range(7*numrealization)]
+      Decon=[]
+      Decon=[0 for i in range(7*numrealization)]
+      incident=[]
+      incident=[0 for i in range(7*numrealization)]
+      incident=[]
+      incident=[0 for i in range(7*numrealization)]
+      for entry in arr:
+        if zeta == 0:
+            PreDecon[index]=arr[i]
+            i=i+1
+            index=index+1
+            zeta=zeta+1
+        elif zeta == 1:
+            PostDecon[index2]=arr[i]
+            i=i+1
+            index2=index2+1
+            zeta=zeta+1
             
+        elif zeta == 2:
+            totalChar[index3]=arr[i]
+            index3=index3+1
+            i=i+1
+            zeta=zeta+1
+           
+        elif zeta == 3 :
+            source[index4]=arr[i]
+            index4=index4+1
+            i=i+1
+            zeta=zeta+1
+            
+        elif zeta==4:
+            Decon[index5]=arr[i]
+            index5=index5+1
+            i=i+1
+            zeta=zeta+1
+        else:
+            incident[index6]=incident[index6]+entry
+            index6=index6+1
+            i=i+1
+            zeta=0
+      return PreDecon,PostDecon,totalChar,source,Decon,incident
+ 
 def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes, n0, nRun, timeSpan, contamination, contaminated = False):
     pdf = FPDF()
     pdf.add_page()
@@ -346,7 +449,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         f = open("C:\\locations\\assemble.txt", "r")
         execute1=f.read()
         f.close()
-        execute=execute1+"\Battelle.EPA.WideAreaDecon.Launcher.exe"
+        execute=master_path+"\\WideAreaDecon\\Battelle.EPA.WideAreaDecon.Launcher\\bin\\Debug\\netcoreapp3.1\\Battelle.EPA.WideAreaDecon.Launcher.exe"
         fileLoc = master_path+"\\JobRequest.json"
         f=open(fileLoc)
         task5json=json.load(f)
@@ -393,7 +496,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"]=SIRM["data"][2]["value"]
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]=SIRM["data"][4]["value"]
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]=SIRM["data"][3]["value"]
-
+        print(master_path)
        
 
 ##        #subprocess.call( execute ,check, startupinfo=si) #### CHECK HERE
@@ -406,7 +509,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         _path=master_path+"\\newJobRequest.json"
         result = subprocess.run([execute,_path],startupinfo=si)
  
-        with open(execute1 + "\\Task 2 Results.json") as f: ## CHECK HERE
+        with open(master_path+"\\WideAreaDecon\\Battelle.EPA.WideAreaDecon.Launcher\\bin\\Debug\\netcoreapp3.1\\Task 2 Results.json") as f: ## CHECK HERE
             task2=json.load(f)
         numrealization=len(task2)
         indexjson=numrealization-1
@@ -677,8 +780,24 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 plt.pie(newvalues, autopct='%1.1f%%',
                         shadow=True, startangle=90,colors=colors1)
                 lgd=plt.legend(headings, bbox_to_anchor = (1.05, 0.6))
+                plt.title('Indoor Contamination by Type')
                 plt.savefig('Indoor_Contamination%.png', bbox_extra_artists=(lgd,), bbox_inches="tight")
                 pdf.image('Indoor_Contamination%.png', x = None, y = None, w=0, h=0, type='', link='')
+                Outdoor_days_break=array_for_Chart(Outdoor_workDays,"days",numrealization)
+                Underground_days_break=array_for_Chart(Underground_workDays,"days",numrealization)
+                Indoor_days_break=array_for_Chart(Indoor_workDays,"days",numrealization)
+                #return PreDecon,PostDecon,totalChar,source,Decon
+                Pre_Outdoor=Outdoor_days_break[0]
+                Post_Outdoor=Outdoor_days_break[1]
+                totalChar_Outdoor=Outdoor_days_break[2]
+                source_Outdoor=Outdoor_days_break[3]
+                Decon_Outdoor=Outdoor_days_break[4]
+                
+                Pre_Underground=Underground_days_break[0]
+                Post_Underground=Underground_days_break[1]
+                totalChar_Underground=Underground_days_break[2]
+                source_Underground=Underground_days_break[3]
+                Decon_Underground=Underground_days_break[4]
                 pdf.ln(" ")
 
             z=z+1

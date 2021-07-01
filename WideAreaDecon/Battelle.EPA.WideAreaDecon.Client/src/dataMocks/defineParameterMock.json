@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "filters": [
+    {
+      "name": "Incident Command",
+      "filters": [
+        {
+          "name": "Logistics",
+          "filters": [],
+          "parameters": [
+            {
+              "name": "Office Rentals",
+              "type": "Constant",
+              "value": 1,
+              "metaData": {
+                "min": 0,
+                "max": 100,
+                "units": "offices",
+                "step": 1
+              }
+            },
+            {
+              "name": "Expendable Office Supplies Per Day",
+              "type": "Constant",
+              "value": 1,
+              "metaData": {
+                "min": 0,
+                "max": 1000,
+                "units": "supplies / day",
+                "step": 0.1
+              }
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        {
+          "name": "Personnel",
+          "type": "Constant",
+          "value": 1,
+          "metaData": {
+            "min": 0,
+            "max": 5,
+            "units": "people",
+            "step": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "Decontamination Efficacy",
+      "filters": [],
+      "parameters": []
+    },
+    {
+      "name": "Building Breakdowns",
+      "filters": [],
+      "parameters": []
+    },
+    {
+      "name": "Source Reduction",
+      "filters": [],
+      "parameters": [
+        {
+          "name": "Contamination Limit for Reduction",
+          "type": "Constant",
+          "value": 1,
+          "metaData": {
+            "min": 0,
+            "max": 1000,
+            "units": "cfu / m^2",
+            "step": 0.1
+          }
+        }
+      ]
+    },
+    {
+      "name": "Personnel",
+      "filters": [],
+      "parameters": [
+        {
+          "name": "Cost per Personnel",
+          "type": "Constant",
+          "value": 1,
+          "metaData": {
+            "min": 0,
+            "max": 100,
+            "units": "$ / person",
+            "step": 0.01
+          }
+        },
+        {
+          "name": "Personnel Availability",
+          "type": "Constant",
+          "value": 1,
+          "metaData": {
+            "min": 0,
+            "max": 100,
+            "units": "people",
+            "step": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+﻿Names,Minimum,Maximum,Mean/Mode,Standard Deviation
+foam ambiguous,0.05,0.05,0.05,2.11E-17
+foam spray,1.01,5700,1555.823182,2597.500606
+fumigation,0.00417,0.01024,0.00693,0.002619938
+fumigation/liquid,0.08,0.16,0.15,0.02688086
+liquid soaked gauze covering,0.8,0.8,0.8,1.12E-16
+liquid soaked gauze wipe,0.8,0.8,0.8,1.78E-15
+gel,0.05,2,1.35,0.975
+liquid,0.005,0.25,0.172407407,0.081001972
+liquid ambiguous,0.05,2,0.465923567,0.770098915
+liquid immersion,10,10,10,0
+liquid spray,0.05,7600,464.8600851,1676.510116

@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+	"tasks": [
+    {
+      "label": "Run API Server",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["run"],
+      "options": {
+        "cwd": "${workspaceRoot}/../Battelle.EPA.WideAreaDecon.API"
+      }
+    },
+    {
+      "label": "Run Unit Tests",
+      "type": "process",
+      "command": "cmd",
+      "args": ["/C", "npm", "run", "test"]
+    },
+    {
+      "label": "Run Linting",
+      "type": "process",
+      "command": "cmd",
+      "args": ["/C", "npm", "run", "lint"]
+    }
+  ]
+}

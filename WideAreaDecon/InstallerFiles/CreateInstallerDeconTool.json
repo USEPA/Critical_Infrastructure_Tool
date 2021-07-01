@@ -1,0 +1,23 @@
+{
+  "DeployDirectory": "Installer",
+  "DatabaseFilePath": [
+  ],
+  "PackageJson": "InstallerFiles\\deconToolInstaller.package.json",
+  "ElectronManifest": "InstallerFiles\\deconToolInstaller.electron.manifest.json",
+  "ElectronApplication": {
+    "Name": "Server",
+    "Location": "Battelle.EPA.WideAreaDecon.zip",
+    "FilesToCopy": [
+      {
+        "source": "InstallerFiles\\epaLogo.ico",
+        "destination": "..\\build\\epaLogo.ico"
+      },
+      {
+        "source": "InstallerFiles\\epaLogo.ico",
+        "destination": "epaLogo.ico"
+      }
+    ]
+  },
+  "SubServices": [
+  ]
+}

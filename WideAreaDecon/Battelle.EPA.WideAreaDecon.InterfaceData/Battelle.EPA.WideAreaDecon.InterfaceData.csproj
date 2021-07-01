@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>5</WarningLevel>
+  </PropertyGroup>-->
+
+  <ItemGroup>
+    <Compile Remove="InputFiles\**" />
+    <EmbeddedResource Remove="InputFiles\**" />
+    <None Remove="InputFiles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.2" />
+    <PackageReference Include="ElectronNET.API" Version="7.30.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(Configuration)'!='Debug'">
+    <PackageReference Include="Battelle.RiskAssessment.Common.Statistics" Version="1.0.11" PrivateAssets="NONE" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <PackageReference Include="Battelle.RiskAssessment.Common.Statistics-Debug" Version="1.0.11" PrivateAssets="NONE" />
+  </ItemGroup>
+
+</Project>

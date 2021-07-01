@@ -1,0 +1,25 @@
+{
+  "files.exclude": {
+    // defaults
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "dist": true,
+
+    "node_modules": false,
+
+    // build folders
+    "**/build/**": true,
+
+    "package-lock.json": true
+  },
+  "json.schemas": [
+    {
+      "fileMatch": ["/appsettings.json", "/appsettings.*.json"],
+      "url": "./../../Battelle.EPA.WideAreaDecon.API/Schema/appsettings.schema.json"
+    }
+  ],
+  "eslint.lintTask.enable": true,
+  "codemetrics.nodeconfiguration.ReturnStatement": 0,
+  "codemetrics.nodeconfiguration.CaseClause": 0,
+  "codemetrics.nodeconfiguration.DefaultClause": 0
+}

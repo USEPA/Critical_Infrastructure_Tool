@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "filters": [
+    {
+      "name": "Interior - Test",
+      "filters": [],
+      "parameters": [
+        {
+          "name": "Amount of Contamination",
+          "type": "Contaminated Building Types",
+          "buildings": [
+            {
+              "name": "Residential",
+              "type": "Contaminated Building Type",
+              "area": {
+                "name": "area",
+                "type": "Constant",
+                "metaData": {
+                  "min": 0,
+                  "max": 1000000,
+                  "units": "m^2",
+                  "step": 1
+                },
+                "value": null
+              }
+            },
+            {
+              "name": "Commercial",
+              "type": "Contaminated Building Type",
+              "area": {
+                "name": "area",
+                "type": "Constant",
+                "units": "m^2",
+                "metaData": {
+                  "min": 0,
+                  "max": 1000000,
+                  "units": "m^2",
+                  "step": 1
+                }
+              }
+            },
+            {
+              "name": "Industrial",
+              "type": "Contaminated Building Type",
+              "area": {
+                "name": "area",
+                "type": "Constant",
+                "units": "m^2",
+                "metaData": {
+                  "min": 0,
+                  "max": 1000000,
+                  "units": "m^2",
+                  "step": 1
+                }
+              }
+            },
+            {
+              "name": "Government",
+              "type": "Contaminated Building Type",
+              "area": {
+                "name": "area",
+                "type": "Constant",
+                "units": "m^2",
+                "metaData": {
+                  "min": 0,
+                  "max": 1000000,
+                  "units": "m^2",
+                  "step": 1
+                }
+              }
+            },
+            {
+              "name": "Educational",
+              "type": "Contaminated Building Type",
+              "area": {
+                "name": "area",
+                "type": "Constant",
+                "units": "m^2",
+                "metaData": {
+                  "min": 0,
+                  "max": 1000000,
+                  "units": "m^2",
+                  "step": 1
+                }
+              }
+            },
+            {
+              "name": "Agricultural",
+              "type": "Contaminated Building Type",
+              "area": {
+                "name": "area",
+                "type": "Constant",
+                "units": "m^2",
+                "metaData": {
+                  "min": 0,
+                  "max": 1000000,
+                  "units": "m^2",
+                  "step": 1
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Exterior",
+      "filters": [],
+      "parameters": [
+        {
+          "name": "Outdoor Area Contaminated",
+          "type": "Constant",
+          "metaData": {
+            "min": 0,
+            "max": 1000000,
+            "units": "m^2",
+            "step": 1
+          }
+        },
+        {
+          "name": "Outdoor Contamination Breakdown",
+          "type": "Sum Fraction",
+          "entries": [
+            {
+              "key": "Concrete",
+              "value": null
+            },
+            {
+              "key": "Greenspace",
+              "value": null
+            },
+            {
+              "key": "Water",
+              "value": null
+            }
+          ],
+          "metaData": {
+            "min": 0,
+            "max": 1,
+            "units": "%",
+            "step": 0.01
+          }
+        }
+      ]
+    },
+    {
+      "name": "Underground",
+      "filters": [],
+      "parameters": [
+        {
+          "name": "Underground Area Contaminated",
+          "type": "Constant",
+          "metaData": {
+            "min": 0,
+            "max": 1000000,
+            "units": "m^2",
+            "step": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+﻿Names,Minimum,Maximum,Mean/Mode,Standard Deviation
+aerosol,50,50,50,0
+aqueous suspension,50,50,50,0
+foam ambiguous,50,50,50,0
+foam spray,40,80,50.44444444,8.729532867
+fogging,50,50,50,0
+fumigation,30,95,68.96368633,14.09525608
+fumigation/liquid,50,50,50,0
+liquid soaked gauze covering,50,50,50,0
+liquid soaked gauze wipe,50,50,50,0
+gel,45,50,46.66666667,2.5
+immersion,50,50,50,0
+liquid,50,50,50,0
+liquid ambiguous,50,50,50,0
+liquid dropper,50,50,50,0
+liquid immersion,50,50,50,0
+liquid spray,40,80,50.40565,5.67590543
+liquid suspension,50,50,50,0
+liquid wipe,50,20333,18140.24324,6385.090304
+physical,35,90,64.21616712,16.04540581
+solid powder,50,50,50,0
