@@ -240,10 +240,7 @@ def main():
                     text_file.close()
                     texting=open("SPORE.txt",'w')
                     texting.write(arr.get())
-                    texting.close()  
-                text_file=open("path.txt",'w')
-                text_file.write(pdf_path.get())
-                text_file.close()
+                    texting.close() 
                 infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
                     print(self.leg)
@@ -337,8 +334,7 @@ def main():
                 tkMessageBox.showinfo("Helper", "Water efficiency can be estimated using the percentage of residents that have potable water, or the water treatment capability")
               elif infrastructure == "energy":
                 tkMessageBox.showinfo("Helper", "Energy efficiency can be estimated using the percentage of residents of the area with power")
-              elif infrastructure == "Filepath":
-                tkMessageBox.showinfo("Helper", "An example of a correct file path would be: C:\REPOS\InfrastructureRemediation\Task 5 or to write to    file C:\REPOS\InfrastructureRemediation\Task 5\example.pdf")
+  
               elif infrastructure == "transport":
                 transport_window = tk.Tk()
                 tframe = tk.Frame(transport_window)
@@ -585,7 +581,7 @@ def main():
 ##            P0.grid(row=12, column = 1, sticky=tk.NSEW)
 
             ext=ttk.LabelFrame(self,text="Extra Parameters")
-            ext.place(x=530,y=375)
+            ext.place(x=530,y=345)
             
             remediation=ttk.LabelFrame(self,text="Remediation Parameters")
             remediation.place(x=10,y=390)
@@ -636,12 +632,8 @@ def main():
             model=ttk.LabelFrame(self,text="Model Parameters")
             model.place(x=475,y=60)
 
-            pdf_path=tk.StringVar()
-            report=ttk.Entry(model, textvariable=pdf_path)
-            ttk.Label(model,text="Enter Report Output Location: ").grid(row=1, column=2,sticky=tk.W)
-            report.grid(row=1, column=3,sticky=tk.W)
+          
             report_ttp = CreateToolTip(wide, 'Enter Realizations for wide area decontamination tool')
-            report.insert(0, "Results\default_Report.pdf")
             arr=tk.StringVar()
             Spore=ttk.Entry(model, textvariable=arr)
             ttk.Label(model,text="Enter Wide Area Decon Spore Loading (Indoor,Underground,Outdoor):  ").grid(row=2, column=2,sticky=tk.W)
@@ -780,7 +772,6 @@ def main():
             
             #get_text_button=ttk.Button(self,text="Confirm File Path", command = get_text)
             #get_text_button.grid(row=32, column=3)
-            tk.Button(model, text="...", command= lambda: openHelper('Filepath')).grid(row=1, column=3, sticky=tk.E)
             tk.Button(self, text='Save Scenario',font=("Arial", 14), bg='misty rose', command= lambda: saveScenario(),
                       ).grid(row=31, column=0, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)

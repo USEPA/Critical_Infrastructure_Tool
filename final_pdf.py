@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import numpy
 import os.path
+import os.path
 import json
 import locale
 import matplotlib.pyplot as plt
@@ -57,7 +58,7 @@ def avg(arr,token):
             cat_count3=cat_count3+1
             count=count+1
             zeta=zeta+1
-
+            
         elif zeta == 2:
             totalChar=totalChar+entry
             cat_count2=cat_count2+1
@@ -163,7 +164,6 @@ def avgtotal(arr):
     return avg
   
 def array_for_Chart(arr,token,numrealization):
-    print(numrealization)
     if token=="days":
       i=0
       index=0
@@ -229,6 +229,7 @@ def array_for_Chart(arr,token,numrealization):
       incident=[0 for i in range(7*numrealization)]
       incident=[]
       incident=[0 for i in range(7*numrealization)]
+      zeta =0
       for entry in arr:
         if zeta == 0:
             PreDecon[index]=arr[i]
@@ -268,7 +269,6 @@ def array_for_Chart(arr,token,numrealization):
 def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, paramTypes, n0, nRun, timeSpan, contamination, contaminated = False):
     pdf = FPDF()
     pdf.add_page()
-    
     pdf.set_fill_color(204, 255, 204)
     width= 70
     height = 10
@@ -314,8 +314,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
     Mapping_File_Path=Path("Results//Mapping.png")
     if Mapping_File_Path.exists():
-    pdf.cell(width, height, "A map of the scenario is depicted below", ln=1)
-    pdf.image("Results//Mapping.png", w=180)
+        pdf.cell(width, height, "A map of the scenario is depicted below", ln=1)
+        pdf.image("Results//Mapping.png", w=180)
     else:
         pdf.set_font('Times', '', 14)
         message="GIS data not available"
@@ -330,16 +330,16 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     sector_list = ["Water", "Energy", "Transportation", "Communications", "Government", "Food & Agriculture",
                    "Emergency Services", "Waste Management", "Healthcare"]
     data = ["Infrastructure Sector", "Initial Efficiency (%)", "Initial Contamination"]
-    pdf.cell(60, height, str(data[0]), border=1, fill = True)
-    pdf.cell(60, height, str(data[1]), border=1, fill = True)
-    pdf.cell(60, height, str(data[2]), border=1, ln=1, fill = True)
+    pdf.cell(60, height, str(data[0]), border=1, align = 'C',fill = True)
+    pdf.cell(60, height, str(data[1]), border=1, align = 'C',fill = True)
+    pdf.cell(60, height, str(data[2]), border=1, ln=1, align = 'C',fill = True)
     for i in range(len(n0)):
-        pdf.cell(60, height, str(sector_list[i]), border=1)
-        pdf.cell(60, height, str(n0[i]), border=1)
+        pdf.cell(60, height, str(sector_list[i]), border=1,align = 'C')
+        pdf.cell(60, height, str(n0[i]), border=1,align = 'C')
         if len(contamination) > 0:
-            pdf.cell(60, height, str(round((100-contamination[i]),1)), border=1, ln=1)
+            pdf.cell(60, height, str(round((100-contamination[i]),1)), border=1, align = 'C',ln=1)
         else:
-            pdf.cell(60, height, str(0), border=1, ln=1)
+            pdf.cell(60, height, str(0), border=1,align = 'C', ln=1)
     pdf.cell(width, 5, ln=1)
     pdf.set_font('Times', 'B', 12)
     pdf.set_font('Times', 'B', 12)
@@ -364,17 +364,16 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     prior1 = "The first prioritization is based on how tightly linked an infrastructure is to other infrastructure sectors."
     prior2 = "The higher the connection strength, the more other infrastructure sectors are dependant on that infrastructure."
     prior3 = "Infrastructures with more dependancies will be prioritized in this ranking."
-    
-    data = ["Infrastructure Sector", "Connection Strength"]
+    data = ["Infrastructure Sector", "Connection Strength"] 
     pdf.cell(width, 5, prior1,ln=1)
     pdf.cell(width, 5, prior2,ln=1)
     pdf.cell(width, 5, prior3,ln=1)
-    pdf.cell(width, height, str(data[0]), border=1,fill = True)
-    pdf.cell(width, height, str(data[1]), border=1, ln=1, fill = True)
+    pdf.cell(width, height, str(data[0]), border=1,align = 'C',fill = True)
+    pdf.cell(width, height, str(data[1]), border=1, ln=1,align = 'C', fill = True)
     for key, value in ranked_dict:
         data = [key, str(round(float(value), 2))]
-        pdf.cell(width, height, str(data[0]), border=1)
-        pdf.cell(width, height, str(data[1]), border=1, ln=1)
+        pdf.cell(width, height, str(data[0]), border=1,align = 'C')
+        pdf.cell(width, height, str(data[1]), border=1,align = 'C', ln=1)
         i += 1
     pdf.set_font('Times', 'B', 12)
     pdf.cell(width, height, 'Estimated Infrastructure Prioritization Based on Median Recovery Time: \n', ln=1)
@@ -384,14 +383,13 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     prior2 = "Infrastructures with longer average recovery times will be prioritized in this ranking."
     pdf.cell(width, 5, prior1,ln=1)
     pdf.cell(width, 5, prior2, ln=1)
-    
     data = ["Infrastructure Sector", "Recovery Time (days)"]
-    pdf.cell(width, height, str(data[0]), border=1, fill = True)
-    pdf.cell(width, height, str(data[1]), border=1, ln=1, fill = True)
+    pdf.cell(width, height, str(data[0]), border=1,align = 'C', fill = True)
+    pdf.cell(width, height, str(data[1]), border=1, ln=1,align = 'C', fill = True)
     for key, value in ranked_dict_rt:
         data = [key, str(round(float(value), 2))]
-        pdf.cell(width, height, str(data[0]), border=1)
-        pdf.cell(width, height, str(data[1]), border=1, ln=1)
+        pdf.cell(width, height, str(data[0]), border=1,align = 'C')
+        pdf.cell(width, height, str(data[1]), border=1,align = 'C', ln=1)
         i += 1
     pdf.cell(width, height, ln=1)   
     #adding sensitivity
@@ -415,7 +413,6 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         sector_name = getSector(paramIndexes[i])
         graph = "Images/" + filename + " " + sector_name
         name = graph + ".png"
-        
         pdf.image(name, w=150)
     pdf.set_font('Times', 'B', 12)
     pdf.cell(width, height, "Requested Sensitivity Analyses", ln=1)
@@ -445,20 +442,16 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     if check == "True" :
         days={}
         json_days='day.json'
-        real=open("C:\\locations\\Realizethelocation.txt","w")
-        real.write(master_path)
-        real.close()
+       
         si = subprocess.STARTUPINFO()
         si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        f = open("C:\\locations\\assemble.txt", "r")
-        execute1=f.read()
-        f.close()
-        execute=master_path+'\\Launcher\\Battelle.EPA.WideAreaDecon.Launcher.exe'
+       
+        execute=master_path+'\\Battelle.EPA.WideAreaDecon.Launcher.exe'
         
         fileLoc = master_path+"\\JobRequest.json"
         f=open(fileLoc)
         task5json=json.load(f)
-        fileLoc = r'C:\Users\TYRAWA\Documents\SIRMResults.json'
+        fileLoc = master_path+"\\SIRMResults.json"
         f=open(fileLoc)
         SIRM=json.load(f)
         Spore_loading=open(master_path+"\\SPORE.txt","r")
@@ -501,21 +494,25 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"]=SIRM["data"][2]["value"]
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]=SIRM["data"][4]["value"]
         task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]=SIRM["data"][3]["value"]
-        print(master_path)
-      
         real=open(master_path+"\\realizations.txt","r")
         number=real.read()
         real.close()
         task5json["numberRealizations"]=number
-        with open(master_path+'\\Launcher\\newJobRequest.json', 'w') as myfile:
+        with open(master_path+'\\newJobRequest.json', 'w') as myfile:
             json.dump(task5json,myfile)
         try:
           _path=master_path+"\\newJobRequest.json"
-          cmd=[execute]
-          subprocess.check_output("cmd/k"+execute)
+          
+          cmd=[execute,_path]
+          cmd=execute+" "+_path
+          
+          os.chdir(master_path)
+          subprocess.Popen(cmd,startupinfo=si)
+          
+          
         except subprocess.CalledProcessError as e:
           print (e)
-        with open(master_path+"\\Task 2 Results.json") as f: ## CHECK HERE
+        with open(master_path+"\\executingDirectoryPath\\Task 2 Results.json") as f: ## CHECK HERE
             task2=json.load(f)
         numrealization=len(task2)
         indexjson=numrealization-1
@@ -583,9 +580,9 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 outdoor_avgs_days=avg(Outdoor_workDays,"days")
                 outdoor_avg_total=avgtotal(Outdoor_total)
                 Titles = ["Phase", "Avg Phase Cost in USD","Avg Work Days"]      
-                pdf.cell(90,height,Titles[0],border=1,fill=True)
-                pdf.cell(50,height,Titles[1],border=1,fill=True)
-                pdf.cell(45,height,Titles[2],border=1,fill=True)
+                pdf.cell(90,height,Titles[0],border=1,align = 'C',fill=True)
+                pdf.cell(50,height,Titles[1],border=1,align = 'C',fill=True)
+                pdf.cell(45,height,Titles[2],border=1,align = 'C',fill=True)
                 multi21=3
                 heading=["Pre-Decontamination Characterization Sampling", "Post-Decontamination Characterization Sampling","Total Characterization Sampling","Source Reduction","Decontamination" ,"Incident Command"]
                 for i in range(len(outdoor_avgs_money)):   
@@ -593,25 +590,23 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                         pdf.ln(" ")
                         multi21=0
                     else:
-                        pdf.cell(90, height, str(heading[i-1]), border=1)
+                        pdf.cell(90, height, str(heading[i-1]), border=1,align = 'C')
                         temp=outdoor_avgs_money[i-1]
                         temp=round(float(temp), 2)
                         temp="{0:,.2f}".format(temp)
-                        pdf.cell(50,height,"$"+str(temp),border=1)
-                        pdf.multi_cell(45, height, str(round(float(outdoor_avgs_days[i-1]), 2)), border=1)
+                        pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                        pdf.multi_cell(45, height, str(round(float(outdoor_avgs_days[i-1]), 2)), border=1,align = 'C')
 
-                pdf.cell(90, height, str(heading[5]), border=1)
+                pdf.cell(90, height, str(heading[5]), border=1,align = 'C')
                 temp=outdoor_avgs_money[5]
                 temp=round(float(temp), 2)
                 temp="{0:,.2f}".format(temp)
-                pdf.cell(50,height,"$"+str(temp),border=1)
-                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1)
+                pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1,align = 'C')
                 pdf.ln(" ")
-                disp=outdoor_avg_total
-                disp=round(float(disp), 2)
-                disp="{0:,.2f}".format(disp)
-                text_45="The total outdoor cost was found from the Wide Area Decontamination Tool to be: $" + str(disp)
-                pdf.cell(60,5,text_45,ln=1)
+                disp_outdoor=outdoor_avg_total
+                disp_outdoor=round(float(disp_outdoor), 2)
+                disp_outdoor="{0:,.2f}".format(disp_outdoor)
             if z == 0:
                 index4=0
                 index5=0
@@ -648,35 +643,34 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 heading=[0 for i in range(3)]
                 heading=["Pre-Decontamination Characterization Sampling", "Post-Decontamination Characterization Sampling","Total Characterization Sampling","Source Reduction","Decontamination" ,"Incident Command"]
                 Titles = ["Phase", "Avg Phase Cost in USD","Avg Work Days"]      
-                pdf.cell(90,height,Titles[0],border=1,fill=True)
-                pdf.cell(50,height,Titles[1],border=1,fill=True)
-                pdf.cell(45,height,Titles[2],border=1,fill=True)
+                pdf.cell(90,height,Titles[0],border=1,align = 'C',fill=True)
+                pdf.cell(50,height,Titles[1],border=1,align = 'C',fill=True)
+                pdf.cell(45,height,Titles[2],border=1,align = 'C',fill=True)
                 multi21=3
                 for i in range(len(Underground_avgs_money)):   
                     if multi21==3:
                         pdf.ln(" ")
                         multi21=0
                     else:
-                        pdf.cell(90, height, str(heading[i-1]), border=1)
+                        pdf.cell(90, height, str(heading[i-1]), border=1,align = 'C')
                         temp=Underground_avgs_money[i-1]
                         temp=round(float(temp), 2)
                         temp="{0:,.2f}".format(temp)
-                        pdf.cell(50,height,"$"+str(temp),border=1)
-                        pdf.multi_cell(45, height, str(round(float(Underground_avgs_days[i-1]), 2)), border=1)
+                        pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                        pdf.multi_cell(45, height, str(round(float(Underground_avgs_days[i-1]), 2)), border=1,align = 'C')
 
-                pdf.cell(90, height, str(heading[5]), border=1)
+                pdf.cell(90, height, str(heading[5]), border=1,align = 'C')
                 temp=Underground_avgs_money[5]
                 temp=round(float(temp), 2)
                 temp="{0:,.2f}".format(temp)
-                pdf.cell(50,height,"$"+str(temp),border=1)
-                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1)
+                pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1,align = 'C')
                 
                 pdf.ln(" ")
-                disp=Underground_avg_total
-                disp=round(float(disp), 2)
-                disp="{0:,.2f}".format(disp)
-                text_45="The total indoor cost was found from the Wide Area Decontamination Tool to be: $" + str(disp)
-                pdf.cell(60,5,text_45,ln=1)
+                disp_Under=Underground_avg_total
+                disp_Under=round(float(disp_Under), 2)
+                disp_Under="{0:,.2f}".format(disp_Under)
+                
                 pdf.ln(" ")
             #########################Outdoor End
             if(z==0): 
@@ -738,9 +732,9 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 heading=[0 for i in range(3)]
                 pdf.ln(" ")
                 Titles = ["Phase", "Avg Phase Cost in USD","Avg Work Days"]      
-                pdf.cell(90,height,Titles[0],border=1,fill=True)
-                pdf.cell(50,height,Titles[1],border=1,fill=True)
-                pdf.cell(45,height,Titles[2],border=1,fill=True)
+                pdf.cell(90,height,Titles[0],border=1,align = 'C',fill=True)
+                pdf.cell(50,height,Titles[1],border=1,align = 'C',fill=True)
+                pdf.cell(45,height,Titles[2],border=1,align = 'C',fill=True)
                 multi21=3
                 heading=[0 for i in range(6)]
                 heading=["Pre-Decontamination Characterization Sampling", "Post-Decontamination Characterization Sampling","Total Characterization Sampling","Source Reduction","Decontamination" ,"Incident Command"]
@@ -749,33 +743,32 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                         pdf.ln(" ")
                         multi21=0    
                     else:
-                        pdf.cell(90, height, str(heading[i-1]), border=1)
+                        pdf.cell(90, height, str(heading[i-1]), border=1,align = 'C')
                         temp=indoor_avgs_money[i-1]
                         temp="{0:,.2f}".format(temp)
-                        pdf.cell(50,height,"$"+str(temp),border=1)
-                        pdf.multi_cell(45, height, str(round(float(indoor_avgs_days[i-1]), 2)), border=1)
+                        pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                        pdf.multi_cell(45, height, str(round(float(indoor_avgs_days[i-1]), 2)), border=1,align = 'C')
 
 
-                pdf.cell(90, height, str(heading[5]), border=1)
+                pdf.cell(90, height, str(heading[5]), border=1,align = 'C')
                 temp=indoor_avgs_money[5]
                 temp="{0:,.2f}".format(temp)
-                pdf.cell(50,height,"$"+str(temp),border=1)
-                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1)
+                pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1,align = 'C')
                 pdf.ln(" ")
-                disp=indoor_avg_total
-                disp=round(float(disp), 2)
-                disp="{0:,.2f}".format(disp)
-                text_45="The total indoor cost was found from the Wide Area Decontamination Tool to be: $" + str(disp)
-                pdf.cell(60,5,text_45,ln=1)
+                disp_indoor=indoor_avg_total
+                disp_indoor=round(float(disp_indoor), 2)
+                disp_indoor="{0:,.2f}".format(disp_indoor)
+
                 percent=[]
                 percent=[0 for i in range(8)]
-                percent[0]=task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Residential"]["value"]
-                percent[1]=task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Commercial"]["value"]  
-                percent[2]=task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Industrial"]["value"]
-                percent[3]=task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Agricultural"]["value"]
-                percent[4]=task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"]
-                percent[5]=task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]
-                percent[6]=task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]
+                percent[0]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Residential"]["value"])*100
+                percent[1]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Commercial"]["value"])*100 
+                percent[2]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Industrial"]["value"])*100
+                percent[3]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Agricultural"]["value"])*100
+                percent[4]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"])*100
+                percent[5]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"])*100
+                percent[6]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"])*100
                 headings=[]
                 headings=[0 for i in range(8)]
                 headings=["Residential","Commercial","Industrial","Agricultural","Religious","Government","Educational"]
@@ -783,16 +776,55 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 fig.set_size_inches(4, 4)
                 colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
                 newvalues = [x for x in percent if x != 0]
-                plt.pie(newvalues, autopct='%1.1f%%',
-                        shadow=True, startangle=90,colors=colors1)
-                lgd=plt.legend(headings, bbox_to_anchor = (1.05, 0.6))
+                labels = ['{0} - {1:1.2f} %'.format(i,j) for i,j in zip(headings, newvalues)]
+                patches, texts = plt.pie(newvalues, shadow=True, colors=colors1, radius=1.2)
+                sort_legend = True
+                if sort_legend:
+                    patches, labels, dummy =  zip(*sorted(zip(patches, labels, newvalues),
+                                                          key=lambda headings: headings[2],
+                                                          reverse=True))
+                lgd=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
                 plt.title('Indoor Contamination by Type')
                 plt.savefig('Indoor_Contamination%.png', bbox_extra_artists=(lgd,), bbox_inches="tight")
                 pdf.image('Indoor_Contamination%.png', x = None, y = None, w=0, h=0, type='', link='')
+
+                ##Days
                 Outdoor_days_break=array_for_Chart(Outdoor_workDays,"days",numrealization)
                 Underground_days_break=array_for_Chart(Underground_workDays,"days",numrealization)
                 Indoor_days_break=array_for_Chart(Indoor_workDays,"days",numrealization)
+
+                ##MONEY
+                Indoor_money_break=array_for_Chart(Indoor_phase_costs,"money",numrealization)
+                Underground_money_break=array_for_Chart(Underground_phase_costs,"money",numrealization)
+                Outdoor_money_break=array_for_Chart(Outdoor_phase_costs,"money",numrealization)
+                
                 #return PreDecon,PostDecon,totalChar,source,Decon
+                pdf.set_font('Times', 'B', 16)
+                pdf.cell(width, 5,"Summary Of Results", ln=1)
+                pdf.ln(" ")
+                pdf.set_font('Times','', 12)
+                totals=[]
+                totals=[0 for i in range(3)]
+                totals=[disp_indoor, disp_outdoor,disp_Under]
+                headings_total=[]
+                headings_total=[0 for i in range(3)]
+                headings_total=["Average Total Indoor","Average Total Outdoor","Average Total Underground"]
+                multi21=3
+                pdf.cell(35,height,"  ")
+                pdf.cell(50,height,"Type",border=1,align = 'C',fill=True)
+                pdf.cell(50,height,"Average Totals in USD",border=1,align = 'C',fill=True)
+                for i in range(len(totals)):
+                  if multi21==3:
+                     pdf.ln(" ")
+                     multi21=0
+                  else:
+                        pdf.cell(35,height,"  ")
+                        pdf.cell(50,height,headings_total[i-1],border=1,align = 'C')
+                        pdf.multi_cell(50,height,"$"+str(totals[i-1]),border=1,align = 'C')
+                pdf.cell(35,height,"  ")        
+                pdf.cell(50,height,headings_total[2],border=1,align = 'C')
+                pdf.cell(50,height,"$"+totals[2],border=1,align = 'C')
+                
                 Pre_Outdoor=Outdoor_days_break[0]
                 Post_Outdoor=Outdoor_days_break[1]
                 totalChar_Outdoor=Outdoor_days_break[2]
@@ -804,6 +836,78 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 totalChar_Underground=Underground_days_break[2]
                 source_Underground=Underground_days_break[3]
                 Decon_Underground=Underground_days_break[4]
+                
+                Pre_Indoor=Indoor_days_break[0]
+                Post_Indoor=Indoor_days_break[1]
+                totalChar_Indoor=Indoor_days_break[2]
+                source_Indoor=Indoor_days_break[3]
+                Decon_Indoor=Indoor_days_break[4]
+                
+                pre_outsum_days=sum(Pre_Outdoor)
+                pre_undersum_days=sum(Pre_Underground)
+                pre_Indoor_sum_days=sum(Pre_Indoor)
+
+                predaystotal=pre_outsum_days+pre_undersum_days+pre_Indoor_sum_days
+
+                post_outsum_days=sum(Post_Outdoor)
+                post_undersum_days=sum(Post_Underground)
+                post_Indoor_sum_days=sum(Post_Indoor)
+
+                postdaystotal=post_outsum_days+post_undersum_days+post_Indoor_sum_days
+                
+                totalChar_outsum_days=sum(totalChar_Outdoor)
+                totalChar_undersum_days=sum(totalChar_Underground)
+                totalChar_Indoor_sum_days=sum(totalChar_Indoor)
+
+                totalChardaystotal=totalChar_outsum_days+totalChar_undersum_days+totalChar_Indoor_sum_days
+
+                source_outsum_days=sum(source_Outdoor)
+                source_undersum_days=sum(source_Underground)
+                source_Indoor_sum_days=sum(source_Indoor)
+
+                sourcedaystotal=source_outsum_days+source_undersum_days+source_Indoor_sum_days
+
+                Decon_outsum_days=sum(Decon_Outdoor)
+                Decon_undersum_days=sum(Decon_Underground)
+                Decon_Indoor_sum_days=sum(Decon_Indoor)
+
+                Decondaystotal=Decon_outsum_days+Decon_undersum_days+Decon_Indoor_sum_days
+
+                total_days=predaystotal+sourcedaystotal+Decondaystotal+postdaystotal+totalChardaystotal
+
+
+                pre_percent=(predaystotal/total_days)*100
+                post_percent=(postdaystotal/total_days)*100
+                char_percent=(totalChardaystotal/total_days)*100
+                source_percent=(sourcedaystotal/total_days)*100
+                Decon_percent=(Decondaystotal/total_days)*100
+                workdays=[pre_percent,post_percent,char_percent,source_percent,Decon_percent]
+                
+                
+                heading=["Pre-Decontamination", "Post-Decontamination","Total Characterization","Source Reduction","Decontamination" ,"Incident Command"]
+                fig, ax = plt.subplots()
+                fig.set_size_inches(4, 4)
+                colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
+                newvalues = [x for x in workdays if x != 0]
+                labels = ['{0} - {1:1.2f} %'.format(i,j) for i,j in zip(heading, workdays)]
+                patches, texts = plt.pie(workdays, shadow=True, colors=colors1, radius=1.2)
+                sort_legend = True
+                if sort_legend:
+                    patches, labels, dummy =  zip(*sorted(zip(patches, labels, workdays),
+                                                          key=lambda heading: heading[2],
+                                                          reverse=True))
+
+                lgd1=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
+                plt.title('Workday Breakdown By Element')
+                plt.savefig('Workday Breakdown By Element%.png', bbox_extra_artists=(lgd1,), bbox_inches="tight")
+                pdf.ln(" ")
+                pdf.image('Workday Breakdown By Element%.png', x = None, y = None, w=0, h=0, type='', link='')
+
+
+
+                
+
+                
                 pdf.ln(" ")
 
             z=z+1
@@ -819,46 +923,6 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     pdf.cell(width, height,disclaimer1, ln=1)
     pdf.cell(width, height,disclaimer2, ln=1)
     path=Path(master_path + '\path.txt')
-    if (path.exists()):
-        f = open(path, "r")
-        zeta=f.read()
-        itter_path=zeta
-        zeta=Path(zeta)
-        if (zeta.exists()):
-            b=0
-            j=0
-            check=False
-            for i in reversed(itter_path):
-                if i=='f' or i == 'p' or i == 'd' or i=='.' and b != 4:
-                    b=b+1
-                if (b==4):
-                    check=True
-                    break
-                elif(j==4):
-                    check=False
-                    break
-                else:
-                    j=j+1
-           
-            if check==True and os.path.getsize(master_path + '\path.txt') != 0: ### path
-                try:
-                    pdf.output(itter_path)
-                    tkMessageBox.showinfo("Helper","pdf created in the location provided: " + itter_path)
-                except:
-                    tkMessageBox.showinfo("Helper","Something went wrong check permissions for the filepath if not try entering new file path, no pdf created ")
-            elif os.path.getsize(master_path + '\path.txt') != 0: #####path
-                try:
-                    pdf.output(itter_path + "\created.pdf" , 'F')
-                    tkMessageBox.showinfo("Helper","pdf created in the location provided: " + itter_path +" with name created.pdf" )
-                except:
-                    tkMessageBox.showinfo("Helper","Something went wrong check permissions for the filepath if not try entering new file path, no pdf created")
-            else:
-                tkMessageBox.showinfo("Helper","no path provided Report is located in Results/" + filename + "_Report.pdf")
-                pdf.output('Results/' + filename + "_Report.pdf", 'F')
-        else:
-            tkMessageBox.showinfo("Helper","your filepath is not valid and/or does not exists review your input and try again check the help button for a file path example report is generated in in Results/"+ filename + "_Report.pdf")
-            pdf.output('Results/' + filename + "_Report.pdf", 'F')
-    else:
     pdf.output('Results/' + filename + "_Report.pdf", 'F')
 
 def getInfrastructureList(location, pdf, width, height, location2, contaminated, location3 = "Overall//"):
