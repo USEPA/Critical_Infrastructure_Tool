@@ -19,6 +19,7 @@ from plotnine import *
 from matplotlib import rcParams
 import pathlib
 import subprocess
+from IPython.display import Latex
 if (sys.version_info > (3, 0)):
   import tkinter as tk
   from tkinter import ttk
@@ -28,7 +29,10 @@ else:
   from Tkinter import ttl
 import tkinter.messagebox as tkMessageBox
 from pylab import *
-
+def wrapArg(s):
+    if len(str(s).split(' ')) <= 1:
+        return s
+    return (f"\"{s}\"")
 #Root = os.path.abspath(os.path.dirname(__file__))
 def avg(arr,token):
     count=0
@@ -184,7 +188,6 @@ def array_for_Chart(arr,token,numrealization):
       Decon=[0 for i in range(7*numrealization)]
       for entry in arr:
         if zeta == 0:
-  
             PreDecon[index]=entry
             index=index+1
             zeta=zeta+1
@@ -232,37 +235,34 @@ def array_for_Chart(arr,token,numrealization):
       zeta =0
       for entry in arr:
         if zeta == 0:
-            PreDecon[index]=arr[i]
-            i=i+1
+            PreDecon[index]=entry
+           
             index=index+1
             zeta=zeta+1
         elif zeta == 1:
-            PostDecon[index2]=arr[i]
-            i=i+1
+            PostDecon[index2]=entry
+           
             index2=index2+1
             zeta=zeta+1
             
         elif zeta == 2:
-            totalChar[index3]=arr[i]
+            totalChar[index3]=entry
             index3=index3+1
             i=i+1
             zeta=zeta+1
            
         elif zeta == 3 :
-            source[index4]=arr[i]
+            source[index4]=entry
             index4=index4+1
-            i=i+1
             zeta=zeta+1
             
         elif zeta==4:
-            Decon[index5]=arr[i]
+            Decon[index5]=entry
             index5=index5+1
-            i=i+1
             zeta=zeta+1
         else:
-            incident[index6]=incident[index6]+entry
+            incident[index6]=entry
             index6=index6+1
-            i=i+1
             zeta=0
       return PreDecon,PostDecon,totalChar,source,Decon,incident
  
@@ -368,9 +368,12 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     pdf.cell(width, 5, prior1,ln=1)
     pdf.cell(width, 5, prior2,ln=1)
     pdf.cell(width, 5, prior3,ln=1)
+    pdf.ln(" ")
+    pdf.cell(20, height, " " )
     pdf.cell(width, height, str(data[0]), border=1,align = 'C',fill = True)
     pdf.cell(width, height, str(data[1]), border=1, ln=1,align = 'C', fill = True)
     for key, value in ranked_dict:
+        pdf.cell(20, height, " " )
         data = [key, str(round(float(value), 2))]
         pdf.cell(width, height, str(data[0]), border=1,align = 'C')
         pdf.cell(width, height, str(data[1]), border=1,align = 'C', ln=1)
@@ -383,10 +386,13 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     prior2 = "Infrastructures with longer average recovery times will be prioritized in this ranking."
     pdf.cell(width, 5, prior1,ln=1)
     pdf.cell(width, 5, prior2, ln=1)
+    pdf.ln(" ")
     data = ["Infrastructure Sector", "Recovery Time (days)"]
+    pdf.cell(20, height, " " )
     pdf.cell(width, height, str(data[0]), border=1,align = 'C', fill = True)
     pdf.cell(width, height, str(data[1]), border=1, ln=1,align = 'C', fill = True)
     for key, value in ranked_dict_rt:
+        pdf.cell(20, height, " " )
         data = [key, str(round(float(value), 2))]
         pdf.cell(width, height, str(data[0]), border=1,align = 'C')
         pdf.cell(width, height, str(data[1]), border=1,align = 'C', ln=1)
@@ -426,7 +432,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
 
     pdf.set_font('Times', 'B', 12)
     for g in range(len(sensitivity)):
-        graph = "Sensitivity Images/" + getSector(sensitivity[g]) + " Sensitivity43316916.png"
+       #graph = "Sensitivity Images/" + getSector(sensitivity[g]) + " Sensitivity43316916.png"
+        graph = "Sensitivity Images/" + getSector(sensitivity[g]) + " Sensitivity.png"
         pdf.image(graph, w=150)
     json_path="check.json"
     file = pathlib.Path(json_path)
@@ -442,81 +449,12 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     if check == "True" :
         days={}
         json_days='day.json'
-       
-        si = subprocess.STARTUPINFO()
-        si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-       
-        execute=master_path+'\\Battelle.EPA.WideAreaDecon.Launcher.exe'
-        
-        fileLoc = master_path+"\\JobRequest.json"
-        f=open(fileLoc)
-        task5json=json.load(f)
-        fileLoc = master_path+"\\SIRMResults.json"
-        f=open(fileLoc)
-        SIRM=json.load(f)
-        Spore_loading=open(master_path+"\\SPORE.txt","r")
-        Spore=Spore_loading.read()
-        Spore_loading.close()
-        spore_count=0
-        Indoor_Spore=""
-        Outdoor_Spore=""
-        Underground_Spore=""
-        Spore_Results=[]
-        Spore_Results=[0 for i in range(len(Spore))]
-        i=0
-        b=0
-        j=1
-        for c in Spore:
-            Spore_Results[i]=c
-            i=i+1
-        for z in Spore_Results:
-           if z.isspace():
-             spore_count=spore_count+1
-           else:
-             if spore_count==0:
-               Indoor_Spore=Indoor_Spore+z
-             elif spore_count==1:
-               Outdoor_Spore=Outdoor_Spore+z
-             elif spore_count==2:
-               Underground_Spore=Underground_Spore+z
-
-       
-        task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"]=SIRM["data"][6]["value"]##AREA CONTAMINATED
-        task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"]=SIRM["data"][7]["value"]
-
-        task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]=Outdoor_Spore##LOADING
-        task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]=Underground_Spore
-        task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]=Indoor_Spore
-
-        task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Commercial"]["value"]=SIRM["data"][1]["value"]
-        task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Industrial"]["value"]=SIRM["data"][0]["value"]
-        task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Agricultural"]["value"]=SIRM["data"][5]["value"]
-        task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"]=SIRM["data"][2]["value"]
-        task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]=SIRM["data"][4]["value"]
-        task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]=SIRM["data"][3]["value"]
-        real=open(master_path+"\\realizations.txt","r")
-        number=real.read()
-        real.close()
-        task5json["numberRealizations"]=number
-        with open(master_path+'\\newJobRequest.json', 'w') as myfile:
-            json.dump(task5json,myfile)
-        try:
-          _path=master_path+"\\newJobRequest.json"
-          
-          cmd=[execute,_path]
-          cmd=execute+" "+_path
-          
-          os.chdir(master_path)
-          subprocess.Popen(cmd,startupinfo=si)
-          
-          
-        except subprocess.CalledProcessError as e:
-          print (e)
         with open(master_path+"\\executingDirectoryPath\\Task 2 Results.json") as f: ## CHECK HERE
             task2=json.load(f)
         numrealization=len(task2)
         indexjson=numrealization-1
         z=0
+      
         while z != numrealization:
             pdf.set_font('Times', 'B', 12)
             pdf.set_fill_color(204, 255, 204)
@@ -549,28 +487,38 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                        index3=index3+1
             if (z==indexjson):
                 days["Outdoor"]=Outdoor_workDays
-                some_text="The following data was generated by the Wide Area Decontamination Tool for the Indoor,Outdoor and Underground Catagories."
-                text4="The metrics of average total cost for each type are located in the tables below."
+                text445="The Wide Area Decontamination tool can characterize wide-area indoor, outdoor, and underground biological"
+                text_intro3="incidents and estimate the cost, time, and resources associated with the decontamination of these site areas while"
+                text_intro4="implementing a methodology for estimating efficacy, or the effectiveness of a given decontamination treatment at"
+                text_intro5="reducing the contaminant present on a surface. "
+                text_intro6="The final developed model estimates the cost of each step of the decontamination process as well as the "
+                text_intro7="overall cost of the remediation effort for the incident. It also estimates the overall time spent decontaminating "
+                text_intro8="and the various resources needed for the process, such as personal protective equipment (PPE),"
+                text_intro9="decontamination agent,and associated delivery systems."
+           
+                pdf.ln(" ")
+                pdf.ln(" ")
+                pdf.ln(" ")
+                pdf.ln(" ")
+                pdf.ln(" ")
+                pdf.ln(" ")
+                pdf.ln(" ")
                 
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
                 pdf.set_font('Times','B',16)
                 pdf.cell(60,5, "Wide Area Decontamination Tool", ln=1)
                 pdf.ln(" ")
                 pdf.set_font('Times', '', 12)
-                pdf.cell(60,5,some_text,ln=1)
-                pdf.cell(60,5,text4,ln=1)
-               
+                pdf.cell(60,5,text445,ln=1)
+                pdf.cell(60,5,text_intro3,ln=1)
+                pdf.cell(60,5,text_intro4,ln=1)
+                pdf.cell(60,5,text_intro5,ln=1)
+                pdf.cell(60,5,text_intro6,ln=1)
+                pdf.cell(60,5,text_intro7,ln=1)
+                pdf.cell(60,5,text_intro8,ln=1)
+                pdf.cell(60,5,text_intro9,ln=1)
                 pdf.ln(" ")
-                pdf.ln(" ")
-                
+              
+              
                 text="Outdoor Results"
                 pdf.set_font('Times','B',16)
                 pdf.cell(60,5,text,ln=1)
@@ -602,7 +550,10 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 temp=round(float(temp), 2)
                 temp="{0:,.2f}".format(temp)
                 pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
-                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1,align = 'C')
+                pdf.set_fill_color(0)
+                pdf.multi_cell(45, height, border=1,align = 'C',fill=True)
+                pdf.set_fill_color(204, 255, 204)
+               
                 pdf.ln(" ")
                 disp_outdoor=outdoor_avg_total
                 disp_outdoor=round(float(disp_outdoor), 2)
@@ -629,7 +580,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                        Underground_total[index6]=task2[z]["Underground"][key][key2]
                        index6=index6+1
             if (z==indexjson):
-                pdf.ln(" ")
+                
+                
                 text="Underground Results"
                 pdf.set_font('Times','B',16)
                 pdf.cell(60,5,text,ln=1)
@@ -664,13 +616,13 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 temp=round(float(temp), 2)
                 temp="{0:,.2f}".format(temp)
                 pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
-                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1,align = 'C')
-                
-                pdf.ln(" ")
+                pdf.set_fill_color(0)
+                pdf.multi_cell(45, height, border=1,align = 'C',fill=True)
+                pdf.set_fill_color(204, 255, 204)
+               
                 disp_Under=Underground_avg_total
                 disp_Under=round(float(disp_Under), 2)
-                disp_Under="{0:,.2f}".format(disp_Under)
-                
+                disp_Under="{0:,.2f}".format(disp_Under)                
                 pdf.ln(" ")
             #########################Outdoor End
             if(z==0): 
@@ -701,30 +653,27 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                            Indoor_total[index11]=task2[z]["Indoor"][key][key2][key3]
                            index11=index11+1
             if (z==indexjson):
-                pdf.ln(" ")
+               
                 with open(json_days, "w") as f:
                       json.dump(days,  f)
 
                 pdf.ln(" ")
                 pdf.ln(" ")
                 pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
-                pdf.ln(" ")
                 text="Indoor Results"
-                
                 pdf.set_font('Times','B',16)
-                
                 pdf.cell(60,5,text,ln=1)
                 pdf.ln(" ")
                 pdf.set_font('Times', '', 12)
                 text="The indoor results include inputs from Residential, Commercial, Industrial, Agricultural, Religous, Government,"
-                text2="and Educational buildings. Phase costs and work days were taken from each type of building and averages for"
-                text3="each phase were calculated and phase were calculated and displayed."
+                text2="and Educational. Phase costs and work days were taken from each type of building and averages for"
+                text3="each phase were calculated. Note: buildings are included if value is specified for the type."
+                text4="A breakdown for the percentage of indoor contamination by type is below the chart."
                 pdf.cell(60,5,text,ln=1)
                 pdf.cell(60,5,text2,ln=1)
                 pdf.cell(60,5,text3,ln=1)
-                
+                #pdf.ln(" ")
+                pdf.cell(60,5,text4,ln=1)
                 indoor_avgs_money=avg(Indoor_phase_costs,"money")
                 indoor_avgs_days=avg(Indoor_workDays,"days")
                 indoor_avg_total=avgtotal(Indoor_total)
@@ -754,54 +703,33 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 temp=indoor_avgs_money[5]
                 temp="{0:,.2f}".format(temp)
                 pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
-                pdf.multi_cell(45, height, str(round(float(0), 2)), border=1,align = 'C')
+                pdf.set_fill_color(0)
+                pdf.multi_cell(45, height, border=1,align = 'C',fill=True)
+                pdf.set_fill_color(204, 255, 204)
+               
                 pdf.ln(" ")
                 disp_indoor=indoor_avg_total
                 disp_indoor=round(float(disp_indoor), 2)
                 disp_indoor="{0:,.2f}".format(disp_indoor)
 
-                percent=[]
-                percent=[0 for i in range(8)]
-                percent[0]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Residential"]["value"])*100
-                percent[1]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Commercial"]["value"])*100 
-                percent[2]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Industrial"]["value"])*100
-                percent[3]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Agricultural"]["value"])*100
-                percent[4]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"])*100
-                percent[5]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"])*100
-                percent[6]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"])*100
-                headings=[]
-                headings=[0 for i in range(8)]
-                headings=["Residential","Commercial","Industrial","Agricultural","Religious","Government","Educational"]
-                fig, ax = plt.subplots()
-                fig.set_size_inches(4, 4)
-                colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
-                newvalues = [x for x in percent if x != 0]
-                labels = ['{0} - {1:1.2f} %'.format(i,j) for i,j in zip(headings, newvalues)]
-                patches, texts = plt.pie(newvalues, shadow=True, colors=colors1, radius=1.2)
-                sort_legend = True
-                if sort_legend:
-                    patches, labels, dummy =  zip(*sorted(zip(patches, labels, newvalues),
-                                                          key=lambda headings: headings[2],
-                                                          reverse=True))
-                lgd=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
-                plt.title('Indoor Contamination by Type')
-                plt.savefig('Indoor_Contamination%.png', bbox_extra_artists=(lgd,), bbox_inches="tight")
                 pdf.image('Indoor_Contamination%.png', x = None, y = None, w=0, h=0, type='', link='')
 
                 ##Days
                 Outdoor_days_break=array_for_Chart(Outdoor_workDays,"days",numrealization)
                 Underground_days_break=array_for_Chart(Underground_workDays,"days",numrealization)
                 Indoor_days_break=array_for_Chart(Indoor_workDays,"days",numrealization)
-
                 ##MONEY
                 Indoor_money_break=array_for_Chart(Indoor_phase_costs,"money",numrealization)
                 Underground_money_break=array_for_Chart(Underground_phase_costs,"money",numrealization)
                 Outdoor_money_break=array_for_Chart(Outdoor_phase_costs,"money",numrealization)
-                
+               
                 #return PreDecon,PostDecon,totalChar,source,Decon
                 pdf.set_font('Times', 'B', 16)
-                pdf.cell(width, 5,"Summary Of Results", ln=1)
+                pdf.cell(width, 5,"Wide Area Decontamination Summary", ln=1)
                 pdf.ln(" ")
+                pdf.set_font('Times','', 12)
+                pdf.set_font('Times', 'B', 14)
+                pdf.cell(width, 5,"Average Costs" , ln=1)
                 pdf.set_font('Times','', 12)
                 totals=[]
                 totals=[0 for i in range(3)]
@@ -824,22 +752,164 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 pdf.cell(35,height,"  ")        
                 pdf.cell(50,height,headings_total[2],border=1,align = 'C')
                 pdf.cell(50,height,"$"+totals[2],border=1,align = 'C')
+                totals_total=float(outdoor_avg_total)+float(indoor_avg_total)+float(Underground_avg_total)
+                pdf.multi_cell(50,height,"  ")
+                pdf.cell(35,height,"  ")
+                pdf.cell(50,height,"Total Job Cost",border=1,align = 'C')
+                temp="{0:,.2f}".format(totals_total)
+                pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                pdf.ln(" ")
+                pdf.ln(" ")
+                pdf.ln(" ")
+                ind=0
+                ind1=0
+                ind2=0
+                Indoor_area=[]
+                Indoor_area=[0 for i in range(7*numrealization)]
+                Outdoor_area=[]
+                Outdoor_area=[0 for i in range(1*numrealization)]
+                Underground_area=[]
+                Underground_area=[0 for i in range(1*numrealization)]
+                for key in task2[z]["Indoor"]:
+                  for key2 in task2[z]["Indoor"][key]:
+                      if key2 == "generalResults":   
+                         Indoor_area[ind]=task2[z]["Indoor"][key][key2]["areaContaminated"]
+                         ind=ind+1
+                      
+                for key in task2[z]["Outdoor"]:
+                  for key2 in task2[z]["Outdoor"][key]:
+                      if key2 == "areaContaminated":   
+                         Outdoor_area[ind1]=task2[z]["Outdoor"][key][key2]
+                         ind1=ind1+1
+                         
+                for key in task2[z]["Underground"]:
+                  for key2 in task2[z]["Underground"][key]:
+                      if key2 == "areaContaminated":   
+                         Underground_area[ind2]=task2[z]["Underground"][key][key2]
+                         ind2=ind2+1
+                pdf.set_font('Times','B',14)
+                pdf.cell(60,5, "Area Contaminated", ln=1)
+                pdf.set_font('Times', '', 12)
+                pdf.ln(" ")
+                total_Underground_area=sum(Underground_area)
+                total_Outdoor_area=sum(Outdoor_area)
+                total_Indoor_area=sum(Indoor_area)
+                total_Underground_area="{0:,.2f}".format(total_Underground_area)
+                total_Outdoor_area="{0:,.2f}".format(total_Outdoor_area)
+                total_Indoor_area="{0:,.2f}".format(total_Indoor_area)
+                total_Indoor_area=str(total_Indoor_area) + ' m' + '\u00B2'
+                total_Underground_area=str(total_Underground_area) + ' m' + '\u00B2'
+                total_Outdoor_area=str(total_Outdoor_area) + ' m' + '\u00B2'
+                pdf.cell(35,height,"  ")
+                pdf.cell(45,height,"Type of Area",border=1,align='C',fill=True)
+                pdf.multi_cell(45,height,"Area",border=1,align='C',fill=True)
+                pdf.cell(35,height,"  ")
+                pdf.cell(45,height,"Underground",border=1,align='C')
+                pdf.multi_cell(45,height,str(total_Underground_area),border=1,align = 'C')
+                pdf.cell(35,height,"  ")
+                pdf.cell(45,height,"Outdoor",border=1,align='C')
+                pdf.multi_cell(45,height,str(total_Outdoor_area),border=1,align = 'C')
+                pdf.cell(35,height,"  ")
+                pdf.cell(45,height,"Indoor",border=1,align='C')
+                pdf.cell(45,height,str(total_Indoor_area),border=1,align = 'C')
                 
+                Pre_Outdoor=Outdoor_money_break[0]
+                Post_Outdoor=Outdoor_money_break[1]
+                totalChar_Outdoor=Outdoor_money_break[2]
+                source_Outdoor=Outdoor_money_break[3]
+                Decon_Outdoor=Outdoor_money_break[4]
+                Indcident_Outdoor=Outdoor_money_break[5]
+                
+                Pre_Underground=Underground_money_break[0]
+                Post_Underground=Underground_money_break[1]
+                totalChar_Underground=Underground_money_break[2]
+                source_Underground=Underground_money_break[3]
+                Decon_Underground=Underground_money_break[4]
+                Indcident_Underground=Underground_money_break[5]
+              
+                Pre_Indoor=Indoor_money_break[0]
+                Post_Indoor=Indoor_money_break[1]
+                totalChar_Indoor=Indoor_money_break[2]
+                source_Indoor=Indoor_money_break[3]
+                Decon_Indoor=Indoor_money_break[4]
+                Indcident_Indoor=Indoor_money_break[5]
+                
+                pre_outsum_money=sum(Pre_Outdoor)
+                pre_undersum_money=sum(Pre_Underground)
+                pre_Indoor_sum_money=sum(Pre_Indoor)
+
+                predaystotal=pre_outsum_money+pre_undersum_money+pre_Indoor_sum_money
+
+                post_outsum_money=sum(Post_Outdoor)
+                post_undersum_money=sum(Post_Underground)
+                post_Indoor_sum_money=sum(Post_Indoor)
+
+                postdaystotal=post_outsum_money+post_undersum_money+post_Indoor_sum_money
+                
+                incident_sum_indoor=sum(Indcident_Outdoor)
+                incident_sum_outdoor=sum(Indcident_Outdoor)
+                incident_sum_under=sum(Indcident_Underground)
+                incidentTotal=incident_sum_under+incident_sum_outdoor+incident_sum_indoor
+
+              
+                source_outsum_money=sum(source_Outdoor)
+                source_undersum_money=sum(source_Underground)
+                source_Indoor_sum_money=sum(source_Indoor)
+
+                sourcedaystotal=source_outsum_money+source_undersum_money+source_Indoor_sum_money
+
+                Decon_outsum_money=sum(Decon_Outdoor)
+                Decon_undersum_money=sum(Decon_Underground)
+                Decon_Indoor_sum_money=sum(Decon_Indoor)
+          
+                Decondaystotal=Decon_outsum_money+Decon_undersum_money+Decon_Indoor_sum_money
+                
+                total_money=Decondaystotal+sourcedaystotal+incidentTotal+postdaystotal+predaystotal
+
+
+                pre_percent=(predaystotal/total_money)*100
+                post_percent=(postdaystotal/total_money)*100
+                source_percent=(sourcedaystotal/total_money)*100
+                Decon_percent=(Decondaystotal/total_money)*100
+                incident_percent=(incidentTotal/total_money)*100
+                workdays=[pre_percent,post_percent,source_percent,Decon_percent,incident_percent]
+     
+                
+                heading=["Pre-Decontamination", "Post-Decontamination","Source Reduction","Decontamination" ,"Incident Command"]
+                fig, ax = plt.subplots()
+                fig.set_size_inches(4, 4)
+                colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
+                newvalues = [x for x in workdays if x != 0]
+                labels = ['{0} - {1:1.2f} %'.format(i,j) for i,j in zip(heading, workdays)]
+                patches, texts = plt.pie(workdays, shadow=True, colors=colors1, radius=1.2)
+                sort_legend = True
+                if sort_legend:
+                    patches, labels, dummy =  zip(*sorted(zip(patches, labels, workdays),
+                                                          key=lambda heading: heading[2],
+                                                          reverse=True))
+
+                lgd1=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
+                plt.title('Cost Breakdown By Element')
+                fig=plt.savefig('Cost Breakdown By Element%.png', bbox_extra_artists=(lgd1,), bbox_inches="tight")
+                plt.close(fig)
+                pdf.ln(" ")
+                pdf.ln(" ")
+                pdf.image('Cost Breakdown By Element%.png', x = None, y = None, w=0, h=0, type='', link='')
+
                 Pre_Outdoor=Outdoor_days_break[0]
                 Post_Outdoor=Outdoor_days_break[1]
-                totalChar_Outdoor=Outdoor_days_break[2]
                 source_Outdoor=Outdoor_days_break[3]
                 Decon_Outdoor=Outdoor_days_break[4]
                 
                 Pre_Underground=Underground_days_break[0]
                 Post_Underground=Underground_days_break[1]
-                totalChar_Underground=Underground_days_break[2]
+               
                 source_Underground=Underground_days_break[3]
                 Decon_Underground=Underground_days_break[4]
                 
                 Pre_Indoor=Indoor_days_break[0]
                 Post_Indoor=Indoor_days_break[1]
-                totalChar_Indoor=Indoor_days_break[2]
+                
                 source_Indoor=Indoor_days_break[3]
                 Decon_Indoor=Indoor_days_break[4]
                 
@@ -855,11 +925,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
 
                 postdaystotal=post_outsum_days+post_undersum_days+post_Indoor_sum_days
                 
-                totalChar_outsum_days=sum(totalChar_Outdoor)
-                totalChar_undersum_days=sum(totalChar_Underground)
-                totalChar_Indoor_sum_days=sum(totalChar_Indoor)
-
-                totalChardaystotal=totalChar_outsum_days+totalChar_undersum_days+totalChar_Indoor_sum_days
+              
 
                 source_outsum_days=sum(source_Outdoor)
                 source_undersum_days=sum(source_Underground)
@@ -870,21 +936,20 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Decon_outsum_days=sum(Decon_Outdoor)
                 Decon_undersum_days=sum(Decon_Underground)
                 Decon_Indoor_sum_days=sum(Decon_Indoor)
-
+                
                 Decondaystotal=Decon_outsum_days+Decon_undersum_days+Decon_Indoor_sum_days
 
-                total_days=predaystotal+sourcedaystotal+Decondaystotal+postdaystotal+totalChardaystotal
+                total_days=predaystotal+sourcedaystotal+Decondaystotal+postdaystotal
 
 
                 pre_percent=(predaystotal/total_days)*100
                 post_percent=(postdaystotal/total_days)*100
-                char_percent=(totalChardaystotal/total_days)*100
                 source_percent=(sourcedaystotal/total_days)*100
                 Decon_percent=(Decondaystotal/total_days)*100
-                workdays=[pre_percent,post_percent,char_percent,source_percent,Decon_percent]
+                workdays=[pre_percent,post_percent,source_percent,Decon_percent]
                 
                 
-                heading=["Pre-Decontamination", "Post-Decontamination","Total Characterization","Source Reduction","Decontamination" ,"Incident Command"]
+                heading=["Pre-Decontamination", "Post-Decontamination","Source Reduction","Decontamination" ]
                 fig, ax = plt.subplots()
                 fig.set_size_inches(4, 4)
                 colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
@@ -899,15 +964,12 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
 
                 lgd1=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
                 plt.title('Workday Breakdown By Element')
-                plt.savefig('Workday Breakdown By Element%.png', bbox_extra_artists=(lgd1,), bbox_inches="tight")
+                fig=plt.savefig('Workday Breakdown By Element%.png', bbox_extra_artists=(lgd1,), bbox_inches="tight")
+                plt.close(fig)
                 pdf.ln(" ")
                 pdf.image('Workday Breakdown By Element%.png', x = None, y = None, w=0, h=0, type='', link='')
-
-
-
                 
 
-                
                 pdf.ln(" ")
 
             z=z+1
@@ -915,7 +977,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     else:
         
             print("")
-            
+    pdf.set_font('Times', 'B', 12)       
     disclaimer1 = "Disclaimer: The results produced here are estimates and created through the use of the SIRM model."
     disclaimer1b = "the tool doesn’t account for auxiliary infrastructure such as power lines, water pipes, etc."
     disclamer1c = "that may impact operations/recovery."
@@ -924,6 +986,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     pdf.cell(width, height,disclaimer2, ln=1)
     path=Path(master_path + '\path.txt')
     pdf.output('Results/' + filename + "_Report.pdf", 'F')
+    tkMessageBox.showinfo("Completion","Report is outputed in Results folder")
 
 def getInfrastructureList(location, pdf, width, height, location2, contaminated, location3 = "Overall//"):
     data ={"Building Type": [], "Number of Contaminated buildings/infrastructure": []}
