@@ -30,6 +30,7 @@ from os.path import abspath
 import matplotlib.pyplot as plt
 #from Tkinter import Label
 from tkinter import ttk
+import subprocess
 import os
 #import geopandas
 if (sys.version_info > (3,0)):
@@ -58,7 +59,7 @@ class CreateToolTip(object):
         self.widget.bind("<ButtonPress>", self.leave)
         self.id = None
         self.tw = None
-
+    
     def enter(self, event=None):
         self.schedule()
 
@@ -151,12 +152,54 @@ def main():
             self.orders, self.coeffs, self.k = coefficients_from_file.load_file(dir_path + "//"+ "default.csv")
             #print(self.orders, self.coeffs, self.k)
 
+            def select_all():
+
+              water_bool.set(True)
+              water_graph_bool.set(True)
+              energy_bool.set(True)
+              energy_graph_bool.set(True)
+              transportation_bool.set(True)
+              transportation_graph_bool.set(True)
+              comm_bool.set(True)
+              comm_graph_bool.set(True)
+              gov_bool.set(True)
+              gov_graph_bool.set(True)
+              emer_bool.set(True)
+              emer_graph_bool.set(True)
+              fa_bool.set(True)
+              fa_graph_bool.set(True)
+              waste_bool.set(True)
+              waste_graph_bool.set(True)
+              healthcare_bool.set(True)
+              healthcare_graph_bool.set(True)
+   
+              
+
+            def deselect_all():
+              water_bool.set(False)
+              water_graph_bool.set(False)
+              energy_bool.set(False)
+              energy_graph_bool.set(False)
+              transportation_bool.set(False)
+              transportation_graph_bool.set(False)
+              comm_bool.set(False)
+              comm_graph_bool.set(False)
+              gov_bool.set(False)
+              gov_graph_bool.set(False)
+              emer_bool.set(False)
+              emer_graph_bool.set(False)
+              fa_bool.set(False)
+              fa_graph_bool.set(False)
+              waste_bool.set(False)
+              waste_graph_bool.set(False)
+              healthcare_bool.set(False)
+              healthcare_graph_bool.set(False)
             def run(optimize):
                 data = {}
                 n0List = []
                 n0List.append(waterVar.get())
                 n0List.append(energyVar.get())
-                n0List.append(transportVar.get())
+                n0List.append(transportVar.get()) 
                 n0List.append(communicationsVar.get())
                 n0List.append(governmentVar.get())
                 n0List.append(agricultureVar.get())
@@ -235,15 +278,111 @@ def main():
                 with open(dirpath + "//" + "report_inputs.txt", 'w') as outfile:
                         json.dump(data, outfile)
                 if check["check"] == "True":
-                    text_file=open("realizations.txt",'w')
-                    text_file.write(realize.get())
-                    text_file.close()
-                    texting=open("SPORE.txt",'w')
-                    texting.write(arr.get())
-                    texting.close()  
-                text_file=open("path.txt",'w')
-                text_file.write(pdf_path.get())
-                text_file.close()
+
+                  master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
+                  fileLoc = master_path+"\\JobRequest.json"
+                  f=open(fileLoc)
+                  task5json=json.load(f)
+                  fileLoc = master_path+"\\SIRMResults.json"
+                  f=open(fileLoc)
+                  SIRM=json.load(f)                 
+                  Spore=arr.get()
+                  spore_count=0
+                  Indoor_Spore=""
+                  Outdoor_Spore=""
+                  Underground_Spore=""
+                  Spore_Results=[]
+                  Spore_Results=[0 for i in range(len(Spore))]
+                  i=0
+                  b=0
+                  j=1
+                  
+                  violation=True 
+                  for c in Spore:
+                      Spore_Results[i]=c
+                      i=i+1
+                  for z in Spore_Results:
+                     if z.isspace():
+                       spore_count=spore_count+1
+                     else:
+                       if spore_count==0:
+                         if z.isdigit()==True or z == '.':
+                           Indoor_Spore=Indoor_Spore+z
+                         else:
+                           violation=False
+                       elif spore_count==1:
+                         if z.isdigit()==True or z == '.':
+                           Underground_Spore=Underground_Spore+z
+                         else:
+                           violation=False
+                       elif spore_count==2:
+                         if z.isdigit()==True or z == '.':
+                           Outdoor_Spore=Outdoor_Spore+z
+                         else:
+                           violation=False
+                  
+                  if violation==False:
+                    tkMessageBox.showinfo("Helper","Task 5 model did not execute enter a valid spore loading number (int or float)")
+                  else:
+                  
+                    task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"]=SIRM["data"][6]["value"]##AREA CONTAMINATED
+                    task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"]=SIRM["data"][7]["value"]
+                    #print(task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"],task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"])
+                    task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]=Outdoor_Spore##LOADING
+                    task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]=Underground_Spore
+                    task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]=Indoor_Spore
+
+                    task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Commercial"]["value"]=SIRM["data"][1]["value"]
+                    task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Industrial"]["value"]=SIRM["data"][0]["value"]
+                    task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Agricultural"]["value"]=SIRM["data"][5]["value"]
+                    task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"]=SIRM["data"][2]["value"]
+                    task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]=SIRM["data"][4]["value"]
+                    task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]=SIRM["data"][3]["value"]
+                    percent=[]
+                    percent=[0 for i in range(8)]
+                    percent[0]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Residential"]["value"])*100
+                    percent[1]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Commercial"]["value"])*100 
+                    percent[2]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Industrial"]["value"])*100
+                    percent[3]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Agricultural"]["value"])*100
+                    percent[4]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"])*100
+                    percent[5]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"])*100
+                    percent[6]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"])*100
+                    headings=[]
+                    headings=[0 for i in range(8)]
+                    headings=["Residential","Commercial","Industrial","Agricultural","Religious","Government","Educational"]
+                    fig, ax = plt.subplots()
+                    fig.set_size_inches(2, 2)
+                    colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
+                    newvalues = [x for x in percent if x != 0]
+                    labels = ['{0} - {1:1.2f} %'.format(i,j) for i,j in zip(headings, newvalues)]
+                    patches, texts = plt.pie(newvalues, shadow=True, colors=colors1, radius=1.2)
+                    sort_legend = True
+                    if sort_legend:
+                        patches, labels, dummy =  zip(*sorted(zip(patches, labels, newvalues),
+                                                              key=lambda headings: headings[2],
+                                                              reverse=True))
+                    lgd=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
+                    plt.title('Indoor Contamination by Type')
+                    fig=plt.savefig('Indoor_Contamination%.png', bbox_extra_artists=(lgd,), bbox_inches="tight")
+                    plt.close(fig)
+                    realization=realize.get()
+                    if realization.isdigit()==True:
+                      task5json["numberRealizations"]=realize.get()
+                      with open(master_path+'\\newJobRequest.json', 'w') as myfile:
+                            json.dump(task5json,myfile)
+                      si = subprocess.STARTUPINFO()
+                      si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                      execute=master_path+'\\Battelle.EPA.WideAreaDecon.Launcher.exe'
+                    
+                      _path=master_path+"\\newJobRequest.json"
+                      execute=str('"'+master_path+'\\Battelle.EPA.WideAreaDecon.Launcher.exe"')
+                      _path=str('"'+master_path+'\\newJobRequest.json"')
+                    
+                      cmd=execute+" "+_path
+                      subprocess.call(cmd,shell=True,startupinfo=si)
+                    else:
+                       tkMessageBox.showinfo("Entry for Realizaitons is not a number model will not run please enter a number and try again")
+            
                 infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
                     print(self.leg)
@@ -337,8 +476,7 @@ def main():
                 tkMessageBox.showinfo("Helper", "Water efficiency can be estimated using the percentage of residents that have potable water, or the water treatment capability")
               elif infrastructure == "energy":
                 tkMessageBox.showinfo("Helper", "Energy efficiency can be estimated using the percentage of residents of the area with power")
-              elif infrastructure == "Filepath":
-                tkMessageBox.showinfo("Helper", "An example of a correct file path would be: C:\REPOS\InfrastructureRemediation\Task 5 or to write to    file C:\REPOS\InfrastructureRemediation\Task 5\example.pdf")
+  
               elif infrastructure == "transport":
                 transport_window = tk.Tk()
                 tframe = tk.Frame(transport_window)
@@ -415,18 +553,18 @@ def main():
                     json.dump(other,fp)
                 
             mainframe = tk.Frame.__init__(self,parent)
-            label = ttk.Label(self, text="Stochastic Infrastructure Remediation Model", font=("Calibri Light", 40))
+            label = tk.Label(self, text="Stochastic Infrastructure Remediation Model",bg="snow" ,font=("Calibri Light", 40))
             label.grid(row=0, sticky=tk.NSEW, columnspan=4)
 
             #tk.Button(self, text='Help', bg='#FCB1A0', command= lambda: showPDF(), font=("Arial", 14)).grid(row=0, column=4, sticky=tk.NSEW)
             #Checkboxes
             extra=ttk.LabelFrame(self,text="Extra Commands")
-            extra.place(x=1000,y=575)
+            extra.place(x=490,y=545)
             if printProgress == "true" or printProgress == "True" or printProgress == "1":
                 var1 = tk.IntVar(value=int(bool(printProgress)))
             else:
                 var1 = tk.IntVar()
-            ttk.Checkbutton(extra,text="Print Progress", variable=var1 ).grid(row=15, sticky=tk.W, column = 0)
+            ttk.Checkbutton(extra,text="Print Progress", variable=var1 ).grid(row=1, sticky=tk.W, column = 0)
 
             if averaging == "true" or averaging == "True" or averaging == "1":
                 var2 = tk.IntVar(value=int(bool(averaging)))
@@ -438,7 +576,7 @@ def main():
                 var3 = tk.IntVar(value=int(bool(contaminatedListAvailable)))
             else:
                 var3 = tk.IntVar()
-            ttk.Checkbutton(extra,text="Contaminated Infrastructure List Available", variable=var3).grid(row=17, sticky=tk.W, column = 0)
+            ttk.Checkbutton(extra,text="Contaminated Infrastructure List Available", variable=var3).grid(row=1, sticky=tk.W, column = 1)
 
             #var3 = tk.IntVar(value=int(bool(confIntervals)))
 ##            if averaging == "true" or averaging == "True" or averaging == "1":
@@ -458,7 +596,7 @@ def main():
             else:
                 var25 = tk.IntVar()
 
-
+    
             task__5=tk.IntVar()
             #print(task__5.get())
             #String Parameters
@@ -483,8 +621,46 @@ def main():
 ##            N0.insert(0, n0)
 ##            N0_ttp = CreateToolTip(N0, 'Enter the efficiency of each infrastructure, each followed by a space. Use the order defined fat the bottom.')
 ##            N0.grid(row=2, column = 3, sticky=tk.NSEW)
+            water_bool = tk.IntVar()
+            water_graph_bool = tk.IntVar()
+            energy_bool = tk.IntVar()
+            energy_graph_bool = tk.IntVar()
+            transportation_bool = tk.IntVar()
+            transportation_graph_bool = tk.IntVar()
+            comm_bool = tk.IntVar()
+            comm_graph_bool = tk.IntVar()
+            gov_bool = tk.IntVar()
+            gov_graph_bool = tk.IntVar()
+            emer_bool = tk.IntVar()
+            emer_graph_bool = tk.IntVar()
+            fa_bool = tk.IntVar()
+            fa_graph_bool = tk.IntVar()
+            waste_bool = tk.IntVar()
+            waste_graph_bool = tk.IntVar()
+            healthcare_bool = tk.IntVar()
+            healthcare_graph_bool = tk.IntVar()
+
+            file=tk.IntVar()
             count=0
             if(count==0):
+              water_bool.set(True)
+              water_graph_bool.set(True)
+              energy_bool.set(True)
+              energy_graph_bool.set(True)
+              transportation_bool.set(True)
+              transportation_graph_bool.set(True)
+              comm_bool.set(True)
+              comm_graph_bool.set(True)
+              gov_bool.set(True)
+              gov_graph_bool.set(True)
+              emer_bool.set(True)
+              emer_graph_bool.set(True)
+              fa_bool.set(True)
+              fa_graph_bool.set(True)
+              waste_bool.set(True)
+              waste_graph_bool.set(True)
+              healthcare_bool.set(True)
+              healthcare_graph_bool.set(True)
               path='./'
               filename='check' 
               filePath='./'+path+'/'+filename+'.json'
@@ -493,7 +669,7 @@ def main():
               with open(filePath,'w') as fp:
                     json.dump(other,fp)
               count=count+1
-            initial=ttk.LabelFrame(self,text="initial percentages")
+            initial=ttk.LabelFrame(self,text="Initial Percentages")
             initial.place(x=5,y=60)
             ttk.Label(initial, text="Initial water sector efficiency (%): ").grid(row=2, column = 0, sticky=tk.W)         
             waterVar = tk.StringVar()
@@ -585,7 +761,7 @@ def main():
 ##            P0.grid(row=12, column = 1, sticky=tk.NSEW)
 
             ext=ttk.LabelFrame(self,text="Extra Parameters")
-            ext.place(x=530,y=375)
+            ext.place(x=530,y=335)
             
             remediation=ttk.LabelFrame(self,text="Remediation Parameters")
             remediation.place(x=10,y=390)
@@ -625,23 +801,19 @@ def main():
             TLoss.insert(0, tLoss)
             TLoss.grid(row=13, column = 3, sticky=tk.NSEW)
 
-            ttk.Label(remediation, text="Days of Remediation: ").grid(row=11, column = 0, sticky=tk.W)
-            var9 = tk.StringVar()
-            TLoss = ttk.Entry(remediation, textvariable=var9)
-            TLoss_ttp = CreateToolTip(TLoss, 'Enter additional time outage')
-            TLoss.insert(0, tLoss)
-            TLoss.grid(row=11, column = 1, sticky=tk.NSEW)
+##            ttk.Label(remediation, text="Days of Remediation: ").grid(row=11, column = 0, sticky=tk.W)
+##            var19 = tk.StringVar()
+##            TLoss = ttk.Entry(remediation, textvariable=var19)
+##            TLoss_ttp = CreateToolTip(TLoss, 'Enter additional time outage')
+##            TLoss.insert(0, tLoss)
+##            TLoss.grid(row=11, column = 1, sticky=tk.NSEW)
 
 
             model=ttk.LabelFrame(self,text="Model Parameters")
             model.place(x=475,y=60)
 
-            pdf_path=tk.StringVar()
-            report=ttk.Entry(model, textvariable=pdf_path)
-            ttk.Label(model,text="Enter Report Output Location: ").grid(row=1, column=2,sticky=tk.W)
-            report.grid(row=1, column=3,sticky=tk.W)
+          
             report_ttp = CreateToolTip(wide, 'Enter Realizations for wide area decontamination tool')
-            report.insert(0, "Results\default_Report.pdf")
             arr=tk.StringVar()
             Spore=ttk.Entry(model, textvariable=arr)
             ttk.Label(model,text="Enter Wide Area Decon Spore Loading (Indoor,Underground,Outdoor):  ").grid(row=2, column=2,sticky=tk.W)
@@ -706,7 +878,7 @@ def main():
             ttk.Label(self, text="").grid(row=11, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=12, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=13, sticky=tk.W, column = 0)
-            ttk.Label(self, text="").grid(row=14, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=14, sticky=tk.W, column = 3)
             ttk.Label(self, text="").grid(row=15, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=16, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=17, sticky=tk.W, column = 0)
@@ -719,7 +891,7 @@ def main():
             ttk.Label(self, text="").grid(row=24, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=25, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=26, sticky=tk.W, column = 0)
-            ttk.Label(self, text="        ").grid(row=27, sticky=tk.W, column = 1)
+            ttk.Label(self, text="").grid(row=27, sticky=tk.W, column = 3)
             tk.Label(model, text="Results Chart Name: ").grid(row=9, column = 2, sticky=tk.W)
             var17 = tk.StringVar()
             #tk.Label(model, text="Enter Report output path: ").grid(row=2, column = 2,stick=tk.W)
@@ -758,7 +930,6 @@ def main():
             DepBackup_ttp = CreateToolTip(DepBackup, 'Enter the indexes of the infrastructures dependant on the above backups. Keep the same order between the backup inputs')
             DepBackup.insert(0, depBackup)
             DepBackup.grid(row=11, column = 3, sticky=tk.NSEW)
-       
             #Index Note
             note = ttk.Label(self,text="Infrastructure indexes (used in initial infrastructure sector efficiencies, repair factors, " \
                                         "and infrastructure indexes of parameters) are water (0), energy (1), transport services (2), " \
@@ -768,19 +939,39 @@ def main():
                                         font=("Arial Bold", 10), borderwidth=2, relief="groove")
             note.grid(row=39, column = 0, columnspan = 6, sticky=tk.NSEW)
 
-            #Buttons
-
-            #ttk.Label(self, text="                    ").grid(row=15, sticky=tk.NSEW, column = 2)
-
-            ttk.Checkbutton(extra,text='Reduce Parent Efficiency', var=var25).grid(row=16, sticky=tk.W, column = 0)
-            ttk.Checkbutton(extra,text='Add Wide Area Decontamination Results',variable=task__5, command=task5).grid(row=18, sticky=tk.W, column = 0) ###TASK 5 BUTTON 
+            ttk.Checkbutton(extra,text='Reduce Parent Efficiency', var=var25).grid(row=2, sticky=tk.W, column = 1)
+            ttk.Checkbutton(extra,text='Add Wide Area Decontamination Results',variable=task__5, command=task5).grid(row=2, sticky=tk.W, column = 0) ###TASK 5 BUTTON
+            change=tk.BooleanVar()
+            
             tk.Button(self, text='Run GUI Scenario',command= lambda: run(False),font=("Arial", 14), bg='DarkSeaGreen1',
                       ).grid(row=30, column=0,sticky=tk.NSEW, columnspan=2)
+            tk.Label(self,text='Change PDF Location:',bg="snow" ).grid(row=27, column=0,sticky=tk.NSEW)
+            file_path=tk.StringVar()
+            path=ttk.Entry(self,textvariable=file_path)
+            path.grid(row=27, column=1, sticky=tk.NSEW)
+            master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+            path.insert(0, str(master_path))
+           
+            def switchFunction():
+              master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+              if change.get():
+                 var=file_path.get()
+                 filename='path' 
+                 filePath=master_path+'\\'+filename+'.json'
+                 other={}
+                 other["path"]=var
+                 other["change"]=1
+                 with open(filePath,'w') as fp:
+                    json.dump(other,fp)
+              else:
+                 other={}
+                 other["change"]=0
+                 filename='path' 
+                 filePath=master_path+'\\'+filename+'.json'
+                 with open(filePath,'w') as fp:
+                    json.dump(other,fp) 
+            switch = ttk.Checkbutton(self, command=switchFunction,variable=change).grid(row=27,column = 2,sticky=tk.W)
             
-            
-            #get_text_button=ttk.Button(self,text="Confirm File Path", command = get_text)
-            #get_text_button.grid(row=32, column=3)
-            tk.Button(model, text="...", command= lambda: openHelper('Filepath')).grid(row=1, column=3, sticky=tk.E)
             tk.Button(self, text='Save Scenario',font=("Arial", 14), bg='misty rose', command= lambda: saveScenario(),
                       ).grid(row=31, column=0, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
@@ -797,61 +988,42 @@ def main():
                 self.grid_rowconfigure(i, weight=1, uniform="foo")
             for i in range(0,4):
                 self.grid_columnconfigure(i, weight=1, uniform="bar")
-
-            water_bool = tk.IntVar()
-            water_graph_bool = tk.IntVar()
-            energy_bool = tk.IntVar()
-            energy_graph_bool = tk.IntVar()
-            transportation_bool = tk.IntVar()
-            transportation_graph_bool = tk.IntVar()
-            comm_bool = tk.IntVar()
-            comm_graph_bool = tk.IntVar()
-            gov_bool = tk.IntVar()
-            gov_graph_bool = tk.IntVar()
-            emer_bool = tk.IntVar()
-            emer_graph_bool = tk.IntVar()
-            fa_bool = tk.IntVar()
-            fa_graph_bool = tk.IntVar()
-            waste_bool = tk.IntVar()
-            waste_graph_bool = tk.IntVar()
-            healthcare_bool = tk.IntVar()
-            healthcare_graph_bool = tk.IntVar()
-            w=ttk.LabelFrame(self,text='Report Value Selection',width=200,height=100)
-            w.place(x=1000, y=55)
-            #ttk.LabelFrame(self,text='Report Value Selection', borderwidth=2,relief="groove",
-                   # ).grid(row=0, column = 5)
-            #report.place(x=80,y=2)
-            ttk.Checkbutton(w,text='Show Water Sensitivity', var=water_bool,
+            Report_Value=ttk.LabelFrame(self,text='Report Value Selection',width=200,height=100)
+            Report_Value.place(x=1000, y=55)
+        
+            ttk.Checkbutton(Report_Value,text='Show Water Sensitivity', var=water_bool,
                            ).grid(row=1, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w,text='Show Water Recovery Histogram', var=water_graph_bool,
+            ttk.Checkbutton(Report_Value,text='Show Water Recovery Histogram', var=water_graph_bool,
                            ).grid(row=2, sticky=tk.W, column = 5)
+            
 
-            ttk.Checkbutton(w,text='Show Energy Sensitivity', var=energy_bool).grid(row=3, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w,text='Show Energy Recovery Histogram', var=energy_graph_bool).grid(row=4, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Energy Sensitivity', var=energy_bool).grid(row=3, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Energy Recovery Histogram', var=energy_graph_bool).grid(row=4, sticky=tk.W, column = 5)
 
-            ttk.Checkbutton(w,text='Show Transportation Sensitivity', var=transportation_bool).grid(row=5, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w,text='Show Transportation Recovery Histogram', var=transportation_graph_bool).grid(row=6, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Transportation Sensitivity', var=transportation_bool).grid(row=5, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Transportation Recovery Histogram', var=transportation_graph_bool).grid(row=6, sticky=tk.W, column = 5)
 
-            ttk.Checkbutton(w,text='Show Communications Sensitivity', var=comm_bool).grid(row=7, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w,text='Show Communications Recovery Histogram', var=comm_graph_bool).grid(row=8, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Communications Sensitivity', var=comm_bool).grid(row=7, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Communications Recovery Histogram', var=comm_graph_bool).grid(row=8, sticky=tk.W, column = 5)
 
-            ttk.Checkbutton(w,text='Show Government Sensitivity', var=gov_bool).grid(row=9, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w,text='Show Government Recovery Histogram', var=gov_graph_bool).grid(row=10, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Government Sensitivity', var=gov_bool).grid(row=9, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Government Recovery Histogram', var=gov_graph_bool).grid(row=10, sticky=tk.W, column = 5)
 
-            ttk.Checkbutton(w,text='Show Food/Agriculture Sensitivity', var=fa_bool).grid(row=11, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w,text='Show Food/Agriculture Recovery Histogram', var=fa_graph_bool).grid(row=12, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Food/Agriculture Sensitivity', var=fa_bool).grid(row=11, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Food/Agriculture Recovery Histogram', var=fa_graph_bool).grid(row=12, sticky=tk.W, column = 5)
 
-            ttk.Checkbutton(w, text='Show Emergency Services Sensitivity', var=emer_bool).grid(row=13, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w, text='Show Emergency Services Recovery Histogram', var=emer_graph_bool).grid(row=14, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value, text='Show Emergency Services Sensitivity', var=emer_bool).grid(row=13, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value, text='Show Emergency Services Recovery Histogram', var=emer_graph_bool).grid(row=14, sticky=tk.W, column = 5)
 
-            ttk.Checkbutton(w, text='Show Waste Management Sensitivity', var=waste_bool ).grid(row=15, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w, text='Show Waste Management Recovery Histogram', var=waste_graph_bool ).grid(row=16, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value, text='Show Waste Management Sensitivity', var=waste_bool ).grid(row=15, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value, text='Show Waste Management Recovery Histogram', var=waste_graph_bool ).grid(row=16, sticky=tk.W, column = 5)
 
-            ttk.Checkbutton(w,text='Show Healthcare Sensitivity', var=healthcare_bool ).grid(row=17, sticky=tk.W, column = 5)
-            ttk.Checkbutton(w,text='Show Healthcare Recovery Histogram', var=healthcare_graph_bool).grid(row=18, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Healthcare Sensitivity', var=healthcare_bool ).grid(row=17, sticky=tk.W, column = 5)
+            ttk.Checkbutton(Report_Value,text='Show Healthcare Recovery Histogram', var=healthcare_graph_bool).grid(row=18, sticky=tk.W, column = 5)
+            Button(Report_Value, text = 'Select All',font=("sans" ,10,), command = select_all).grid(row=31, sticky=tk.N, column  =5 )
+            Button(Report_Value, text = 'Deselect All',font=("sans",10), command = deselect_all).grid(row=32, sticky=tk.N, column = 5)
             ttk.Label(self, text="                                                                                                             ").grid(row=78, sticky=tk.W, column = 5)
             #print(self.orders, self.coeffs, self.k)
-            
             #tk.Button(self, text='Save Report Values', bg='#FCB1A0', command= lambda: saveValues(), font=("Arial", 14)).grid(row=18, column=5, sticky=tk.NSEW)
             #tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=6, sticky=tk.NSEW)
     global app

@@ -7,8 +7,11 @@ import sys
 import numpy as np
 if (sys.version_info > (3, 0)):
   import tkinter as tk
+  from tkinter import ttk
+  from tkinter import *
 else:
   import Tkinter as tk
+  from Tkinter import ttl
 import infrastructures_from_file
 import coefficients_from_file
 import tkinter.messagebox as tkMessageBox
@@ -171,8 +174,9 @@ class sensitivityAnalysis(object):
           m, b = np.polyfit(sectorResults['Value'], sectorResults['RT'], 1)
           new_row = {'Sector': newSectors[i], 'Slope': m, 'Intercept': b}
           slope_results = slope_results.append(new_row, ignore_index=True)
-        print(slope_results)     
-        p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line() + ggtitle(ggt)
+        print(slope_results)
+        
+        p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line()
         file_name = self.parameter + "_" + self.sector
         path_name = dir_path + "\\Sensitivity\\"
         p.save(filename=file_name, path = path_name, verbose = False, device= "jpeg")
@@ -181,19 +185,56 @@ class sensitivityAnalysis(object):
         height = 10
         pdf = FPDF()
         pdf.add_page()
+        pdf.set_font('Times', 'B', 16)
+        pdf.cell(width, height,"Sensitivity Analysis for "+self.sector+" on "+ self.parameter)
+        pdf.ln(" ")
+        pdf.set_font('Times', 'B', 14)
+        pdf.cell(width,height,"Introduction")
+        pdf.ln(" ")
+        pdf.set_font('Times', '', 12)
+        text_1="A sensitivity analysis was conducted on a selected value from the Stochastic Infrastructure Remediation Model "
+        text_2="(SIRM). The SIRM allows for a series of interconnected infrastructure sectors to be modeled and considers the "
+        text_3="realistic variability of the impact of a CBRN (chemical, biological, radiological, and nuclear) event."
+        text_4="Sensitivity Analysis will determine how "+self.parameter + " is affected  by recovery time. The closer the slope"
+        text_5="to zero the less of an impact it will have in the model."
+        pdf.cell(width,height,text_1,ln=1)
+        pdf.cell(width,height,text_2,ln=1)
+        pdf.cell(width,height,text_3,ln=1)
+        pdf.cell(width,height,text_4,ln=1)
+        pdf.cell(width,height,text_5,ln=1)
+        pdf.set_font('Times','B',14)
+        pdf.cell(width, height, "Sensitivity Graph",ln=1)
         pdf.set_font('Times', 'B', 12)
         graph_name = path_name + file_name + ".png"
+        pdf.cell(width, height,"     "+ ggt)
+        pdf.ln(" ")
         pdf.image(graph_name, w = 200)
+        pdf.set_font('Times', 'B', 12)
         text = "Slope"
         if self.parameter == "Days Backup":
-          text = "Reduction (days) in recovery time for an increase in 1 day backup"
+           text= "Reduction (days) in recovery time for an increase in 1 day backup"
         if self.parameter == "Efficiency of Backups":
           text = "Reduction (days) in recovery time for an increase in 1% backup efficiency"
         if self.parameter == "Initial Efficiency":
           text = "Reduction (days) in recovery time for an increase in 1% initial efficiency"
         if self.parameter == "Repair Factors":
           text = "Reduction (days) in recovery time for an increase in 0.1 repair factor"
-          
+        pdf.ln(" ")
+        pdf.ln(" ")
+        pdf.ln(" ")
+        pdf.ln(" ")
+        pdf.ln(" ")
+        pdf.ln(" ")
+        pdf.ln(" ")
+        pdf.ln(" ")
+        pdf.set_font('Times', 'B', 14)
+        pdf.cell(width, height,text)
+        pdf.ln(" ")
+        pdf.set_font('Times', '', 12)
+        pdf.cell(width, height,"Below is the sector and "+text+" for the",ln=1)
+        pdf.cell(width, height, "parameter breakdown for the sensitivity analysis.",ln=1)
+        pdf.ln(" ")
+        pdf.set_font('Times', 'B', 12)
         data = ["Infrastructure Sector",text ]
         white = np.array([255, 255, 255])
         pdf.cell(width, height, str(data[0]), border=1)
@@ -202,6 +243,7 @@ class sensitivityAnalysis(object):
         c1='white' 
         c2='green' 
         slope_max= max(abs(slope_results["Slope"]))
+        
         #pdf.cell(width, height, str(data[2]), border=1, ln=1)
         for i in range(len(slope_results["Slope"])):
           slope = abs(round(float(slope_results["Slope"][i]), 2))
@@ -227,6 +269,9 @@ def main():
 
             tk.Tk.__init__(self, *args, **kwargs)
             container = tk.Frame(self)
+            style=ttk.Style(self)
+            self.tk.call('source','azure.tcl')
+            style.theme_use('azure')
 
             container.pack(side="top", fill="both", expand = True)
 
@@ -236,6 +281,7 @@ def main():
             self.frames = {}
 
             frame = StartPage(container, self)
+            frame.configure(bg="snow")
 
             self.frames[StartPage] = frame
 
@@ -263,6 +309,7 @@ def main():
         def __init__(self, parent, controller):
             mainframe = tk.Frame.__init__(self,parent)
             dirpath = os.getcwd()
+            
                 
             self.leg = None
             def hide_rf(checkbox):
@@ -424,7 +471,8 @@ def main():
                          self.gov_bool, self.emer_bool, self.fa_bool, self.waste_bool, self.healthcare_bool]
             sector_list = ["Water", "Energy", "Transportation", "Communications", "Government", "Emergency Services",
                            "Food and Agriculture", "Waste Management", "Healthcare"]
-            
+            label = tk.Label(self, text="                     Sensitivity Analysis Tool", bg="snow",font=("Calibri Light", 30))
+            label.grid(row=0, sticky=tk.NSEW,columnspan=4)
             #string definitions
             rf_range_min = tk.StringVar()
             inf_stoich_range_min = tk.StringVar()
@@ -442,51 +490,83 @@ def main():
             backup_days_steps = tk.StringVar()
             backup_efficiency_steps = tk.StringVar()
             initial_efficiency_steps = tk.StringVar()
+            analyze=ttk.LabelFrame(self,text='Parameters to Analyze')
+            analyze.place(x=0,y=60)
 
-            tk.Label(self, text='Parameters to Analyze', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 0)
-            rf_check = tk.Checkbutton(self, text='Repair Factors', var=self.rf_bool, font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 0)
-            db_check = tk.Checkbutton(self, text='Days Backup', var=self.backup_days_bool, font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 0)
-            de_check = tk.Checkbutton(self, text='Efficiency of Backup', var=self.backup_efficiency_bool, font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 0)
-            ie_check = tk.Checkbutton(self, text='Initial Efficiency', var=self.initial_efficiency_bool, font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 0)
+            #ttk.Label(remediation, text='Parameters to Analyze').grid(row=1, sticky=tk.W, column = 0)
+            rf_check = ttk.Checkbutton(analyze, text='Repair Factors', var=self.rf_bool).grid(row=2, sticky=tk.W, column = 0)
+            db_check = ttk.Checkbutton(analyze, text='Days Backup', var=self.backup_days_bool).grid(row=4, sticky=tk.W, column = 0)
+            de_check = ttk.Checkbutton(analyze, text='Efficiency of Backup', var=self.backup_efficiency_bool).grid(row=6, sticky=tk.W, column = 0)
+            ie_check = ttk.Checkbutton(analyze, text='Initial Efficiency', var=self.initial_efficiency_bool).grid(row=8, sticky=tk.W, column = 0)
+            analyze_min=ttk.LabelFrame(self,text='Parameter Mins')
+            analyze_min.place(x=160,y=60)
 
-            tk.Label(self, text='Parameter Mins', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 1)
-            rp_min_text = tk.Label(self, text='Repair Factors Min:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 1)
-            bd_min_text = tk.Label(self, text='Days Backup Min:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 1)
-            be_min_text = tk.Label(self, text='Efficiency of Backup Min:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 1)
-            ie_min_text = tk.Label(self, text='Initial Efficiency Min:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 1)
+            #tk.Label(self, text='Parameter Mins', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 1)
+            rp_min_text = ttk.Label(analyze_min, text='Repair Factors Min:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 1)
+            bd_min_text = ttk.Label(analyze_min, text='Days Backup Min:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 1)
+            be_min_text = ttk.Label(analyze_min, text='Efficiency of Backup Min:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 1)
+            ie_min_text = ttk.Label(analyze_min, text='Initial Efficiency Min:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 1)
 
-            rp_min = tk.Entry(self, textvariable=rf_range_min, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 1)
-            bd_min = tk.Entry(self, textvariable=backup_days_range_min, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 1)
-            be_min = tk.Entry(self, textvariable=backup_efficiency_range_min, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 1)
-            ie_min = tk.Entry(self, textvariable=initial_efficiency_range_min, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 1)
+            rp_min = ttk.Entry(analyze_min, textvariable=rf_range_min, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 1)
+            bd_min = ttk.Entry(analyze_min, textvariable=backup_days_range_min, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 1)
+            be_min = ttk.Entry(analyze_min, textvariable=backup_efficiency_range_min, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 1)
+            ie_min = ttk.Entry(analyze_min, textvariable=initial_efficiency_range_min, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 1)
 
-            tk.Label(self, text='Parameter Maxes', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 2)
-            rp_max_text = tk.Label(self, text='Repair Factors Max:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 2)
-            bd_max_text = tk.Label(self, text='Days Backup Max:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 2)
-            be_max_text = tk.Label(self, text='Efficiency of Backup Max:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 2)
-            ie_max_text = tk.Label(self, text='Initial Efficiency Max:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 2)
+            
+            analyze_max=ttk.LabelFrame(self,text='Parameters Maxes')
+            analyze_max.place(x=330,y=60)
+            #ttk.Label(analyze_max, text='Parameter Maxes', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 2)
+            rp_max_text = ttk.Label(analyze_max, text='Repair Factors Max:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 2)
+            bd_max_text = ttk.Label(analyze_max, text='Days Backup Max:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 2)
+            be_max_text = ttk.Label(analyze_max, text='Efficiency of Backup Max:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 2)
+            ie_max_text = ttk.Label(analyze_max, text='Initial Efficiency Max:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 2)
 
-            rp_max = tk.Entry(self, textvariable=rf_range_max, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 2)
-            bd_max = tk.Entry(self, textvariable=backup_days_range_max, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 2)
-            be_max = tk.Entry(self, textvariable=backup_efficiency_range_max, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 2)
-            ie_max = tk.Entry(self, textvariable=initial_efficiency_range_max, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 2)
+            rp_max = ttk.Entry(analyze_max, textvariable=rf_range_max, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 2)
+            bd_max = ttk.Entry(analyze_max, textvariable=backup_days_range_max, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 2)
+            be_max = ttk.Entry(analyze_max, textvariable=backup_efficiency_range_max, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 2)
+            ie_max = ttk.Entry(analyze_max, textvariable=initial_efficiency_range_max, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 2)
+            analyze_param=ttk.LabelFrame(self,text='Parameters Steps')
+            analyze_param.place(x=500,y=60)
 
-            tk.Label(self, text='Parameter Steps', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 3)
-            rp_steps_text = tk.Label(self, text='Repair Factors Steps:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 3)
-            bd_steps_text = tk.Label(self, text='Days Backup Steps:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 3)
-            be_steps_text = tk.Label(self, text='Efficiency of Backup Steps:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 3)
-            ie_steps_text = tk.Label(self, text='Initial Efficiency Steps:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 3)
+            #ttk.Label(analyze_param, text='Parameter Steps', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 3)
+            rp_steps_text = ttk.Label(analyze_param, text='Repair Factors Steps:', font=("Arial", 10)).grid(row=2, sticky=tk.W, column = 3)
+            bd_steps_text = ttk.Label(analyze_param, text='Days Backup Steps:', font=("Arial", 10)).grid(row=4, sticky=tk.W, column = 3)
+            be_steps_text = ttk.Label(analyze_param, text='Efficiency of Backup Steps:', font=("Arial", 10)).grid(row=6, sticky=tk.W, column = 3)
+            ie_steps_text = ttk.Label(analyze_param, text='Initial Efficiency Steps:', font=("Arial", 10)).grid(row=8, sticky=tk.W, column = 3)
 
-            rp_steps = tk.Entry(self, textvariable=rf_steps, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 3)
-            bd_steps = tk.Entry(self, textvariable=backup_days_steps, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 3)
-            be_steps = tk.Entry(self, textvariable=backup_efficiency_steps, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 3)
-            ie_steps = tk.Entry(self, textvariable=initial_efficiency_steps, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 3)
+            rp_steps = ttk.Entry(analyze_param, textvariable=rf_steps, font=("Arial", 10)).grid(row=3, sticky=tk.W, column = 3)
+            bd_steps = ttk.Entry(analyze_param, textvariable=backup_days_steps, font=("Arial", 10)).grid(row=5, sticky=tk.W, column = 3)
+            be_steps = ttk.Entry(analyze_param, textvariable=backup_efficiency_steps, font=("Arial", 10)).grid(row=7, sticky=tk.W, column = 3)
+            ie_steps = ttk.Entry(analyze_param, textvariable=initial_efficiency_steps, font=("Arial", 10)).grid(row=9, sticky=tk.W, column = 3)
+            ttk.Label(self, text="").grid(row=1, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=2, sticky=tk.W, column = 0)
 
-            tk.Label(self, text='Infrastructure Sectors to Analyze:', font=("Arial", 12)).grid(row=1, sticky=tk.W, column = 4)
+            ttk.Label(self, text="").grid(row=3, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=4, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=5, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=6, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=7, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=8, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=9, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=10, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=11, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=12, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=13, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=14, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=15, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=16, sticky=tk.W, column = 0)
+            ttk.Label(self, text="").grid(row=17, sticky=tk.W, column = 0)
+          
+            
+           
+
+            tk.Label(self, text='                                                                                 ',bg="snow" ,font=("Arial", 12)).grid(row=16, sticky=tk.W, column = 10)
+            Infra=ttk.LabelFrame(self,text='Infrastructure Sectors to Analyze:')
+            Infra.place(x=670,y=60)
             for i in range(len(sector_list)):
-              tk.Checkbutton(self, text=sector_list[i], var=bool_list[i], font=("Arial", 10)).grid(row=2+i, sticky=tk.W, column = 4)
+              ttk.Checkbutton(Infra, text=sector_list[i], var=bool_list[i]).grid(row=2+i, sticky=tk.W, column = 4)
             #print(self.orders, self.coeffs, self.k)
-            tk.Button(self, text='Run Analysis', bg='#C7FCA0', command= lambda: run(), font=("Arial", 14)).grid(row=18, column=3, sticky=tk.NSEW)
+            tk.Button(self, text='Run Analysis', bg='#C7FCA0', command= lambda: run(), font=("Arial", 14)).grid(row=16, column=2, sticky=tk.NSEW,columnspan=2)
             #tk.Button(self, text='Cancel', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=18, column=4, sticky=tk.NSEW)
         
     global app

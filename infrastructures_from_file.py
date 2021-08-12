@@ -45,7 +45,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     dir_path = os.path.dirname(abspath(getsourcefile(lambda:0)))
     json_data = open(dir_path + "//" + fname)
     data = json.load(json_data)
-    
+
     #n0 calculation
     n_values = list(data["n0"])
     if check_inputs("Initial efficiencies", n_values, 100, 0, 9):
@@ -277,14 +277,6 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
         negatives = True
     else:
         negatives = False
-    json_path="check.json"
-    file = pathlib.Path(json_path)
-    if file.exists() :
-          with open(json_path) as f:
-            data=json.load(f)
-            check=data["check"]
-    if check=="True":
-        print(" ")
         #remediationFactor=timeSpan
     leg = infrastructures_v4.infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
                                              paramIndexes, infStoichFactor, printProgress, averaging, intervals, seedValue, name, remediationFactor, contamination,
