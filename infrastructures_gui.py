@@ -278,7 +278,6 @@ def main():
                 with open(dirpath + "//" + "report_inputs.txt", 'w') as outfile:
                         json.dump(data, outfile)
                 if check["check"] == "True":
-
                   master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
                   fileLoc = master_path+"\\JobRequest.json"
                   f=open(fileLoc)
@@ -668,6 +667,12 @@ def main():
               other["check"]="False"
               with open(filePath,'w') as fp:
                     json.dump(other,fp)
+              master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+              filePath=master_path+'\\'+'path'+'.json'
+              other={}
+              other["change"]=0
+              with open(filePath,'w') as f:
+                  path=json.dump(other,f)
               count=count+1
             initial=ttk.LabelFrame(self,text="Initial Percentages")
             initial.place(x=5,y=60)
