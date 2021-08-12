@@ -19,7 +19,17 @@ from fpdf import FPDF
 from scipy.optimize import LinearConstraint
 import pandas as pd
 import json
-
+import statistics
+import sys
+import os
+if (sys.version_info > (3, 0)):
+  import tkinter as tk
+  from tkinter import ttk
+  from tkinter import *
+else:
+  import Tkinter as tk
+  from Tkinter import ttl
+import tkinter.messagebox as tkMessageBox
 leg = ""
 
 def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
@@ -166,8 +176,8 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         break
         fileLoc = "report_inputs.txt"
         json_data = open(fileLoc)
-
-
+        
+        
         #if making a histogram, retrieve the desired parameter of each solution and store in param_vals if more than 1 stochastic solution is running
         sectorRange = list(range(len(n0)))
         if nRun > 1:
@@ -187,14 +197,19 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         time_of_recovery_vals[m][i] = t[time_of_recover]
             for j in range(len(paramTypes)):
                 if paramTypes[j] == "min":
+                    helper= paramTypes[j]
                     param_vals[j][i] = min(n[:,paramIndexes[j]])
                 elif paramTypes[j] == "max":
+                    helper= paramTypes[j]
                     param_vals[j][i] = max(n[:,paramIndexes[j]])
                 elif paramTypes[j] == "average":
+                    helper= paramTypes[j]
                     param_vals[j][i] = statistics.mean(n[:,paramIndexes[j]])
                 elif paramTypes[j] == "final_val":
+                    helper= paramTypes[j]
                     param_vals[j][i] = n[-1,paramIndexes[j]]
                 else: #recover_time
+                    helper = paramTypes[j]
                     if min(n[:,paramIndexes[j]]) >= 100:
                         continue #leave a zero in the array whenever the sector efficiency never falls below 100%
                     else:
@@ -210,7 +225,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                         else:
                             param_vals[j][i] = t[time_of_recover]
 
-
+     
     #divide running sums stored in averages and make into run-averages
     if averaging and nRun > 1:
         for i in range(0, int(timeSpan/bin_size)):
@@ -224,6 +239,12 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
                     averages[i][j] = averages[i][j]/num_in_bin[i]
 
     #Plotting
+    if timeSpan < max(param_vals[0]):             
+        timeSpan= max(param_vals[0])+10
+        tkMessageBox.showinfo("Helper", "The timeSpan on the " + helper +" graph has been adjusted to output results. Please change the simulation days."  )
+        
+ 
+      
     infrastructures_results.results(nRun, paramTypes, paramIndexes, param_vals, imageFileName, contam, int(timeSpan))
     #make interactive plot of infrastructure efficiency time profiles
     if averages is not None:
@@ -238,31 +259,62 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     #ranking the priorities by coefficients
     ranked_dict, ranked = prioritizeByConnections(orders, list(range(len(n0))))
     ranked_dict_rt, ranked_rt = getRecoveryTimeDict(time_of_recovery_vals, sectorRange)
-    f = open("Results/" + imageFileName + "_prioritization.txt", "w")
-    f.write("Rank by strength of connections: \n")
-    i = 1
-    sectors = []
-    for key, value in ranked_dict:
-        f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ "\n")
-        i += 1
-    f.write("\nRank by median recovery time: \n")
-    i = 1
-    results = pd.DataFrame()
-    sectors = []
-    recoveryTimes = []
-    for key, value in ranked_dict_rt:
-        f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ " days \n")
-        i += 1
-        sectors.append(key)
-        recoveryTimes.append(str(round(float(value), 2)))
+    master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+    filePath=master_path+'\\'+'path'+'.json'
+    with open(filePath) as f:
+       path=json.load(f)
+    ######### RESULTS PRI
+    if path['change']==0:
+      f = open("Results/" + imageFileName + "_prioritization.txt", "w")
+      f.write("Rank by strength of connections: \n")
+      i = 1
+      sectors = []
+      for key, value in ranked_dict:
+          f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ "\n")
+          i += 1
+      f.write("\nRank by median recovery time: \n")
+      i = 1
+      results = pd.DataFrame()
+      sectors = []
+      recoveryTimes = []
+      for key, value in ranked_dict_rt:
+          f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ " days \n")
+          i += 1
+          sectors.append(key)
+          recoveryTimes.append(str(round(float(value), 2)))
+      results["Sectors"] = sectors
+      results["Recovery Times"] = recoveryTimes
+      results.to_csv("Results/" + imageFileName + ".csv")
+    else:
+      newpath=path['path']+'\\'+imageFileName
+      if not os.path.exists(newpath):
+            os.makedirs(newpath)
+      f = open(newpath+'\\' + imageFileName + "_prioritization.txt", "w")
+      f.write("Rank by strength of connections: \n")
+      i = 1
+      sectors = []
+      for key, value in ranked_dict:
+          f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ "\n")
+          i += 1
+      f.write("\nRank by median recovery time: \n")
+      i = 1
+      results = pd.DataFrame()
+      sectors = []
+      recoveryTimes = []
+      for key, value in ranked_dict_rt:
+          f.write(str(i) + ")" + str(key) + " : " + str(round(float(value), 2))+ " days \n")
+          i += 1
+          sectors.append(key)
+          recoveryTimes.append(str(round(float(value), 2)))
+      results["Sectors"] = sectors
+      results["Recovery Times"] = recoveryTimes
+      results.to_csv(newpath +'\\'+ imageFileName + ".csv")
     final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes, n0,nRun, timeSpan, contamination, 
                         contaminatedListAvailable)
-    results["Sectors"] = sectors
-    results["Recovery Times"] = recoveryTimes
-    results.to_csv("Results/" + imageFileName + ".csv")
+    #######RESULTS
+   
     f.close()
-    
-
+  
     #end program without returning anything
     #return leg
 
@@ -289,6 +341,7 @@ def constraintsFunction(x0, maxPercent):
 def optimizeDecon(n0, p0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes,
                     infStoichFactor, printProgress, averaging, contaminatedListAvailable, agent, seedValue, imageFileName, remediationFactor,
                   contamination, maxPercent):
+    
     x0 = [0]*len(remediationFactor)
     for i in range(len(remediationFactor)):
         x0[i] = float(remediationFactor[i])
@@ -363,6 +416,7 @@ def getRecoveryTimeDict(recoveryTimes, sectors):
     results_final = sorted(results.items(), key=lambda x: x[1], reverse=True)
     for key in results_final:
         ranked.append(key)
+    
     return results_final, ranked
 
 def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor, printProgress, contamination,

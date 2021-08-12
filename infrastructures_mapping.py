@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from osgeo import ogr
 
 def loadMap(filename):
-    hazus = gpd.read_file(r'C:\Repos\EPA\Shapefiles\harvey\houston data\HoustonBlocks.shp')
+    hazus = gpd.read_file(r'C:\Repos\EPA\Shapefiles\harvey\houston data\HoustonBlocks.shp') ###Co to jest
     scenarioData = gpd.read_file(filename)
     base = hazus.plot(color='#e0ecf4', figsize=(40,40), legend=True, legend_kwds={'label': "Infrastructure Data"})
     #scenarioData.plot(ax=base, color='#8856a7', legend=True, legend_kwds={'label': "Incident Data"})

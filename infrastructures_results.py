@@ -52,6 +52,9 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
                 sector_name = "Emergency Services"
             elif paramIndexes[i] == 7:
                 sector_name = "Waste"
+            elif paramIndexes[i] == 8:
+                sector_name = "Healthcare"
+           
 
             #set titles and axes labels of second plot
             plt.rcParams.update({'font.size': 22})
@@ -67,26 +70,61 @@ def results(nRun, paramTypes, paramIndexes, param_vals, runName, contam, maxTime
             plt.close()
             #print out distribution statistics as desired
             print("")
-            f = open("Results/" + runName + " " + sector_name + ".txt", "w")
-            print(param_name + ' of ' + sector_name + ' Sector Efficiency')
-            f.write(param_name + ' of ' + sector_name + ' Sector Efficiency \n')
-            print("Average: "+str(statistics.mean(param_vals[i])))
-            f.write("Average: "+str(statistics.mean(param_vals[i])) + "\n")
-            print("Sample SD: "+str(statistics.stdev(param_vals[i])))
-            f.write("Sample SD: "+str(statistics.stdev(param_vals[i])) + "\n")
-            print("Min: "+str(min(param_vals[i])))
-            f.write("Min: "+str(min(param_vals[i])) + "\n")
-            percentiles = np.array([0.1, 1, 2.5, 5, 10, 25, 50, 75, 90, 95, 97.5, 99, 99.9])
-            for j in percentiles:
-                print("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)))
-                f.write("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)) + "\n")
-            print("Max: "+str(max(param_vals[i])))
-            f.write("Max: "+str(max(param_vals[i])) + "\n")
-            print("Skewness: "+str(skew(param_vals[i])))
-            f.write("Skewness: "+str(skew(param_vals[i])) + "\n")
-            print("Kurtosis: "+str(kurtosis(param_vals[i])))
-            f.write("Kurtosis: "+str(kurtosis(param_vals[i])) + "\n")
-            f.close()
+            master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+            filePath=master_path+'\\'+'path'+'.json'
+            with open(filePath) as f:
+                path=json.load(f)
+            if path['change']==0:
+                f = open("Results/" + runName + " " + sector_name + ".txt", "w")
+                print(param_name + ' of ' + sector_name + ' Sector Efficiency')
+                f.write(param_name + ' of ' + sector_name + ' Sector Efficiency \n')
+                print("Average: "+str(statistics.mean(param_vals[i])))
+                f.write("Average: "+str(statistics.mean(param_vals[i])) + "\n")
+                print("Sample SD: "+str(statistics.stdev(param_vals[i])))
+                f.write("Sample SD: "+str(statistics.stdev(param_vals[i])) + "\n")
+                print("Min: "+str(min(param_vals[i])))
+                f.write("Min: "+str(min(param_vals[i])) + "\n")
+                percentiles = np.array([0.1, 1, 2.5, 5, 10, 25, 50, 75, 90, 95, 97.5, 99, 99.9])
+                for j in percentiles:
+                    print("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)))
+                    f.write("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)) + "\n")
+                print("Max: "+str(max(param_vals[i])))
+                f.write("Max: "+str(max(param_vals[i])) + "\n")
+                print("Skewness: "+str(skew(param_vals[i])))
+                f.write("Skewness: "+str(skew(param_vals[i])) + "\n")
+                print("Kurtosis: "+str(kurtosis(param_vals[i])))
+                f.write("Kurtosis: "+str(kurtosis(param_vals[i])) + "\n")
+                f.close()
+            else:
+                newpath=path['path']+'\\'+runName
+                if not os.path.exists(newpath):
+                    os.makedirs(newpath)
+                master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+                filePath=master_path+'\\'+'path'+'.json'
+                with open(filePath) as fp:
+                    path=json.load(fp)
+                newpath=path['path']+'\\'+ runName
+                print(newpath)
+                f = open(newpath+'\\' + runName + " " + sector_name + ".txt", "w")
+                print(param_name + ' of ' + sector_name + ' Sector Efficiency')
+                f.write(param_name + ' of ' + sector_name + ' Sector Efficiency \n')
+                print("Average: "+str(statistics.mean(param_vals[i])))
+                f.write("Average: "+str(statistics.mean(param_vals[i])) + "\n")
+                print("Sample SD: "+str(statistics.stdev(param_vals[i])))
+                f.write("Sample SD: "+str(statistics.stdev(param_vals[i])) + "\n")
+                print("Min: "+str(min(param_vals[i])))
+                f.write("Min: "+str(min(param_vals[i])) + "\n")
+                percentiles = np.array([0.1, 1, 2.5, 5, 10, 25, 50, 75, 90, 95, 97.5, 99, 99.9])
+                for j in percentiles:
+                    print("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)))
+                    f.write("Percentile " + str(j) + ": " + str(np.percentile(param_vals[i], j)) + "\n")
+                print("Max: "+str(max(param_vals[i])))
+                f.write("Max: "+str(max(param_vals[i])) + "\n")
+                print("Skewness: "+str(skew(param_vals[i])))
+                f.write("Skewness: "+str(skew(param_vals[i])) + "\n")
+                print("Kurtosis: "+str(kurtosis(param_vals[i])))
+                f.write("Kurtosis: "+str(kurtosis(param_vals[i])) + "\n")
+                f.close()
                   
 
             

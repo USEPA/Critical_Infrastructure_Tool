@@ -12,7 +12,10 @@ hidden_imports = [
     'geos',
     'shapely',
     'shapely.geometry',
+    'matplotlib',
     'pyproj',
+     'scipy',
+
     'palettable',
     'rtree',
     'pytest',
