@@ -122,7 +122,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     you want it to...
     '''
     #Calculations
-
+ 
     #seed random number generator if desired
     if seedValue is not None:
         np.random.seed(seedValue)
@@ -434,7 +434,7 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
     This function returns an array t_vals (which stores the values of t at each
     timestep) and n (which stores the efficiency values at each timestep).
     '''
-
+    
     #initialize the kv (virus rate constants) dependent on agent
 ##    if agent == "monkeypox":
 ##        R0 = 1.2                    #source: Smith 2013
@@ -785,6 +785,7 @@ def Gillespie_model(n0, repair_factors, nLoss, tLoss, timeSpan, infStoichFactor,
 
         
         coeffs = coeffs0.copy()
+        
 
         v = []
 

@@ -19,7 +19,6 @@ from plotnine import *
 from matplotlib import rcParams
 import pathlib
 import subprocess
-from IPython.display import Latex
 if (sys.version_info > (3, 0)):
   import tkinter as tk
   from tkinter import ttk

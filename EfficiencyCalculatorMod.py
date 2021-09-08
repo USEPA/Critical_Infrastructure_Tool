@@ -274,7 +274,7 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         return ((1-results/results2)*100)
 
 def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "contaminated", Infrastructure_Dataset="HoustonBlocks",
-                         BPP = 0):  # EfficiencyCalculator
+                         BPPMin = 0, BPPMax = 1):  # EfficiencyCalculator
     # To allow overwriting outputs change overwriteOutput option to True.
     arcpy.env.overwriteOutput = True
     desc = arcpy.Describe("SIRM Tool.tbx")
@@ -322,6 +322,8 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     os.mkdir(path_parent + "//Overall")
     os.mkdir(GUI_Tool_Location + "//Overall")
     if arcpy.Exists(Contaminated_Dataset):
+
+
         (waste_contaminated) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.1 Mile", OutputPath, True),2)
         getAffectedInfrastructures(Contaminated_Dataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Contaminated")
         (ports_contaminated) = getPercentage("ports", "Ports_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.5 Mile", OutputPath, True)
@@ -456,7 +458,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     # Process: Calculate Comm Percent (Calculate Value)
     comm_percent = round(comm, 2)
     if arcpy.Exists(Contaminated_Dataset):
-        comm_percent_contaminated = round(comm_contaminated,2)
+        comm_percent_contaminated = round((comm_contaminated + broadcast_contaminated)/2,2)
 
     # Process: Calculate Government Percent (Calculate Value) 
     government_percent = round(gov, 2)
@@ -524,7 +526,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     with open(path_parent + "\\" + "infrastructures_inputs.txt", "w") as outfile:
         json.dump(data, outfile)
     if arcpy.Exists(Contaminated_Dataset):
-        fillOut(GUI_Tool_Location + "\\DefineScenario.xlsx", Contaminated_Dataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location, BPP)
+        fillOut(GUI_Tool_Location + "\\DefineScenario.xlsx", Contaminated_Dataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location, BPPMin, BPPMax)
     newPath = wrapArg(GUI_Tool_Location +  "\\infrastructures_gui.exe")
 
     os.chdir(GUI_Tool_Location)
@@ -582,7 +584,7 @@ def getArea(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buffer, Ou
         #arcpy.AddMessage(name+ " " + str(area_contaminated))
         return area_contaminated
 
-def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location, BPP):
+def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location, BPPMin, BPPMax):
     spreadsheet = pd.read_excel(excelDoc, sheet_name="Extent of Contamination")
     copy = OutputPath + "\\copied_features.shp"
     arcpy.CopyFeatures_management(ScenarioDataset, copy)
@@ -645,11 +647,19 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     total_outdoor = results
     area_contaminated = sum([industrial_area, commerical, worship,
                  school_areas, government_area, agri])
+
+##    dicts = {
+##        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor Min", "Total Indoor Max", "Total Outdoor"],
+##        "units":["", "", "", "", "", "", "m^2","m^2", "m^2"],
+##        "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
+##                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated,
+##                 area_contaminated*(1.0-float(BPPMin)),area_contaminated*(1.0-float(BPPMax)), total_outdoor]
+##        }
     dicts = {
         "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor", "Total Outdoor"],
         "units":["", "", "", "", "", "", "m^2", "m^2"],
         "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
-                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated, area_contaminated*(1.0-float(BPP)), total_outdoor]
+                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated, area_contaminated*(1.0-float(BPPMin)), total_outdoor]
         }
     
     arcpy.AddMessage(sum([industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,

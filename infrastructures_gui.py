@@ -509,7 +509,7 @@ def main():
 
             def loadInits():
                 filename = askopenfilename()
-                self.orders, self.coeffs, self.k = efficiencies_from_file.load_file(filename)
+                self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
                 
             n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes, paramIndexes, printProgress, averaging, \
                 contaminatedListAvailable, infStoichFactor, seedValue, name, remediationFactor, contaminated, backups, \
