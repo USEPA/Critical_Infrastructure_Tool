@@ -261,12 +261,12 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         results = 0
         count = 0
         for row in cursor:
-            results += row[0]
+            results += float(row[0])
             count +=1
         cursor2 = arcpy.da.SearchCursor(dissolved_stats, "SUM_AREA_GEO")
         results2 = 100
         for row in cursor2:
-            results2 += row[0]
+            results2 += float(row[0])
         area_contaminated = results
         #arcpy.AddMessage(name+ " " + str(area_contaminated))
         if contaminated:
@@ -581,18 +581,19 @@ def getArea(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buffer, Ou
             results = row[0]
             count +=1
         area_contaminated = results
-        #arcpy.AddMessage(name+ " " + str(area_contaminated))
+        arcpy.AddMessage(name+ " " + str(area_contaminated))
         return area_contaminated
 
 def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location, BPPMin, BPPMax):
     spreadsheet = pd.read_excel(excelDoc, sheet_name="Extent of Contamination")
     copy = OutputPath + "\\copied_features.shp"
     arcpy.CopyFeatures_management(ScenarioDataset, copy)
-    arcpy.management.AddGeometryAttributes(Input_Features=copy,Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
-    cursor = arcpy.da.SearchCursor(copy, "AREA_GEO")
+    arcpy.management.AddGeometryAttributes(Input_Features=ScenarioDataset,Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
+    cursor = arcpy.da.SearchCursor(ScenarioDataset, "AREA_GEO")
     area  = 0
     for row in cursor:
-        area += row[0]
+        arcpy.AddMessage("Area " + str(row))
+        area += float(row[0])
     spreadsheet.loc[spreadsheet.Description == "The total outdoor surface area contaminated", "Parameter 1"] = area
     #Government
     government = getArea("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset,
@@ -634,17 +635,17 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     industrial_area = industrial + industrial2
     government_area = government
     affected_stats = arcpy.env.workspace + "\\affected_total"
-    arcpy.management.AddGeometryAttributes(Input_Features=ScenarioDataset, Geometry_Properties=["AREA_GEODESIC"],
-                                               Area_Unit="Square meters")
-    arcpy.analysis.Statistics(in_table=ScenarioDataset, out_table=affected_stats, statistics_fields=[["AREA_GEO", "SUM"]],
-                                  case_field=[])
-    cursor = arcpy.da.SearchCursor(affected_stats, "SUM_AREA_GEO")
-    results = 0
-    count = 0
-    for row in cursor:
-        results = row[0]
-        count +=1
-    total_outdoor = results
+    #arcpy.management.AddGeometryAttributes(Input_Features=ScenarioDataset, Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
+    #arcpy.analysis.Statistics(in_table=ScenarioDataset, out_table=affected_stats, statistics_fields=[["AREA_GEO", "SUM"]],case_field=[])
+    #cursor = arcpy.da.SearchCursor(affected_stats, ["SHAPE@AREA"])
+    # results = 0
+    # count = 0
+    # for row in cursor:
+        # results += float(row[0])
+        # arcpy.AddMessage(results)
+        # count +=1
+    total_outdoor = area
+    arcpy.AddMessage("Total Area " + str(total_outdoor))
     area_contaminated = sum([industrial_area, commerical, worship,
                  school_areas, government_area, agri])
 
