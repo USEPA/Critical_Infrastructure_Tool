@@ -37,7 +37,7 @@ if (sys.version_info > (3,0)):
   from tkinter.filedialog import askopenfilename
 else:
   from tkFileDialog import askopenfilename
-
+from tkinter import filedialog
 if (sys.version_info > (3,0)):
   from tkinter.filedialog import asksaveasfile
 else:
@@ -66,6 +66,7 @@ class CreateToolTip(object):
     def leave(self, event=None):
         self.unschedule()
         self.hidetip()
+
 
     def schedule(self):
         self.unschedule()
@@ -153,7 +154,6 @@ def main():
             #print(self.orders, self.coeffs, self.k)
 
             def select_all():
-
               water_bool.set(True)
               water_graph_bool.set(True)
               energy_bool.set(True)
@@ -172,9 +172,6 @@ def main():
               waste_graph_bool.set(True)
               healthcare_bool.set(True)
               healthcare_graph_bool.set(True)
-   
-              
-
             def deselect_all():
               water_bool.set(False)
               water_graph_bool.set(False)
@@ -362,7 +359,11 @@ def main():
                                                               reverse=True))
                     lgd=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
                     plt.title('Indoor Contamination by Type')
-                    fig=plt.savefig('Indoor_Contamination%.png', bbox_extra_artists=(lgd,), bbox_inches="tight")
+                    if remove_img( master_path, 'Indoor_Contamination%.png') == True: 
+                      fig=plt.savefig('Indoor_Contamination%.png', bbox_extra_artists=(lgd,), bbox_inches="tight")
+                    else:
+                      remove_img( master_path, 'Indoor_Contamination%.png')
+                      fig=plt.savefig('Indoor_Contamination%.png', bbox_extra_artists=(lgd,), bbox_inches="tight")
                     plt.close(fig)
                     realization=realize.get()
                     if realization.isdigit()==True:
@@ -385,7 +386,12 @@ def main():
                 infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
                     print(self.leg)
-
+            def remove_img( path, img_name):
+                
+                if os.path.exists(path + '\\' + img_name) is False:
+                    return True
+                else:
+                  os.remove(path + '\\' + img_name)
             def saveScenario():
                 data = {}
                 n0List = []
@@ -445,7 +451,22 @@ def main():
                 filename = askopenfilename()
                 if ".csv" in filename:
                     self.orders, self.coeffs, self.k = coefficients_from_file.load_file(filename)
-
+            def save_report_location():
+               #files = [('Pdf', '*.pdf')] 
+               output_name = filedialog.askdirectory()
+               if (output_name != ""):
+                 other={}
+                 other["path"]=output_name
+                 other["change"]=1
+                 with open(filePath,'w') as f:
+                    path=json.dump(other,f)
+               else:
+                 other={}
+                 other["change"]=0
+                 with open(filePath,'w') as f:
+                    path=json.dump(other,f)
+               print(output_name)
+               
             def runReports():
                 self.leg = report_GUI.main()
 
@@ -529,7 +550,7 @@ def main():
 ##                with open(filePath,'w') as fp:
 ##                  json.dump(Realization,fp)
 ##                return var90.get()
-
+          
             def get_text():
                 text_file=open("path.txt",'w')
                 text_file.write(path.get())
@@ -783,8 +804,6 @@ def main():
             Repair_factors.insert(0, repair_factors)
             Repair_factors.grid(row=1, column = 1, sticky=tk.NSEW)
 
-            
-
             ttk.Label(remediation, text="Remediation Factor (%/day): ").grid(row=12, column = 0, sticky=tk.W)
             var18 = tk.StringVar()
             Remediation_factor = ttk.Entry(remediation, textvariable=var18)
@@ -816,8 +835,6 @@ def main():
 
             model=ttk.LabelFrame(self,text="Model Parameters")
             model.place(x=475,y=60)
-
-          
             report_ttp = CreateToolTip(wide, 'Enter Realizations for wide area decontamination tool')
             arr=tk.StringVar()
             Spore=ttk.Entry(model, textvariable=arr)
@@ -871,7 +888,6 @@ def main():
             SeedValue.grid(row=8, column = 3, sticky=tk.NSEW)
             ttk.Label(self, text="").grid(row=1, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=2, sticky=tk.W, column = 0)
-
             ttk.Label(self, text="").grid(row=3, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=4, sticky=tk.W, column = 0)
             ttk.Label(self, text="").grid(row=5, sticky=tk.W, column = 0)
@@ -899,14 +915,13 @@ def main():
             ttk.Label(self, text="").grid(row=27, sticky=tk.W, column = 3)
             tk.Label(model, text="Results Chart Name: ").grid(row=9, column = 2, sticky=tk.W)
             var17 = tk.StringVar()
+            
             #tk.Label(model, text="Enter Report output path: ").grid(row=2, column = 2,stick=tk.W)
             ChartName = ttk.Entry(model, textvariable=var17)
             ChartName_ttp = CreateToolTip(ChartName, 'Enter the name of the scenario (no spaces)')
             ChartName.insert(0, name)
             ChartName.grid(row=9, column = 3, sticky=tk.NSEW)
-            
-       
-           
+   
             tk.Label(ext, text="Backup infrastructure indexes of parameters: ").grid(row=8, column = 2, sticky=tk.W)
             var21 = tk.StringVar()
             Backup = ttk.Entry(ext, textvariable=var21)
@@ -950,35 +965,36 @@ def main():
             
             tk.Button(self, text='Run GUI Scenario',command= lambda: run(False),font=("Arial", 14), bg='DarkSeaGreen1',
                       ).grid(row=30, column=0,sticky=tk.NSEW, columnspan=2)
-            tk.Label(self,text='Change PDF Location:',bg="snow" ).grid(row=27, column=0,sticky=tk.NSEW)
-            file_path=tk.StringVar()
-            path=ttk.Entry(self,textvariable=file_path)
-            path.grid(row=27, column=1, sticky=tk.NSEW)
-            master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
-            path.insert(0, str(master_path))
+            #tk.Label(self,text='Change PDF Location:',bg="snow" ).grid(row=27, column=0,sticky=tk.NSEW)
+            #file_path=tk.StringVar()
+           # path=ttk.Entry(self,textvariable=file_path)
+##            path.grid(row=27, column=1, sticky=tk.NSEW)
+##            master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+##            path.insert(0, str(master_path))
            
-            def switchFunction():
-              master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
-              if change.get():
-                 var=file_path.get()
-                 filename='path' 
-                 filePath=master_path+'\\'+filename+'.json'
-                 other={}
-                 other["path"]=var
-                 other["change"]=1
-                 with open(filePath,'w') as fp:
-                    json.dump(other,fp)
-              else:
-                 other={}
-                 other["change"]=0
-                 filename='path' 
-                 filePath=master_path+'\\'+filename+'.json'
-                 with open(filePath,'w') as fp:
-                    json.dump(other,fp) 
-            switch = ttk.Checkbutton(self, command=switchFunction,variable=change).grid(row=27,column = 2,sticky=tk.W)
-            
+##            def switchFunction():
+##              master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
+##              if change.get():
+##                 var=file_path.get()
+##                 filename='path' 
+##                 filePath=master_path+'\\'+filename+'.json'
+##                 other={}
+##                 other["path"]=var
+##                 other["change"]=1
+##                 with open(filePath,'w') as fp:
+##                    json.dump(other,fp)
+##              else:
+##                 other={}
+##                 other["change"]=0
+##                 filename='path' 
+##                 filePath=master_path+'\\'+filename+'.json'
+##                 with open(filePath,'w') as fp:
+##                    json.dump(other,fp) 
+           # switch = ttk.Checkbutton(self, command=switchFunction,variable=change).grid(row=27,column = 2,sticky=tk.W)
             tk.Button(self, text='Save Scenario',font=("Arial", 14), bg='misty rose', command= lambda: saveScenario(),
                       ).grid(row=31, column=0, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Change PDF location',font=("Arial", 14), bg='misty rose', command= lambda: save_report_location(),
+                      ).grid(row=29, column=0, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Load Coefficients', font=("Arial", 14), bg='light cyan',
                       command= lambda: loadCoeff()).grid(row=32, column=0, sticky=tk.NSEW, columnspan=2)
@@ -993,7 +1009,7 @@ def main():
                 self.grid_rowconfigure(i, weight=1, uniform="foo")
             for i in range(0,4):
                 self.grid_columnconfigure(i, weight=1, uniform="bar")
-            Report_Value=ttk.LabelFrame(self,text='Report Value Selection',width=200,height=100)
+            Report_Value=ttk.LabelFrame(self,text='Report Value Section',width=200,height=100)
             Report_Value.place(x=1000, y=55)
         
             ttk.Checkbutton(Report_Value,text='Show Water Sensitivity', var=water_bool,
