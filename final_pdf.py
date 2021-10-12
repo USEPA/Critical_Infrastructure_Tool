@@ -35,6 +35,7 @@ def wrapArg(s):
     return (f"\"{s}\"")
 #Root = os.path.abspath(os.path.dirname(__file__))
 def avg(arr,token):
+    
     cat_count1=0
     cat_count2=0
     cat_count3=0
@@ -48,6 +49,7 @@ def avg(arr,token):
     totalChar=0
     Waste=0
     incident=0
+    clearance=0
     total=0
     gen_count=0
     if token=="days":
@@ -61,21 +63,27 @@ def avg(arr,token):
             SourceRed=SourceRed+entry
             cat_count2=cat_count2+1
             gen_count=gen_count+1
-            
         elif gen_count == 2:
+            clearance=clearance+entry
+            cat_count6=cat_count6+1
+            gen_count=gen_count+1
+                
+        elif gen_count == 3:
             Decon=Decon+entry
             cat_count3=cat_count3+1  
             gen_count=gen_count+1
            
-        elif gen_count == 3 :
+        elif gen_count == 4 :
             Waste=Waste+entry
             cat_count4=cat_count4+1
             gen_count=gen_count+1
             gen_count=0
+        
       CharSamp_avg=CharSamp/cat_count1
       SourceRed_avg=SourceRed/cat_count2
       Decon_avg=Decon/cat_count3
       Waste_avg=Waste/cat_count4
+      Clearance_avg=clearance/cat_count6
       averages=[]
       averages=[0 for i in range(5)]
       i=0
@@ -83,6 +91,8 @@ def avg(arr,token):
           averages[i]=CharSamp_avg
           i=i+1
           averages[i]=SourceRed_avg
+          i=i+1
+          averages[i]=Clearance_avg
           i=i+1
           averages[i]=Decon_avg
           i=i+1
@@ -159,8 +169,11 @@ def avg(arr,token):
             Decon=Decon+entry
             cat_count3=cat_count3+1
             gen_count=gen_count+1
-           
-        elif gen_count == 3 :
+        elif gen_count==3:
+            clearance=clearance+entry
+            cat_count6=cat_count6+1
+            gen_count=gen_count+1
+        elif gen_count == 4 :
             Waste=Waste+entry
             cat_count4=cat_count4+1
             gen_count=gen_count+1
@@ -173,10 +186,11 @@ def avg(arr,token):
       CharSamp_avg=CharSamp/cat_count1
       SourceRed_avg=SourceRed/cat_count2
       Decon_avg=Decon/cat_count3
+      Clearance_avg=clearance/cat_count6
       Waste_avg=Waste/cat_count4
       incident_avg=incident/cat_count5
       averages=[]
-      averages=[0 for i in range(5)]
+      averages=[0 for i in range(6)]
       i=0
       for ind in averages:
           averages[i]=CharSamp_avg
@@ -184,6 +198,8 @@ def avg(arr,token):
           averages[i]=SourceRed_avg
           i=i+1
           averages[i]=Decon_avg
+          i=i+1
+          averages[i]=Clearance_avg
           i=i+1
           averages[i]=Waste_avg
           i=i+1
@@ -210,18 +226,21 @@ def array_for_Chart(arr,token,numrealization):
       index3=0
       index4=0
       index5=0
-     
+      index6=0
+      index7=0
       gen_count=0
       CharSamp=[]
-      CharSamp=[0 for i in range(7*numrealization)]
+      CharSamp=[0 for i in range(8*numrealization)]
       SourceRed=[]
-      SourceRed=[0 for i in range(7*numrealization)]
+      SourceRed=[0 for i in range(8*numrealization)]
       Decon=[]
-      Decon=[0 for i in range(7*numrealization)]
+      Decon=[0 for i in range(8*numrealization)]
       source=[]
-      source=[0 for i in range(7*numrealization)]
+      source=[0 for i in range(8*numrealization)]
       Waste=[]
-      Waste=[0 for i in range(7*numrealization)]
+      Waste=[0 for i in range(8*numrealization)]
+      clearance=[]
+      clearance=[0 for i in range(8*numrealization)]
       for entry in arr:
         if gen_count == 0:
             CharSamp[index]=entry
@@ -235,12 +254,16 @@ def array_for_Chart(arr,token,numrealization):
             Decon[index3]=entry
             index3=index3+1
             gen_count=gen_count+1
-        elif gen_count == 3 :
+        elif gen_count == 3:
+            clearance[index6]=entry
+            index6=index6+1
+            gen_count=gen_count+1
+        elif gen_count == 4 :
             Waste[index4]=entry
             index4=index4+1
             gen_count=gen_count+1
             gen_count=0
-      return CharSamp,SourceRed,Decon,Waste
+      return CharSamp,SourceRed,Decon,clearance,Waste
     else:
       i=0
       index=0
@@ -249,6 +272,7 @@ def array_for_Chart(arr,token,numrealization):
       index4=0
       index5=0
       index6=0
+      index7=0
       CharSamp=[]
       CharSamp=[0 for i in range(7*numrealization)]
       SourceRed=[]
@@ -263,6 +287,8 @@ def array_for_Chart(arr,token,numrealization):
       Waste=[0 for i in range(7*numrealization)]
       incident=[]
       incident=[0 for i in range(7*numrealization)]
+      clearance=[]
+      clearance=[0 for i in range(7*numrealization)]
       gen_count =0
       for entry in arr:
         if gen_count == 0:
@@ -278,13 +304,16 @@ def array_for_Chart(arr,token,numrealization):
             Decon[index3]=entry
             index3=index3+1
             gen_count=gen_count+1
-           
-        elif gen_count == 3 :
+        elif gen_count == 3:
+             clearance[index7]=entry
+             index7=index7+1
+             gen_count=gen_count+1
+        elif gen_count == 4 :
             Waste[index5]=entry
             index5=index5+1
             gen_count=gen_count+1
             
-        elif gen_count==4:
+        elif gen_count==5:
             incident[index6]=entry
             index6=index6+1
             gen_count=0
@@ -497,7 +526,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Outdoor_phase_costs=[]
                 Outdoor_phase_costs=[0 for i in range(6*numrealization)]
                 Outdoor_workDays=[]
-                Outdoor_workDays=[0 for i in range(5*numrealization)]
+                Outdoor_workDays=[0 for i in range(7*numrealization)]
                 Outdoor_total=[]
                 Outdoor_total=[0 for i in range(1*numrealization)]
                 Outdoor_onsite=[]
@@ -506,7 +535,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Outdoor_Area=[0 for i in range(10*numrealization)]
             for key in task2[z]["scenarioResults"]["outdoorResults"]:
                 for key2 in task2[z]["scenarioResults"]["outdoorResults"][key]:
-                    if key2 == "phaseCost":   
+                    if key2 == "phaseCost":
                        Outdoor_phase_costs[index]=task2[z]["scenarioResults"]["outdoorResults"][key][key2]
                        index=index+1
                     elif key2 == "workDays":
@@ -563,12 +592,14 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 outdoor_avgs_money=avg(Outdoor_phase_costs,"money")
                 outdoor_avgs_days=avg(Outdoor_workDays,"days")
                 outdoor_avg_total=avgtotal(Outdoor_total)
+               
                 Titles = ["Phase", "Average Phase Cost in USD","Average Work Days"]      
                 pdf.cell(90,height,Titles[0],border=1,align = 'C',fill=True)
                 pdf.cell(50,height,Titles[1],border=1,align = 'C',fill=True)
                 pdf.cell(45,height,Titles[2],border=1,align = 'C',fill=True)
                 first_line=3
-                heading=["Characterization Sampling", "Source Reduction","Decontamination","Waste Sampling","Incident Command" ]
+                heading=["Characterization Sampling", "Source Reduction","Decontamination","Clearance Sampling","Waste Sampling","Incident Command" ]
+                
                 for i in range(len(outdoor_avgs_money)):   
                     if first_line==3:
                         pdf.ln(" ")
@@ -589,13 +620,21 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                         pdf.multi_cell(45, height, str(round(float(temp), 0)), border=1,align = 'C')
 
                 
-               
+                pdf.cell(90, height, str(heading[5]), border=1,align = 'C')
+                temp=outdoor_avgs_money[5]
+                temp=round(float(temp), 2)
+                significant_digits = 3
+                temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                temp="{0:,.2f}".format(temp)
+                pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                pdf.multi_cell(45, height, str(round(float(0), 0)), border=1,align = 'C')
                 pdf.ln(" ")
                 disp_outdoor=outdoor_avg_total
                 disp_outdoor=round(float(disp_outdoor), 2)
                 significant_digits = 3
                 disp_outdoor =  round(disp_outdoor, significant_digits - int(math.floor(math.log10(abs(disp_outdoor)))) - 1)
                 disp_outdoor="{0:,.2f}".format(disp_outdoor)
+                
             if z == 0:
                 index4=0
                 index5=0
@@ -644,8 +683,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 significant_digits = 3
                 disp_Under =  round(disp_Under, significant_digits - int(math.floor(math.log10(abs(disp_Under)))) - 1)
                 disp_Under="{0:,.2f}".format(disp_Under)
-                heading=[0 for i in range(3)]
-                heading=["Characterization Sampling", "Source Reduction","Decontamination","Waste Sampling","Incident Command" ]
+                heading=[0 for i in range(7)]
+                heading=["Characterization Sampling", "Source Reduction","Decontamination","Clearance Sampling","Waste Sampling","Incident Command" ]
                 Titles = ["Phase", "Average Phase Cost in USD","Average Work Days"]      
                 pdf.cell(90,height,Titles[0],border=1,align = 'C',fill=True)
                 pdf.cell(50,height,Titles[1],border=1,align = 'C',fill=True)
@@ -670,7 +709,14 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                           temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                         pdf.multi_cell(45, height, str(round(float(temp), 0)), border=1,align = 'C')
 
-                             
+                pdf.cell(90, height, str(heading[5]), border=1,align = 'C')
+                temp=Underground_avgs_money[5]
+                temp=round(float(temp), 2)
+                significant_digits = 3
+                temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                temp="{0:,.2f}".format(temp)
+                pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                pdf.multi_cell(45, height, str(round(float(0), 0)), border=1,align = 'C')            
                 pdf.ln(" ")
             #########################Outdoor End
             if(z==0): 
@@ -685,7 +731,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Indoor_phase_costs=[]
                 Indoor_phase_costs=[0 for i in range(30*numrealization)]
                 Indoor_workDays=[]
-                Indoor_workDays=[0 for i in range(20*numrealization)]
+                Indoor_workDays=[0 for i in range(30*numrealization)]
                 Indoor_total=[]
                 Indoor_total=[0 for i in range(7*numrealization)]
                 Indoor_onsite=[]
@@ -715,7 +761,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
               index_other=0
               otra=0
               Travel_costs=[]
-              Travel_costs=[0 for i in range(6*numrealization)]
+              Travel_costs=[0 for i in range(10*numrealization)]
               other_params=[]
               other_params=[0 for i in range(5*numrealization)]
               counter=0
@@ -772,8 +818,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 pdf.cell(50,height,Titles[1],border=1,align = 'C',fill=True)
                 pdf.cell(45,height,Titles[2],border=1,align = 'C',fill=True)
                 first_line=3
-                heading=[0 for i in range(6)]
-                heading=["Characterization Sampling", "Source Reduction","Decontamination","Waste Sampling","Incident Command" ]
+                heading=[0 for i in range(7)]
+                heading=["Characterization Sampling", "Source Reduction","Decontamination","Clearance Sampling","Waste Sampling","Incident Command" ]
                 for i in range(len(indoor_avgs_money)):    
                     if first_line==3:
                         pdf.ln(" ")
@@ -791,6 +837,14 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                         else:
                           temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                         pdf.multi_cell(45, height, str(round(float(temp), 0)), border=1,align = 'C')
+                pdf.cell(90, height, str(heading[5]), border=1,align = 'C')
+                temp=indoor_avgs_money[5]
+                temp=round(float(temp), 2)
+                significant_digits = 3
+                temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                temp="{0:,.2f}".format(temp)
+                pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
+                pdf.multi_cell(45, height, str(round(float(0), 0)), border=1,align = 'C')         
                 pdf.ln(" ")
                 
                 pdf.image('Indoor_Contamination%.png', x = None, y = None, w=0, h=0, type='', link='')
@@ -1010,7 +1064,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
 
                 workdays=[Characterization_percent,Source_percent,Waste_percent,Decon_percent,incidentTotal_percent]
                 #return CharSamp,SourceRed,Waste,Decon,incident
-                heading=["Characertization Sampling","Source Reduction","Decontamination","Waste Sampling", "Incident Command"]
+                heading=["Characertization Sampling","Source Reduction","Decontamination","Waste Sampling","Clearance Sampling" ,"Incident Command"]
                 fig, ax = plt.subplots()
                 fig.set_size_inches(4, 4)
                 colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
@@ -1022,7 +1076,6 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                     patches, labels, dummy =  zip(*sorted(zip(patches, labels, workdays),
                                                           key=lambda heading: heading[2],
                                                           reverse=True))
-
                 lgd1=plt.legend(patches, labels, bbox_to_anchor = (1.05, 0.6),fontsize=8)
                 plt.title('Cost Breakdown By Element')
                 fig=plt.savefig('Money Breakdown By Element%.png', bbox_extra_artists=(lgd1,), bbox_inches="tight")
