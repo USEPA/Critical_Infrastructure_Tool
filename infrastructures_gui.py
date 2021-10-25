@@ -276,54 +276,53 @@ def main():
                         json.dump(data, outfile)
                 if check["check"] == "True":
                   master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
-                  fileLoc = master_path+"\\JobRequest.json"
+                  fileLoc = master_path+"\\newJobRequest.json"
                   f=open(fileLoc)
                   task5json=json.load(f)
                   fileLoc = master_path+"\\SIRMResults.json"
                   f=open(fileLoc)
                   SIRM=json.load(f)                 
-                  Spore=arr.get()
-                  spore_count=0
-                  Indoor_Spore=""
-                  Outdoor_Spore=""
-                  Underground_Spore=""
-                  Spore_Results=[]
-                  Spore_Results=[0 for i in range(len(Spore))]
-                  i=0
-                  b=0
-                  j=1
-                  
-                  violation=True 
-                  for c in Spore:
-                      Spore_Results[i]=c
-                      i=i+1
-                  for z in Spore_Results:
-                     if z.isspace():
-                       spore_count=spore_count+1
-                     else:
-                       if spore_count==0:
-                         if z.isdigit()==True or z == '.':
-                           Indoor_Spore=Indoor_Spore+z
-                         else:
-                           violation=False
-                       elif spore_count==1:
-                         if z.isdigit()==True or z == '.':
-                           Underground_Spore=Underground_Spore+z
-                         else:
-                           violation=False
-                       elif spore_count==2:
-                         if z.isdigit()==True or z == '.':
-                           Outdoor_Spore=Outdoor_Spore+z
-                         else:
-                           violation=False
-                  
+
+                  violation=True
                   if violation==False:
                     tkMessageBox.showinfo("Helper","Task 5 model did not execute enter a valid spore loading number (int or float)")
                   else:
-                  
+                    fileLoc = master_path+"\\DATA.json"
+                    f=open(fileLoc)
+                    DATA_GUI=json.load(f)
+                    violation=True
+                    Spore=DATA_GUI["Spore"]
+                    Spore_Results=[]
+                    Spore_Results=[0 for i in range(len(Spore))]
+                    i=0
+                    spore_count=0
+                    Indoor_Spore=""
+                    Underground_Spore=""
+                    Outdoor_Spore=""
+                    for c in Spore:
+                        Spore_Results[i]=c
+                        i=i+1
+                    for z in Spore_Results:
+                       if z.isspace():
+                         spore_count=spore_count+1
+                       else:
+                         if spore_count==0:
+                           if z.isdigit()==True or z == '.':
+                             Indoor_Spore=Indoor_Spore+z
+                           else:
+                             violation=False
+                         elif spore_count==1:
+                           if z.isdigit()==True or z == '.':
+                             Underground_Spore=Underground_Spore+z
+                           else:
+                             violation=False
+                         elif spore_count==2:
+                           if z.isdigit()==True or z == '.':
+                             Outdoor_Spore=Outdoor_Spore+z
+                           else:
+                             violation=False
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"]=SIRM["data"][6]["value"]##AREA CONTAMINATED
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"]=SIRM["data"][7]["value"]
-                    #print(task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"],task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"])
                     task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]=Outdoor_Spore##LOADING
                     task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]=Underground_Spore
                     task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]=Indoor_Spore
@@ -334,6 +333,28 @@ def main():
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"]=SIRM["data"][2]["value"]
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]=SIRM["data"][4]["value"]
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]=SIRM["data"][3]["value"]
+                    task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["min"]=DATA_GUI["teams_char_min"]
+                    task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["max"]=DATA_GUI["teams_char_max"]
+                    
+                    task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["min"]=DATA_GUI["teams_source_min"]
+                    task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["max"]=DATA_GUI["teams_source_max"]
+                    
+                    task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["min"]=DATA_GUI["teams_clear_min"]
+                    task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["max"]=DATA_GUI["teams_clear_max"]
+
+                    task5json["modifyParameter"]["filters"][5]["filters"][0]["parameters"][0]["value"]=DATA_GUI["teams_Waste_min"]
+
+                    task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]= DATA_GUI["frac_clear_min"]
+                    task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]= DATA_GUI["frac_clear_max"]
+                    
+                    task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["min"]= DATA_GUI["frac_min"]
+                    task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["max"]= DATA_GUI["frac_max"]
+
+                    task5json["modifyParameter"]["filters"][5]["filters"][1]["parameters"][0]["value"]= DATA_GUI["frac_Waste_min"]
+                    task5json["modifyParameter"]["filters"][5]["filters"][1]["parameters"][0]["value"]= DATA_GUI["frac_Waste_max"]
+
+                    task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][11]["value"]= DATA_GUI["frac_Waste_min"]
+                    task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][11]["value"]= DATA_GUI["frac_Waste_max"]
                     percent=[]
                     percent=[0 for i in range(8)]
                     percent[0]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Residential"]["value"])*100
@@ -401,6 +422,7 @@ def main():
                 n0List.append(communicationsVar.get())
                 n0List.append(governmentVar.get())
                 n0List.append(agricultureVar.get())
+                
                 n0List.append(emerServVar.get())
                 n0List.append(wasteVar.get())
                 n0List.append(healthcareVar.get())
@@ -446,7 +468,245 @@ def main():
                     with open(dir_path + "//" + "infrastructures_inputs.txt", 'w') as outfile:
                         json.dump(data, outfile)
                     refresh()
+
+            def sve():
+                  path='./'
+                  filename='DATA' 
+                  filePath='./'+path+'/'+filename+'.json'
+                  TASK5List = []
+                  other2={}
+                  other2["teams_char_min"]=teams_char_min.get()
+                  other2["teams_char_max"]=teams_char_max.get()
+                  other2["frac_min"]=frac_min.get()
+                  other2["frac_max"]=frac_max.get()
+                  other2["teams_source_min"]=teams_source_min.get()
+                  other2["teams_source_max"]=teams_source_max.get()
+                  other2["frac_source_min"]=frac_source_min.get()
+                  other2["frac_source_max"]=frac_source_max.get()
+                  
+                  other2["teams_clear_min"]=teams_clear_min.get()
+                  other2["teams_clear_max"]=teams_clear_max.get()
+                  other2["frac_clear_min"]=frac_clear_min.get()
+                  other2["frac_clear_max"]=frac_clear_max.get()
+                  
+                  other2["teams_Waste_min"]=teams_Waste_min.get()
+                  
+                  other2["frac_Waste_min"]=teams_Waste_min.get()
+                  other2["frac_Waste_max"]=frac_Waste_max.get()
+                  
+                  other2["Spore"]=Spore.get()
+                  with open(filePath,'w') as fp:
+                      json.dump(other2,fp)
+            def Wide__AREA():
+                win = Tk()
+                win.title("Parameterized Wide Area Decon")
+                top= Toplevel(win)
+                label = tk.Label(top, text="Parameterized Wide Area Decontamination",bg="snow" ,font=("Calibri Light", 40))
+                label.grid(row=0, sticky=tk.NSEW, columnspan=4)
+                top.geometry("1000x425")
+                top.configure(bg='snow')
+                win.withdraw()
+                style=ttk.Style(top)
+                top.tk.call('source','azure.tcl')
+                style.theme_use('azure')
+                Char_samp=ttk.LabelFrame(top,text="Characterization sampling")
+                Char_samp.place(x=30,y=60)
                 
+                teams_char_min=tk.StringVar()
+                teams_char_min=ttk.Entry(Char_samp, textvariable=teams_char_min)
+                teams_char_max=tk.StringVar()
+                
+                teams_char_max=ttk.Entry(Char_samp, textvariable=teams_char_max)
+                ttk.Label(Char_samp,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
+                teams_char_min.insert(0, "1")
+                teams_char_max.insert(0, "2")
+                ttk.Label(Char_samp,text="min").grid(row=0, column=1,sticky=tk.W)
+                ttk.Label(Char_samp,text="max").grid(row=0, column=2,sticky=tk.W)
+                teams_char_min.grid(row=1, column=1,sticky=tk.W)
+                teams_char_max.grid(row=1, column=2,sticky=tk.W)
+                frac_min=tk.StringVar()
+                frac_min=ttk.Entry(Char_samp, textvariable=frac_min)
+                ttk.Label(Char_samp,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
+                ttk.Label(Char_samp,text="min").grid(row=2, column=1,sticky=tk.W)
+                ttk.Label(Char_samp,text="max").grid(row=2, column=2,sticky=tk.W)
+                frac_min.grid(row=3, column=1,sticky=tk.W)
+                frac_min.insert(0, ".5")
+                
+
+                frac_max=tk.StringVar()
+                frac_max=ttk.Entry(Char_samp, textvariable=frac_max)
+                frac_max.grid(row=3, column=2,sticky=tk.W)
+                frac_max.insert(0, "1")
+
+
+                
+                Source_RED=ttk.LabelFrame(top,text="Source Reduction")
+                Source_RED.place(x=20,y=185)#place(x=320,y=10)
+                teams_source_min=tk.StringVar()
+                teams_source_min=ttk.Entry(Source_RED, textvariable=teams_source_min)
+                teams_source_max=tk.StringVar()
+                
+                teams_source_max=ttk.Entry(Source_RED, textvariable=teams_source_max)
+                teams_source_max.insert(0, "2")
+                ttk.Label(Source_RED,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
+                teams_source_min.insert(0, "1")
+                ttk.Label(Source_RED,text="min").grid(row=0, column=1,sticky=tk.W)
+                ttk.Label(Source_RED,text="max").grid(row=0, column=2,sticky=tk.W)
+                teams_source_min.grid(row=1, column=1,sticky=tk.W)
+                teams_source_max.grid(row=1, column=2,sticky=tk.W)
+
+                
+                frac_source_min=tk.StringVar()
+                frac_source_min=ttk.Entry(Source_RED, textvariable=frac_source_min)
+                ttk.Label(Source_RED,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
+                ttk.Label(Source_RED,text="min").grid(row=2, column=1,sticky=tk.W)
+                ttk.Label(Source_RED,text="max").grid(row=2, column=2,sticky=tk.W)
+                frac_source_min.grid(row=3, column=1,sticky=tk.W)
+                frac_source_min.insert(0, ".5")
+               
+
+                frac_source_max=tk.StringVar()
+                frac_source_max=ttk.Entry(Source_RED, textvariable=frac_source_max)
+                frac_source_max.grid(row=3, column=2,sticky=tk.W)
+                frac_source_max.insert(0, "1")
+
+                Clearance_Sampling=ttk.LabelFrame(top,text="Clearance Sampling")
+                Clearance_Sampling.place(x=480,y=75)
+                teams_clear_min=tk.StringVar()
+                teams_clear_min=ttk.Entry(Clearance_Sampling, textvariable=teams_clear_min)
+                teams_clear_max=tk.StringVar()
+                
+                teams_clear_max=ttk.Entry(Clearance_Sampling, textvariable=teams_source_max)
+                teams_clear_max.insert(0, "2")
+                ttk.Label(Clearance_Sampling,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
+                teams_clear_min.insert(0, "1")
+                ttk.Label(Clearance_Sampling,text="min").grid(row=0, column=1,sticky=tk.W)
+                ttk.Label(Clearance_Sampling,text="max").grid(row=0, column=2,sticky=tk.W)
+                teams_clear_min.grid(row=1, column=1,sticky=tk.W)
+                teams_clear_max.grid(row=1, column=2,sticky=tk.W)
+
+                
+                frac_clear_min=tk.StringVar()
+                frac_clear_min=ttk.Entry(Clearance_Sampling, textvariable=frac_clear_min)
+                ttk.Label(Clearance_Sampling,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
+                ttk.Label(Clearance_Sampling,text="min").grid(row=2, column=1,sticky=tk.W)
+                ttk.Label(Clearance_Sampling,text="max").grid(row=2, column=2,sticky=tk.W)
+                frac_clear_min.grid(row=3, column=1,sticky=tk.W)
+                frac_clear_min.insert(0, ".5")
+               
+
+                frac_clear_max=tk.StringVar()
+                frac_clear_max=ttk.Entry(Clearance_Sampling, textvariable=frac_clear_max)
+                frac_clear_max.grid(row=3, column=2,sticky=tk.W)
+                frac_clear_max.insert(0, "1")
+
+                Waste_sampl=ttk.LabelFrame(top,text="Waste Sampling")
+                Waste_sampl.place(x=480,y=195)
+
+                teams_Waste_min=tk.StringVar()
+                teams_Waste_min=ttk.Entry(Waste_sampl, textvariable=teams_Waste_min)
+               
+                ttk.Label(Waste_sampl,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
+                teams_Waste_min.insert(0, "1")
+                
+                teams_Waste_min.grid(row=1, column=1,sticky=tk.W)
+                
+                
+                frac_Waste_min=tk.StringVar()
+                frac_Waste_min=ttk.Entry(Waste_sampl, textvariable=frac_Waste_min)
+                ttk.Label(Waste_sampl,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
+                ttk.Label(Waste_sampl,text="min").grid(row=2, column=1,sticky=tk.W)
+                ttk.Label(Waste_sampl,text="max").grid(row=2, column=2,sticky=tk.W)
+                frac_Waste_min.grid(row=3, column=1,sticky=tk.W)
+                frac_Waste_min.insert(0, ".5")
+               
+
+                frac_Waste_max=tk.StringVar()
+                frac_Waste_max=ttk.Entry(Waste_sampl, textvariable=frac_clear_max)
+                frac_Waste_max.grid(row=3, column=2,sticky=tk.W)
+                frac_Waste_max.insert(0, "1")
+
+                Spore=tk.StringVar()
+                SPORE=ttk.LabelFrame(top,text="Spore Loading")
+                SPORE.place(x=220,y=310)
+                Spore=ttk.Entry(SPORE, textvariable=Spore)
+                ttk.Label(SPORE,text="Enter Wide Area Decon Spore Loading (Indoor,Underground,Outdoor):  ").grid(row=2, column=2,sticky=tk.W)
+                Spore.grid(row=2, column=3,sticky=tk.W)
+               
+                Spore.insert(0, "2.8 2.6 1.7")
+
+                ttk.Label(top, text="").grid(row=1, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=2, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=3, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=4, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=5, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=6, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=7, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=8, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=9, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=10, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=11, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=12, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=13, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=14, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=15, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=16, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=16, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=17, sticky=tk.W, column = 0)
+                ttk.Label(top, text="").grid(row=18, sticky=tk.W, column = 0)
+                tk.Label(top, text="                                                         ",bg="snow").grid(row=19, sticky=tk.W, column = 0)
+                sav=Button(top, text = 'Save Answers',command = sve,font=("sans",10))
+                sav.grid(row=19, column = 1)
+##                def sve():
+##                  path='./'
+##                  filename='DATA' 
+##                  filePath='./'+path+'/'+filename+'.json'
+##                  TASK5List = []
+##                  other2={}
+##                  other2["teams_char_min"]=teams_char_min.get()
+##                  other2["teams_char_max"]=teams_char_max.get()
+##                  other2["frac_min"]=frac_min.get()
+##                  other2["frac_max"]=frac_max.get()
+##                  other2["teams_source_min"]=teams_source_min.get()
+##                  other2["teams_source_max"]=teams_source_max.get()
+##                  other2["frac_source_min"]=frac_source_min.get()
+##                  other2["frac_source_max"]=frac_source_max.get()
+##                  
+##                  other2["teams_clear_min"]=teams_clear_min.get()
+##                  other2["teams_clear_max"]=teams_clear_max.get()
+##                  other2["frac_clear_min"]=frac_clear_min.get()
+##                  other2["frac_clear_max"]=frac_clear_max.get()
+##                  
+##                  other2["teams_Waste_min"]=teams_Waste_min.get()
+##                  
+##                  other2["frac_Waste_min"]=teams_Waste_min.get()
+##                  other2["frac_Waste_max"]=frac_Waste_max.get()
+##                  
+##                  other2["Spore"]=Spore.get()
+##                  with open(filePath,'w') as fp:
+##                      json.dump(other2,fp)
+            
+                #sav=Button(top, text = 'Save Answers',command = sve,font=("sans",10))
+                #sav.grid(row=20, column = 1)
+                
+               
+##                path='./'
+##                filename='DATA' 
+##                filePath='./'+path+'/'+filename+'.json'
+##                TASK5List = []
+##                TASK5List.append(teams.get())
+##                TASK5List.append(frac.get())
+##                TASK5List.append(teams_source.get())
+##                TASK5List.append(Mass_frac.get())
+##                TASK5List.append(teams_DECON.get())
+##                TASK5List.append(teams_clear.get())
+##                TASK5List.append(Frac_Clearance.get())
+##                TASK5List.append(teams_Waste.get())
+##                TASK5List.append(arr.get())
+##                other["data"]=TASK5List
+##                with open(filePath,'w') as fp:
+##                    json.dump(other,fp)
+             
             def loadCoeff():
                 filename = askopenfilename()
                 if ".csv" in filename:
@@ -690,13 +950,22 @@ def main():
                     json.dump(other,fp)
               master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
               filePath=master_path+'\\'+'path'+'.json'
+              
               other={}
               other["change"]=0
               with open(filePath,'w') as f:
                   path=json.dump(other,f)
+              path='./'
+              filename='DATA' 
+              filePath='./'+path+'/'+filename+'.json'
+              other2={}
+              other2["change"]=0
+              with open(filePath,'w') as fp:
+                      json.dump(other2,fp)
+            
               count=count+1
             initial=ttk.LabelFrame(self,text="Initial Percentages")
-            initial.place(x=5,y=60)
+            initial.place(x=35,y=60)
             ttk.Label(initial, text="Initial water sector efficiency (%): ").grid(row=2, column = 0, sticky=tk.W)         
             waterVar = tk.StringVar()
             water = ttk.Entry(initial, textvariable=waterVar)
@@ -787,10 +1056,10 @@ def main():
 ##            P0.grid(row=12, column = 1, sticky=tk.NSEW)
 
             ext=ttk.LabelFrame(self,text="Extra Parameters")
-            ext.place(x=530,y=335)
+            ext.place(x=485,y=335)
             
             remediation=ttk.LabelFrame(self,text="Remediation Parameters")
-            remediation.place(x=10,y=390)
+            remediation.place(x=55,y=390)
             ttk.Label(remediation,text="Realizations for Wide Area Decon Tool: ").grid(row=14, column=0,sticky=tk.W)
             realize=tk.StringVar()
             wide=ttk.Entry(remediation, textvariable=realize)
@@ -834,14 +1103,9 @@ def main():
 
 
             model=ttk.LabelFrame(self,text="Model Parameters")
-            model.place(x=475,y=60)
+            model.place(x=485,y=70)
             report_ttp = CreateToolTip(wide, 'Enter Realizations for wide area decontamination tool')
-            arr=tk.StringVar()
-            Spore=ttk.Entry(model, textvariable=arr)
-            ttk.Label(model,text="Enter Wide Area Decon Spore Loading (Indoor,Underground,Outdoor):  ").grid(row=2, column=2,sticky=tk.W)
-            Spore.grid(row=2, column=3,sticky=tk.W)
-            Spore_ttp = CreateToolTip(wide, 'Enter Realizations for wide area decontamination tool')
-            Spore.insert(0, "2.8 2.6 1.7")
+            
 
 
             
@@ -993,6 +1257,8 @@ def main():
            # switch = ttk.Checkbutton(self, command=switchFunction,variable=change).grid(row=27,column = 2,sticky=tk.W)
             tk.Button(self, text='Save Scenario',font=("Arial", 14), bg='misty rose', command= lambda: saveScenario(),
                       ).grid(row=31, column=0, sticky=tk.NSEW, columnspan=2)
+            tk.Button(self, text='Add Parameterized Wide Area Decontamination', font=("Arial", 14), bg='azure2',
+                      command= lambda: Wide__AREA()).grid(row=32, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Change PDF location',font=("Arial", 14), bg='misty rose', command= lambda: save_report_location(),
                       ).grid(row=29, column=0, sticky=tk.NSEW, columnspan=2)
             #tk.Button(self, text='Quit', bg='#C0C0C0', command=self.destroy, font=("Arial", 14)).grid(row=19, column=0, sticky=tk.NSEW, columnspan=2)
