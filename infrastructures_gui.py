@@ -290,7 +290,37 @@ def main():
                     fileLoc = master_path+"\\DATA.json"
                     f=open(fileLoc)
                     DATA_GUI=json.load(f)
-
+                    violation=True
+                    Spore=DATA_GUI["Spore"]
+                    Spore_Results=[]
+                    Spore_Results=[0 for i in range(len(Spore))]
+                    i=0
+                    spore_count=0
+                    Indoor_Spore=""
+                    Underground_Spore=""
+                    Outdoor_Spore=""
+                    for c in Spore:
+                        Spore_Results[i]=c
+                        i=i+1
+                    for z in Spore_Results:
+                       if z.isspace():
+                         spore_count=spore_count+1
+                       else:
+                         if spore_count==0:
+                           if z.isdigit()==True or z == '.':
+                             Indoor_Spore=Indoor_Spore+z
+                           else:
+                             violation=False
+                         elif spore_count==1:
+                           if z.isdigit()==True or z == '.':
+                             Underground_Spore=Underground_Spore+z
+                           else:
+                             violation=False
+                         elif spore_count==2:
+                           if z.isdigit()==True or z == '.':
+                             Outdoor_Spore=Outdoor_Spore+z
+                           else:
+                             violation=False
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"]=SIRM["data"][6]["value"]##AREA CONTAMINATED
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"]=SIRM["data"][7]["value"]
                     task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]=Outdoor_Spore##LOADING
@@ -439,18 +469,48 @@ def main():
                         json.dump(data, outfile)
                     refresh()
 
-         
+            def sve():
+                  path='./'
+                  filename='DATA' 
+                  filePath='./'+path+'/'+filename+'.json'
+                  TASK5List = []
+                  other2={}
+                  other2["teams_char_min"]=teams_char_min.get()
+                  other2["teams_char_max"]=teams_char_max.get()
+                  other2["frac_min"]=frac_min.get()
+                  other2["frac_max"]=frac_max.get()
+                  other2["teams_source_min"]=teams_source_min.get()
+                  other2["teams_source_max"]=teams_source_max.get()
+                  other2["frac_source_min"]=frac_source_min.get()
+                  other2["frac_source_max"]=frac_source_max.get()
+                  
+                  other2["teams_clear_min"]=teams_clear_min.get()
+                  other2["teams_clear_max"]=teams_clear_max.get()
+                  other2["frac_clear_min"]=frac_clear_min.get()
+                  other2["frac_clear_max"]=frac_clear_max.get()
+                  
+                  other2["teams_Waste_min"]=teams_Waste_min.get()
+                  
+                  other2["frac_Waste_min"]=teams_Waste_min.get()
+                  other2["frac_Waste_max"]=frac_Waste_max.get()
+                  
+                  other2["Spore"]=Spore.get()
+                  with open(filePath,'w') as fp:
+                      json.dump(other2,fp)
             def Wide__AREA():
                 win = Tk()
+                win.title("Parameterized Wide Area Decon")
                 top= Toplevel(win)
-                top.geometry("1000x500")
+                label = tk.Label(top, text="Parameterized Wide Area Decontamination",bg="snow" ,font=("Calibri Light", 40))
+                label.grid(row=0, sticky=tk.NSEW, columnspan=4)
+                top.geometry("1000x425")
                 top.configure(bg='snow')
                 win.withdraw()
                 style=ttk.Style(top)
                 top.tk.call('source','azure.tcl')
                 style.theme_use('azure')
                 Char_samp=ttk.LabelFrame(top,text="Characterization sampling")
-                Char_samp.place(x=30,y=10)
+                Char_samp.place(x=30,y=60)
                 
                 teams_char_min=tk.StringVar()
                 teams_char_min=ttk.Entry(Char_samp, textvariable=teams_char_min)
@@ -459,6 +519,7 @@ def main():
                 teams_char_max=ttk.Entry(Char_samp, textvariable=teams_char_max)
                 ttk.Label(Char_samp,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
                 teams_char_min.insert(0, "1")
+                teams_char_max.insert(0, "2")
                 ttk.Label(Char_samp,text="min").grid(row=0, column=1,sticky=tk.W)
                 ttk.Label(Char_samp,text="max").grid(row=0, column=2,sticky=tk.W)
                 teams_char_min.grid(row=1, column=1,sticky=tk.W)
@@ -475,12 +536,12 @@ def main():
                 frac_max=tk.StringVar()
                 frac_max=ttk.Entry(Char_samp, textvariable=frac_max)
                 frac_max.grid(row=3, column=2,sticky=tk.W)
-                frac_max.insert(0, ".5")
+                frac_max.insert(0, "1")
 
 
                 
                 Source_RED=ttk.LabelFrame(top,text="Source Reduction")
-                Source_RED.place(x=20,y=150)#place(x=320,y=10)
+                Source_RED.place(x=20,y=185)#place(x=320,y=10)
                 teams_source_min=tk.StringVar()
                 teams_source_min=ttk.Entry(Source_RED, textvariable=teams_source_min)
                 teams_source_max=tk.StringVar()
@@ -507,10 +568,10 @@ def main():
                 frac_source_max=tk.StringVar()
                 frac_source_max=ttk.Entry(Source_RED, textvariable=frac_source_max)
                 frac_source_max.grid(row=3, column=2,sticky=tk.W)
-                frac_source_max.insert(0, ".5")
+                frac_source_max.insert(0, "1")
 
                 Clearance_Sampling=ttk.LabelFrame(top,text="Clearance Sampling")
-                Clearance_Sampling.place(x=500,y=15)
+                Clearance_Sampling.place(x=480,y=75)
                 teams_clear_min=tk.StringVar()
                 teams_clear_min=ttk.Entry(Clearance_Sampling, textvariable=teams_clear_min)
                 teams_clear_max=tk.StringVar()
@@ -540,7 +601,7 @@ def main():
                 frac_clear_max.insert(0, "1")
 
                 Waste_sampl=ttk.LabelFrame(top,text="Waste Sampling")
-                Waste_sampl.place(x=480,y=155)
+                Waste_sampl.place(x=480,y=195)
 
                 teams_Waste_min=tk.StringVar()
                 teams_Waste_min=ttk.Entry(Waste_sampl, textvariable=teams_Waste_min)
@@ -567,14 +628,13 @@ def main():
 
                 Spore=tk.StringVar()
                 SPORE=ttk.LabelFrame(top,text="Spore Loading")
-                SPORE.place(x=420,y=290)
+                SPORE.place(x=220,y=310)
                 Spore=ttk.Entry(SPORE, textvariable=Spore)
                 ttk.Label(SPORE,text="Enter Wide Area Decon Spore Loading (Indoor,Underground,Outdoor):  ").grid(row=2, column=2,sticky=tk.W)
                 Spore.grid(row=2, column=3,sticky=tk.W)
                
                 Spore.insert(0, "2.8 2.6 1.7")
-                #butt=ttk.LabelFrame(top)
-                #butt.place(x=380,y=220)
+
                 ttk.Label(top, text="").grid(row=1, sticky=tk.W, column = 0)
                 ttk.Label(top, text="").grid(row=2, sticky=tk.W, column = 0)
                 ttk.Label(top, text="").grid(row=3, sticky=tk.W, column = 0)
@@ -594,41 +654,40 @@ def main():
                 ttk.Label(top, text="").grid(row=16, sticky=tk.W, column = 0)
                 ttk.Label(top, text="").grid(row=17, sticky=tk.W, column = 0)
                 ttk.Label(top, text="").grid(row=18, sticky=tk.W, column = 0)
-                ttk.Label(top, text="").grid(row=19, sticky=tk.W, column = 0)
-                ttk.Label(top, text="").grid(row=20, sticky=tk.W, column = 0)
-                ttk.Label(top, text="").grid(row=21, sticky=tk.W, column = 0)
-                tk.Label(top, text="                                                                                                                            ",bg="snow").grid(row=22, sticky=tk.W, column = 0)
-                def sve():
-                  path='./'
-                  filename='DATA' 
-                  filePath='./'+path+'/'+filename+'.json'
-                  TASK5List = []
-                  other2={}
-                  other2["teams_char_min"]=teams_char_min.get()
-                  other2["teams_char_max"]=teams_char_max.get()
-                  other2["frac_min"]=frac_min.get()
-                  other2["frac_max"]=frac_max.get()
-                  other2["teams_source_min"]=teams_source_min.get()
-                  other2["teams_source_max"]=teams_source_max.get()
-                  other2["frac_source_min"]=frac_source_min.get()
-                  other2["frac_source_max"]=frac_source_max.get()
-                  
-                  other2["teams_clear_min"]=teams_clear_min.get()
-                  other2["teams_clear_max"]=teams_clear_max.get()
-                  other2["frac_clear_min"]=frac_clear_min.get()
-                  other2["frac_clear_max"]=frac_clear_max.get()
-                  
-                  other2["teams_Waste_min"]=teams_Waste_min.get()
-                  
-                  other2["frac_Waste_min"]=teams_Waste_min.get()
-                  other2["frac_Waste_max"]=frac_Waste_max.get()
-                  
-                  other2["Spore"]=Spore.get()
-                  with open(filePath,'w') as fp:
-                      json.dump(other2,fp)
-            
+                tk.Label(top, text="                                                         ",bg="snow").grid(row=19, sticky=tk.W, column = 0)
                 sav=Button(top, text = 'Save Answers',command = sve,font=("sans",10))
-                sav.grid(row=32, column = 3)
+                sav.grid(row=19, column = 1)
+##                def sve():
+##                  path='./'
+##                  filename='DATA' 
+##                  filePath='./'+path+'/'+filename+'.json'
+##                  TASK5List = []
+##                  other2={}
+##                  other2["teams_char_min"]=teams_char_min.get()
+##                  other2["teams_char_max"]=teams_char_max.get()
+##                  other2["frac_min"]=frac_min.get()
+##                  other2["frac_max"]=frac_max.get()
+##                  other2["teams_source_min"]=teams_source_min.get()
+##                  other2["teams_source_max"]=teams_source_max.get()
+##                  other2["frac_source_min"]=frac_source_min.get()
+##                  other2["frac_source_max"]=frac_source_max.get()
+##                  
+##                  other2["teams_clear_min"]=teams_clear_min.get()
+##                  other2["teams_clear_max"]=teams_clear_max.get()
+##                  other2["frac_clear_min"]=frac_clear_min.get()
+##                  other2["frac_clear_max"]=frac_clear_max.get()
+##                  
+##                  other2["teams_Waste_min"]=teams_Waste_min.get()
+##                  
+##                  other2["frac_Waste_min"]=teams_Waste_min.get()
+##                  other2["frac_Waste_max"]=frac_Waste_max.get()
+##                  
+##                  other2["Spore"]=Spore.get()
+##                  with open(filePath,'w') as fp:
+##                      json.dump(other2,fp)
+            
+                #sav=Button(top, text = 'Save Answers',command = sve,font=("sans",10))
+                #sav.grid(row=20, column = 1)
                 
                
 ##                path='./'
@@ -1198,7 +1257,7 @@ def main():
            # switch = ttk.Checkbutton(self, command=switchFunction,variable=change).grid(row=27,column = 2,sticky=tk.W)
             tk.Button(self, text='Save Scenario',font=("Arial", 14), bg='misty rose', command= lambda: saveScenario(),
                       ).grid(row=31, column=0, sticky=tk.NSEW, columnspan=2)
-            tk.Button(self, text='Add Wide Area Decon', font=("Arial", 14), bg='azure2',
+            tk.Button(self, text='Add Parameterized Wide Area Decontamination', font=("Arial", 14), bg='azure2',
                       command= lambda: Wide__AREA()).grid(row=32, column=2, sticky=tk.NSEW, columnspan=2)
             tk.Button(self, text='Change PDF location',font=("Arial", 14), bg='misty rose', command= lambda: save_report_location(),
                       ).grid(row=29, column=0, sticky=tk.NSEW, columnspan=2)
