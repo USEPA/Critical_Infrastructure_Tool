@@ -1224,7 +1224,7 @@ def main():
             note.grid(row=39, column = 0, columnspan = 6, sticky=tk.NSEW)
 
             ttk.Checkbutton(extra,text='Reduce Parent Efficiency', var=var25).grid(row=2, sticky=tk.W, column = 1)
-            #ttk.Checkbutton(extra,text='Add Wide Area Decontamination Results',variable=task__5, command=task5).grid(row=2, sticky=tk.W, column = 0) ###TASK 5 BUTTON
+            ttk.Checkbutton(extra,text='Add Wide Area Decontamination Results',variable=task__5, command=task5).grid(row=2, sticky=tk.W, column = 0) ###TASK 5 BUTTON
             change=tk.BooleanVar()
             
             tk.Button(self, text='Run GUI Scenario',command= lambda: run(False),font=("Arial", 14), bg='DarkSeaGreen1',
