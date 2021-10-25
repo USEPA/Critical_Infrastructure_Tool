@@ -649,19 +649,19 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     area_contaminated = sum([industrial_area, commerical, worship,
                  school_areas, government_area, agri])
 
-##    dicts = {
-##        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor Min", "Total Indoor Max", "Total Outdoor"],
-##        "units":["", "", "", "", "", "", "m^2","m^2", "m^2"],
-##        "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
-##                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated,
-##                 area_contaminated*(1.0-float(BPPMin)),area_contaminated*(1.0-float(BPPMax)), total_outdoor]
-##        }
     dicts = {
-        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor", "Total Outdoor"],
-        "units":["", "", "", "", "", "", "m^2", "m^2"],
+        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor Min", "Total Indoor Max", "Total Outdoor"],
+        "units":["", "", "", "", "", "", "m^2","m^2", "m^2"],
         "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
-                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated, area_contaminated*(1.0-float(BPPMin)), total_outdoor]
+                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated,
+                 area_contaminated*(1.0-float(BPPMax)),area_contaminated*(1.0-float(BPPMin)), total_outdoor]
         }
+##    dicts = {
+##        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor", "Total Outdoor"],
+##        "units":["", "", "", "", "", "", "m^2", "m^2"],
+##        "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
+##                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated, area_contaminated*(1.0-float(BPPMin)), total_outdoor]
+##        }
     
     arcpy.AddMessage(sum([industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
                  school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated]))
