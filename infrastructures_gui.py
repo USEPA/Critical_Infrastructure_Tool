@@ -475,6 +475,7 @@ def main():
                   filePath='./'+path+'/'+filename+'.json'
                   TASK5List = []
                   other2={}
+                  
                   other2["teams_char_min"]=teams_char_min.get()
                   other2["teams_char_max"]=teams_char_max.get()
                   other2["frac_min"]=frac_min.get()
@@ -514,11 +515,13 @@ def main():
                 
                 teams_char_min=tk.StringVar()
                 teams_char_min=ttk.Entry(Char_samp, textvariable=teams_char_min)
+                
                 teams_char_max=tk.StringVar()
                 
                 teams_char_max=ttk.Entry(Char_samp, textvariable=teams_char_max)
                 ttk.Label(Char_samp,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
                 teams_char_min.insert(0, "1")
+                
                 teams_char_max.insert(0, "2")
                 ttk.Label(Char_samp,text="min").grid(row=0, column=1,sticky=tk.W)
                 ttk.Label(Char_samp,text="max").grid(row=0, column=2,sticky=tk.W)
