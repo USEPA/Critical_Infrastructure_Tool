@@ -276,7 +276,7 @@ def main():
                         json.dump(data, outfile)
                 if check["check"] == "True":
                   master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
-                  fileLoc = master_path+"\\newJobRequest.json"
+                  fileLoc = master_path+"\\JobRequest.json"
                   f=open(fileLoc)
                   task5json=json.load(f)
                   fileLoc = master_path+"\\SIRMResults.json"
@@ -323,9 +323,7 @@ def main():
                              violation=False
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"]=SIRM["data"][6]["value"]##AREA CONTAMINATED
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"]=SIRM["data"][7]["value"]
-                    task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]=Outdoor_Spore##LOADING
-                    task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]=Underground_Spore
-                    task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]=Indoor_Spore
+                    
 
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Commercial"]["value"]=SIRM["data"][1]["value"]
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Industrial"]["value"]=SIRM["data"][0]["value"]
@@ -333,28 +331,7 @@ def main():
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Religious"]["value"]=SIRM["data"][2]["value"]
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Government"]["value"]=SIRM["data"][4]["value"]
                     task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Educational"]["value"]=SIRM["data"][3]["value"]
-                    task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["min"]=DATA_GUI["teams_char_min"]
-                    task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["max"]=DATA_GUI["teams_char_max"]
                     
-                    task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["min"]=DATA_GUI["teams_source_min"]
-                    task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["max"]=DATA_GUI["teams_source_max"]
-                    
-                    task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["min"]=DATA_GUI["teams_clear_min"]
-                    task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["max"]=DATA_GUI["teams_clear_max"]
-
-                    task5json["modifyParameter"]["filters"][5]["filters"][0]["parameters"][0]["value"]=DATA_GUI["teams_Waste_min"]
-
-                    task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]= DATA_GUI["frac_clear_min"]
-                    task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]= DATA_GUI["frac_clear_max"]
-                    
-                    task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["min"]= DATA_GUI["frac_min"]
-                    task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["max"]= DATA_GUI["frac_max"]
-
-                    task5json["modifyParameter"]["filters"][5]["filters"][1]["parameters"][0]["value"]= DATA_GUI["frac_Waste_min"]
-                    task5json["modifyParameter"]["filters"][5]["filters"][1]["parameters"][0]["value"]= DATA_GUI["frac_Waste_max"]
-
-                    task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][11]["value"]= DATA_GUI["frac_Waste_min"]
-                    task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][11]["value"]= DATA_GUI["frac_Waste_max"]
                     percent=[]
                     percent=[0 for i in range(8)]
                     percent[0]=(task5json["defineScenario"]["filters"][0]["parameters"][2]["values"]["Residential"]["value"])*100
@@ -469,41 +446,14 @@ def main():
                         json.dump(data, outfile)
                     refresh()
 
-            def sve():
-                  path='./'
-                  filename='DATA' 
-                  filePath='./'+path+'/'+filename+'.json'
-                  TASK5List = []
-                  other2={}
-                  other2["teams_char_min"]=teams_char_min.get()
-                  other2["teams_char_max"]=teams_char_max.get()
-                  other2["frac_min"]=frac_min.get()
-                  other2["frac_max"]=frac_max.get()
-                  other2["teams_source_min"]=teams_source_min.get()
-                  other2["teams_source_max"]=teams_source_max.get()
-                  other2["frac_source_min"]=frac_source_min.get()
-                  other2["frac_source_max"]=frac_source_max.get()
-                  
-                  other2["teams_clear_min"]=teams_clear_min.get()
-                  other2["teams_clear_max"]=teams_clear_max.get()
-                  other2["frac_clear_min"]=frac_clear_min.get()
-                  other2["frac_clear_max"]=frac_clear_max.get()
-                  
-                  other2["teams_Waste_min"]=teams_Waste_min.get()
-                  
-                  other2["frac_Waste_min"]=teams_Waste_min.get()
-                  other2["frac_Waste_max"]=frac_Waste_max.get()
-                  
-                  other2["Spore"]=Spore.get()
-                  with open(filePath,'w') as fp:
-                      json.dump(other2,fp)
+            
             def Wide__AREA():
                 win = Tk()
                 win.title("Parameterized Wide Area Decon")
                 top= Toplevel(win)
                 label = tk.Label(top, text="Parameterized Wide Area Decontamination",bg="snow" ,font=("Calibri Light", 40))
                 label.grid(row=0, sticky=tk.NSEW, columnspan=4)
-                top.geometry("1000x425")
+                top.geometry("1050x425")
                 top.configure(bg='snow')
                 win.withdraw()
                 style=ttk.Style(top)
@@ -559,16 +509,13 @@ def main():
                 frac_source_min=tk.StringVar()
                 frac_source_min=ttk.Entry(Source_RED, textvariable=frac_source_min)
                 ttk.Label(Source_RED,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
-                ttk.Label(Source_RED,text="min").grid(row=2, column=1,sticky=tk.W)
-                ttk.Label(Source_RED,text="max").grid(row=2, column=2,sticky=tk.W)
+                ttk.Label(Source_RED,text="value").grid(row=2, column=1,sticky=tk.W)
+                
                 frac_source_min.grid(row=3, column=1,sticky=tk.W)
                 frac_source_min.insert(0, ".5")
                
 
-                frac_source_max=tk.StringVar()
-                frac_source_max=ttk.Entry(Source_RED, textvariable=frac_source_max)
-                frac_source_max.grid(row=3, column=2,sticky=tk.W)
-                frac_source_max.insert(0, "1")
+            
 
                 Clearance_Sampling=ttk.LabelFrame(top,text="Clearance Sampling")
                 Clearance_Sampling.place(x=480,y=75)
@@ -617,6 +564,7 @@ def main():
                 ttk.Label(Waste_sampl,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
                 ttk.Label(Waste_sampl,text="min").grid(row=2, column=1,sticky=tk.W)
                 ttk.Label(Waste_sampl,text="max").grid(row=2, column=2,sticky=tk.W)
+                ttk.Label(Waste_sampl,text="value").grid(row=2, column=3,sticky=tk.W)
                 frac_Waste_min.grid(row=3, column=1,sticky=tk.W)
                 frac_Waste_min.insert(0, ".5")
                
@@ -625,6 +573,12 @@ def main():
                 frac_Waste_max=ttk.Entry(Waste_sampl, textvariable=frac_clear_max)
                 frac_Waste_max.grid(row=3, column=2,sticky=tk.W)
                 frac_Waste_max.insert(0, "1")
+
+
+                frac_Waste_val=tk.StringVar()
+                frac_Waste_val=ttk.Entry(Waste_sampl, textvariable=frac_Waste_val)
+                frac_Waste_val.grid(row=3, column=3,sticky=tk.W)
+                frac_Waste_val.insert(0, "1")
 
                 Spore=tk.StringVar()
                 SPORE=ttk.LabelFrame(top,text="Spore Loading")
@@ -655,57 +609,75 @@ def main():
                 ttk.Label(top, text="").grid(row=17, sticky=tk.W, column = 0)
                 ttk.Label(top, text="").grid(row=18, sticky=tk.W, column = 0)
                 tk.Label(top, text="                                                         ",bg="snow").grid(row=19, sticky=tk.W, column = 0)
+                def sve():
+                  master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
+                  fileLoc = master_path+"\\JobRequest.json"
+                  f=open(fileLoc)
+                  task5json=json.load(f)
+                  task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["min"]=teams_char_min.get()
+                  task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["max"]=teams_char_max.get()
+                  
+                  task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["min"]=frac_min.get()
+                  task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["max"]=frac_max.get()
+                  
+                  task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["min"]=teams_source_min.get()
+                  task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["max"]=teams_source_max.get()
+                  
+                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][11]["value"]=frac_source_min.get()
+                  
+                  
+                  task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["min"]=teams_clear_min.get()
+                  task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["max"]=teams_clear_max.get()
+                  
+                  task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]=frac_clear_min.get()
+                  task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]=frac_clear_max.get()
+                  
+                  task5json["modifyParameter"]["filters"][5]["filters"][0]["parameters"][0]["value"]=teams_Waste_min.get()
+                  
+                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][7]["lowerLimit"]=frac_Waste_min.get()
+                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][7]["upperLimit"]=frac_Waste_max.get()
+                  Spore_Results=[]
+                  Spore1=Spore.get()
+                  Spore_Results=[]
+                  Spore_Results=[0 for i in range(len(Spore1))]
+                  i=0
+                  spore_count=0
+                  Indoor_Spore=""
+                  Underground_Spore=""
+                  Outdoor_Spore=""
+                  for c in Spore1:
+                      Spore_Results[i]=c
+                      i=i+1
+                  for z in Spore_Results:
+                     if z.isspace():
+                       spore_count=spore_count+1
+                     else:
+                       if spore_count==0:
+                         if z.isdigit()==True or z == '.':
+                           Indoor_Spore=Indoor_Spore+z
+                         else:
+                           violation=False
+                       elif spore_count==1:
+                         if z.isdigit()==True or z == '.':
+                           Underground_Spore=Underground_Spore+z
+                         else:
+                           violation=False
+                       elif spore_count==2:
+                         if z.isdigit()==True or z == '.':
+                           Outdoor_Spore=Outdoor_Spore+z
+                         else:
+                           violation=False
+                  task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]=Outdoor_Spore##LOADING
+                  task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]=Underground_Spore
+                  task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]=Indoor_Spore
+                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][7]["step"]=frac_Waste_val.get()
+                  with open(master_path+'\\newJobRequest.json', 'w') as myfile:
+                            json.dump(task5json,myfile)
+                 
                 sav=Button(top, text = 'Save Answers',command = sve,font=("sans",10))
                 sav.grid(row=19, column = 1)
-##                def sve():
-##                  path='./'
-##                  filename='DATA' 
-##                  filePath='./'+path+'/'+filename+'.json'
-##                  TASK5List = []
-##                  other2={}
-##                  other2["teams_char_min"]=teams_char_min.get()
-##                  other2["teams_char_max"]=teams_char_max.get()
-##                  other2["frac_min"]=frac_min.get()
-##                  other2["frac_max"]=frac_max.get()
-##                  other2["teams_source_min"]=teams_source_min.get()
-##                  other2["teams_source_max"]=teams_source_max.get()
-##                  other2["frac_source_min"]=frac_source_min.get()
-##                  other2["frac_source_max"]=frac_source_max.get()
-##                  
-##                  other2["teams_clear_min"]=teams_clear_min.get()
-##                  other2["teams_clear_max"]=teams_clear_max.get()
-##                  other2["frac_clear_min"]=frac_clear_min.get()
-##                  other2["frac_clear_max"]=frac_clear_max.get()
-##                  
-##                  other2["teams_Waste_min"]=teams_Waste_min.get()
-##                  
-##                  other2["frac_Waste_min"]=teams_Waste_min.get()
-##                  other2["frac_Waste_max"]=frac_Waste_max.get()
-##                  
-##                  other2["Spore"]=Spore.get()
-##                  with open(filePath,'w') as fp:
-##                      json.dump(other2,fp)
-            
-                #sav=Button(top, text = 'Save Answers',command = sve,font=("sans",10))
-                #sav.grid(row=20, column = 1)
                 
-               
-##                path='./'
-##                filename='DATA' 
-##                filePath='./'+path+'/'+filename+'.json'
-##                TASK5List = []
-##                TASK5List.append(teams.get())
-##                TASK5List.append(frac.get())
-##                TASK5List.append(teams_source.get())
-##                TASK5List.append(Mass_frac.get())
-##                TASK5List.append(teams_DECON.get())
-##                TASK5List.append(teams_clear.get())
-##                TASK5List.append(Frac_Clearance.get())
-##                TASK5List.append(teams_Waste.get())
-##                TASK5List.append(arr.get())
-##                other["data"]=TASK5List
-##                with open(filePath,'w') as fp:
-##                    json.dump(other,fp)
+
              
             def loadCoeff():
                 filename = askopenfilename()
