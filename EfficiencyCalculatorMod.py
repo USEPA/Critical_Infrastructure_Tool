@@ -268,7 +268,7 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         for row in cursor2:
             results2 += float(row[0])
         area_contaminated = results
-        #arcpy.AddMessage(name+ " " + str(area_contaminated))
+        arcpy.AddMessage(name+ " " + str(area_contaminated))
         if contaminated:
             return ((results/results2)*100)
         return ((1-results/results2)*100)
