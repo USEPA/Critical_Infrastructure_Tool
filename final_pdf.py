@@ -609,7 +609,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                         temp=outdoor_avgs_money[i-1]
                         temp=round(float(temp), 2)
                         significant_digits = 3
-                        temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                        if temp > 0:
+                          temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                         temp="{0:,.2f}".format(temp)
                         pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
                         temp=outdoor_avgs_days[i-1]
@@ -624,7 +625,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 temp=outdoor_avgs_money[5]
                 temp=round(float(temp), 2)
                 significant_digits = 3
-                temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                if temp > 0:
+                  temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                 temp="{0:,.2f}".format(temp)
                 pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
                 pdf.multi_cell(45, height, str(round(float(0), 0)), border=1,align = 'C')
@@ -653,7 +655,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Underground_Area=[0 for i in range(10*numrealization)]
             for key in task2[z]["scenarioResults"]["undergroundResults"]:
                 for key2 in task2[z]["scenarioResults"]["undergroundResults"][key]:
-                    if key2 == "phaseCost":   
+                    if key2 == "elementCost":   
                        Underground_phase_costs[index4]=task2[z]["scenarioResults"]["undergroundResults"][key][key2]
                        index4=index4+1
                     elif key2 == "workDays":
@@ -699,7 +701,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                         temp=Underground_avgs_money[i-1]
                         temp=round(float(temp), 2)
                         significant_digits = 3
-                        temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                        if temp > 0:
+                          temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                         temp="{0:,.2f}".format(temp)
                         pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
                         temp=Underground_avgs_days[i-1]
@@ -713,7 +716,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 temp=Underground_avgs_money[5]
                 temp=round(float(temp), 2)
                 significant_digits = 3
-                temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                if temp > 0:
+                  temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                 temp="{0:,.2f}".format(temp)
                 pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
                 pdf.multi_cell(45, height, str(round(float(0), 0)), border=1,align = 'C')            
@@ -828,7 +832,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                         pdf.cell(90, height, str(heading[i-1]), border=1,align = 'C')
                         temp=indoor_avgs_money[i-1]
                         significant_digits = 3
-                        temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                        if temp > 0:
+                          temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                         temp="{0:,.2f}".format(temp)
                         pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
                         temp=indoor_avgs_days[i-1]
@@ -841,7 +846,8 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 temp=indoor_avgs_money[5]
                 temp=round(float(temp), 2)
                 significant_digits = 3
-                temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
+                if temp > 0:
+                  temp =  round(temp, significant_digits - int(math.floor(math.log10(abs(temp)))) - 1)
                 temp="{0:,.2f}".format(temp)
                 pdf.cell(50,height,"$"+str(temp),border=1,align = 'C')
                 pdf.multi_cell(45, height, str(round(float(0), 0)), border=1,align = 'C')         
@@ -1011,6 +1017,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Waste_Outdoor=Outdoor_money_break[2]
                 Decon_Outdoor=Outdoor_money_break[3]
                 incident_Outdoor=Outdoor_money_break[4]
+                #print(Outdoor_money_break)
 
                 CharSamp_Underground=Underground_money_break[0]
                 SourceRed_Underground=Underground_money_break[1]
@@ -1023,6 +1030,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Waste_Indoor=Indoor_money_break[2]
                 Decon_Indoor=Indoor_money_break[3]
                 incident_Indoor=Indoor_money_break[4]
+                #print(Indoor_money_break)
 
                 CharSamp_Outdoor_money=sum(CharSamp_Outdoor)
                 CharSamp_Underground_money=sum(CharSamp_Underground)
@@ -1070,6 +1078,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 colors1 = iter([plt.cm.Pastel1(i) for i in range(20)])
                 newvalues = [x for x in workdays if x != 0]
                 labels = ['{0} - {1:1.2f} %'.format(i,j) for i,j in zip(heading, workdays)]
+                print(workdays)
                 patches, texts = plt.pie(workdays, shadow=True, colors=colors1, radius=1.2)
                 sort_legend = True
                 if sort_legend:

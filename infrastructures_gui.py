@@ -276,7 +276,7 @@ def main():
                         json.dump(data, outfile)
                 if check["check"] == "True":
                   master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
-                  fileLoc = master_path+"\\JobRequest.json"
+                  fileLoc = master_path+"\\newJobRequest.json"
                   f=open(fileLoc)
                   task5json=json.load(f)
                   fileLoc = master_path+"\\SIRMResults.json"
@@ -285,42 +285,43 @@ def main():
 
                   violation=True
                   if violation==False:
-                    tkMessageBox.showinfo("Helper","Task 5 model did not execute enter a valid spore loading number (int or float)")
+                    tkMessageBox.showinfo("Helper","Task 5 model did not execute, enter a valid spore loading number (int or float)")
                   else:
-                    fileLoc = master_path+"\\DATA.json"
+                    fileLoc = master_path+"\\newJobRequest.json"
                     f=open(fileLoc)
                     DATA_GUI=json.load(f)
                     violation=True
-                    Spore=DATA_GUI["Spore"]
-                    Spore_Results=[]
-                    Spore_Results=[0 for i in range(len(Spore))]
-                    i=0
-                    spore_count=0
-                    Indoor_Spore=""
-                    Underground_Spore=""
-                    Outdoor_Spore=""
-                    for c in Spore:
-                        Spore_Results[i]=c
-                        i=i+1
-                    for z in Spore_Results:
-                       if z.isspace():
-                         spore_count=spore_count+1
-                       else:
-                         if spore_count==0:
-                           if z.isdigit()==True or z == '.':
-                             Indoor_Spore=Indoor_Spore+z
-                           else:
-                             violation=False
-                         elif spore_count==1:
-                           if z.isdigit()==True or z == '.':
-                             Underground_Spore=Underground_Spore+z
-                           else:
-                             violation=False
-                         elif spore_count==2:
-                           if z.isdigit()==True or z == '.':
-                             Outdoor_Spore=Outdoor_Spore+z
-                           else:
-                             violation=False
+                    #Spore=DATA_GUI["Spore"]
+                    #Spore_Results=[]
+                    #Spore_Results=[0 for i in range(len(Spore))]
+                    #i=0
+                    #spore_count=0
+                    Outdoor_Spore=DATA_GUI["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]
+                    Underground_Spore=DATA_GUI["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]
+                    Indoor_Spore=DATA_GUI["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]
+
+##                    for c in Spore:
+##                        Spore_Results[i]=c
+##                        i=i+1
+##                    for z in Spore_Results:
+##                       if z.isspace():
+##                         spore_count=spore_count+1
+##                       else:
+##                         if spore_count==0:
+##                           if z.isdigit()==True or z == '.':
+##                             Indoor_Spore=Indoor_Spore+z
+##                           else:
+##                             violation=False
+##                         elif spore_count==1:
+##                           if z.isdigit()==True or z == '.':
+##                             Underground_Spore=Underground_Spore+z
+##                           else:
+##                             violation=False
+##                         elif spore_count==2:
+##                           if z.isdigit()==True or z == '.':
+##                             Outdoor_Spore=Outdoor_Spore+z
+##                           else:
+##                             violation=False
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Indoor"]["value"]=SIRM["data"][6]["value"]##AREA CONTAMINATED
                     task5json["defineScenario"]["filters"][0]["parameters"][0]["values"]["Outdoor"]["value"]=SIRM["data"][7]["value"]
                     
@@ -377,9 +378,10 @@ def main():
                       _path=str('"'+master_path+'\\newJobRequest.json"')
                     
                       cmd=execute+" "+_path
+                      print(cmd)
                       subprocess.call(cmd,shell=True,startupinfo=si)
                     else:
-                       tkMessageBox.showinfo("Entry for Realizaitons is not a number model will not run please enter a number and try again")
+                       tkMessageBox.showinfo("Entry for Realizations is not a number model will not run please enter a number and try again")
             
                 infrastructures_from_file.run_file(optimize, self.orders, self.coeffs, self.k)
                 if optimize:
@@ -461,7 +463,10 @@ def main():
                 style.theme_use('azure')
                 Char_samp=ttk.LabelFrame(top,text="Characterization sampling")
                 Char_samp.place(x=30,y=60)
-                
+                master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
+                fileLoc = master_path+"\\newJobRequest.json"
+                f=open(fileLoc)
+                task5json=json.load(f)
                 teams_char_min=tk.StringVar()
                 teams_char_min=ttk.Entry(Char_samp, textvariable=teams_char_min)
                 
@@ -469,9 +474,18 @@ def main():
                 
                 teams_char_max=ttk.Entry(Char_samp, textvariable=teams_char_max)
                 ttk.Label(Char_samp,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
-                teams_char_min.insert(0, "1")
+                char_sampling_order = 1
+                source_reduction_order = 2
+                personel_order = 0
+                logistic_order = 3
+                logistic_order_sr = 1
+                logistic_order_waste = 2
+                clearance_sampling_order = 4
+                waste_sampling_order = 5
                 
-                teams_char_max.insert(0, "2")
+                teams_char_min.insert(0, task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][personel_order]["parameters"][0]["min"])
+                
+                teams_char_max.insert(0, task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][personel_order]["parameters"][0]["max"])
                 ttk.Label(Char_samp,text="min").grid(row=0, column=1,sticky=tk.W)
                 ttk.Label(Char_samp,text="max").grid(row=0, column=2,sticky=tk.W)
                 teams_char_min.grid(row=1, column=1,sticky=tk.W)
@@ -479,16 +493,16 @@ def main():
                 frac_min=tk.StringVar()
                 frac_min=ttk.Entry(Char_samp, textvariable=frac_min)
                 ttk.Label(Char_samp,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
-                ttk.Label(Char_samp,text="min").grid(row=2, column=1,sticky=tk.W)
-                ttk.Label(Char_samp,text="max").grid(row=2, column=2,sticky=tk.W)
+                ttk.Label(Char_samp,text="value").grid(row=2, column=1,sticky=tk.W)
+                #ttk.Label(Char_samp,text="max").grid(row=2, column=2,sticky=tk.W)
                 frac_min.grid(row=3, column=1,sticky=tk.W)
-                frac_min.insert(0, ".5")
+                frac_min.insert(0, task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][logistic_order]["parameters"][17]["value"])
                 
 
-                frac_max=tk.StringVar()
-                frac_max=ttk.Entry(Char_samp, textvariable=frac_max)
-                frac_max.grid(row=3, column=2,sticky=tk.W)
-                frac_max.insert(0, "1")
+##                frac_max=tk.StringVar()
+##                frac_max=ttk.Entry(Char_samp, textvariable=frac_max)
+##                frac_max.grid(row=3, column=2,sticky=tk.W)
+##                frac_max.insert(0, task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][logistic_order]["parameters"][17]["upperLimit"])
 
 
                 
@@ -499,9 +513,9 @@ def main():
                 teams_source_max=tk.StringVar()
                 
                 teams_source_max=ttk.Entry(Source_RED, textvariable=teams_source_max)
-                teams_source_max.insert(0, "2")
+                teams_source_max.insert(0, task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][personel_order]["parameters"][0]["max"])
                 ttk.Label(Source_RED,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
-                teams_source_min.insert(0, "1")
+                teams_source_min.insert(0, task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][personel_order]["parameters"][0]["min"])
                 ttk.Label(Source_RED,text="min").grid(row=0, column=1,sticky=tk.W)
                 ttk.Label(Source_RED,text="max").grid(row=0, column=2,sticky=tk.W)
                 teams_source_min.grid(row=1, column=1,sticky=tk.W)
@@ -514,8 +528,7 @@ def main():
                 ttk.Label(Source_RED,text="value").grid(row=2, column=1,sticky=tk.W)
                 
                 frac_source_min.grid(row=3, column=1,sticky=tk.W)
-                frac_source_min.insert(0, ".5")
-               
+                frac_source_min.insert(0, task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][logistic_order_sr]["parameters"][11]["value"])           
 
             
 
@@ -526,9 +539,9 @@ def main():
                 teams_clear_max=tk.StringVar()
                 
                 teams_clear_max=ttk.Entry(Clearance_Sampling, textvariable=teams_source_max)
-                teams_clear_max.insert(0, "2")
+                teams_clear_max.insert(0, task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][personel_order]["parameters"][0]["max"])
                 ttk.Label(Clearance_Sampling,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
-                teams_clear_min.insert(0, "1")
+                teams_clear_min.insert(0, task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][personel_order]["parameters"][0]["min"])
                 ttk.Label(Clearance_Sampling,text="min").grid(row=0, column=1,sticky=tk.W)
                 ttk.Label(Clearance_Sampling,text="max").grid(row=0, column=2,sticky=tk.W)
                 teams_clear_min.grid(row=1, column=1,sticky=tk.W)
@@ -538,16 +551,16 @@ def main():
                 frac_clear_min=tk.StringVar()
                 frac_clear_min=ttk.Entry(Clearance_Sampling, textvariable=frac_clear_min)
                 ttk.Label(Clearance_Sampling,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
-                ttk.Label(Clearance_Sampling,text="min").grid(row=2, column=1,sticky=tk.W)
-                ttk.Label(Clearance_Sampling,text="max").grid(row=2, column=2,sticky=tk.W)
+                ttk.Label(Clearance_Sampling,text="value").grid(row=2, column=1,sticky=tk.W)
+                #ttk.Label(Clearance_Sampling,text="max").grid(row=2, column=2,sticky=tk.W)
                 frac_clear_min.grid(row=3, column=1,sticky=tk.W)
-                frac_clear_min.insert(0, ".5")
+                frac_clear_min.insert(0, task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][logistic_order]["parameters"][17]["value"])
                
 
-                frac_clear_max=tk.StringVar()
-                frac_clear_max=ttk.Entry(Clearance_Sampling, textvariable=frac_clear_max)
-                frac_clear_max.grid(row=3, column=2,sticky=tk.W)
-                frac_clear_max.insert(0, "1")
+##                frac_clear_max=tk.StringVar()
+##                frac_clear_max=ttk.Entry(Clearance_Sampling, textvariable=frac_clear_max)
+##                frac_clear_max.grid(row=3, column=2,sticky=tk.W)
+##                frac_clear_max.insert(0, task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][logistic_order]["parameters"][17]["max"])
 
                 Waste_sampl=ttk.LabelFrame(top,text="Waste Sampling")
                 Waste_sampl.place(x=480,y=195)
@@ -556,7 +569,7 @@ def main():
                 teams_Waste_min=ttk.Entry(Waste_sampl, textvariable=teams_Waste_min)
                
                 ttk.Label(Waste_sampl,text="Teams Required").grid(row=1, column=0,sticky=tk.W)
-                teams_Waste_min.insert(0, "1")
+                teams_Waste_min.insert(0, task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][personel_order]["parameters"][0]["value"])
                 
                 teams_Waste_min.grid(row=1, column=1,sticky=tk.W)
                 
@@ -564,23 +577,21 @@ def main():
                 frac_Waste_min=tk.StringVar()
                 frac_Waste_min=ttk.Entry(Waste_sampl, textvariable=frac_Waste_min)
                 ttk.Label(Waste_sampl,text="Fraction of Surface Sampled").grid(row=3, column=0,sticky=tk.W)
-                ttk.Label(Waste_sampl,text="min").grid(row=2, column=1,sticky=tk.W)
-                ttk.Label(Waste_sampl,text="max").grid(row=2, column=2,sticky=tk.W)
-                ttk.Label(Waste_sampl,text="value").grid(row=2, column=3,sticky=tk.W)
+                ttk.Label(Waste_sampl,text="value").grid(row=2, column=1,sticky=tk.W)
                 frac_Waste_min.grid(row=3, column=1,sticky=tk.W)
-                frac_Waste_min.insert(0, ".5")
-               
+                frac_Waste_min.insert(0, task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][18]["value"])
+##               
 
-                frac_Waste_max=tk.StringVar()
-                frac_Waste_max=ttk.Entry(Waste_sampl, textvariable=frac_clear_max)
-                frac_Waste_max.grid(row=3, column=2,sticky=tk.W)
-                frac_Waste_max.insert(0, "1")
+##                frac_Waste_max=tk.StringVar()
+##                frac_Waste_max=ttk.Entry(Waste_sampl, textvariable=frac_clear_max)
+##                frac_Waste_max.grid(row=3, column=2,sticky=tk.W)
+##                frac_Waste_max.insert(0, task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][17]["upperLimit"])
 
 
-                frac_Waste_val=tk.StringVar()
-                frac_Waste_val=ttk.Entry(Waste_sampl, textvariable=frac_Waste_val)
-                frac_Waste_val.grid(row=3, column=3,sticky=tk.W)
-                frac_Waste_val.insert(0, "1")
+##                frac_Waste_val=tk.StringVar()
+##                frac_Waste_val=ttk.Entry(Waste_sampl, textvariable=frac_Waste_val)
+##                frac_Waste_val.grid(row=3, column=3,sticky=tk.W)
+##                frac_Waste_val.insert(0, task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][17]["step"])
 
                 Spore=tk.StringVar()
                 SPORE=ttk.LabelFrame(top,text="Spore Loading")
@@ -613,31 +624,39 @@ def main():
                 tk.Label(top, text="                                                         ",bg="snow").grid(row=19, sticky=tk.W, column = 0)
                 def sve():
                   master_path=os.path.dirname(os.path.abspath('infrastructures_gui.py'))
-                  fileLoc = master_path+"\\JobRequest.json"
+                  fileLoc = master_path+"\\newJobRequest.json"
                   f=open(fileLoc)
                   task5json=json.load(f)
-                  task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["min"]=teams_char_min.get()
-                  task5json["modifyParameter"]["filters"][1]["filters"][0]["parameters"][0]["max"]=teams_char_max.get()
+                  char_sampling_order = 1
+                  source_reduction_order = 2
+                  personel_order = 0
+                  logistic_order = 3
+                  logistic_order_sr = 1
+                  logistic_order_waste = 2
+                  clearance_sampling_order = 4
+                  waste_sampling_order = 5
+                  task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][personel_order]["parameters"][0]["min"]=teams_char_min.get()
+                  task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][personel_order]["parameters"][0]["max"]=teams_char_max.get()
                   
-                  task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["min"]=frac_min.get()
-                  task5json["modifyParameter"]["filters"][1]["filters"][2]["parameters"][4]["max"]=frac_max.get()
+                  task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][logistic_order]["parameters"][17]["value"]=frac_min.get()
+                  #task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][logistic_order]["parameters"][17]["upperLimit"]=frac_max.get()
                   
-                  task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["min"]=teams_source_min.get()
-                  task5json["modifyParameter"]["filters"][2]["filters"][0]["parameters"][0]["max"]=teams_source_max.get()
+                  task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][personel_order]["parameters"][0]["min"]=teams_source_min.get()
+                  task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][personel_order]["parameters"][0]["max"]=teams_source_max.get()
                   
-                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][11]["value"]=frac_source_min.get()
+                  task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][logistic_order_sr]["parameters"][11]["value"]=frac_source_min.get()
                   
                   
-                  task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["min"]=teams_clear_min.get()
-                  task5json["modifyParameter"]["filters"][4]["filters"][0]["parameters"][0]["max"]=teams_clear_max.get()
+                  task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][personel_order]["parameters"][0]["min"]=teams_clear_min.get()
+                  task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][personel_order]["parameters"][0]["max"]=teams_clear_max.get()
                   
-                  task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]=frac_clear_min.get()
-                  task5json["modifyParameter"]["filters"][4]["filters"][2]["parameters"][4]["value"]=frac_clear_max.get()
+                  task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][logistic_order]["parameters"][17]["value"]=frac_clear_min.get()
+                  #task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][logistic_order]["parameters"][17]["value"]=frac_clear_max.get()
                   
-                  task5json["modifyParameter"]["filters"][5]["filters"][0]["parameters"][0]["value"]=teams_Waste_min.get()
+                  task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][personel_order]["parameters"][0]["value"]=teams_Waste_min.get()
                   
-                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][7]["lowerLimit"]=frac_Waste_min.get()
-                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][7]["upperLimit"]=frac_Waste_max.get()
+                  task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][18]["value"]=frac_Waste_min.get()
+                  #task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][17]["upperLimit"]=frac_Waste_max.get()
                   Spore_Results=[]
                   Spore1=Spore.get()
                   Spore_Results=[]
@@ -672,7 +691,7 @@ def main():
                   task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]=Outdoor_Spore##LOADING
                   task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]=Underground_Spore
                   task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]=Indoor_Spore
-                  task5json["modifyParameter"]["filters"][2]["filters"][1]["parameters"][7]["step"]=frac_Waste_val.get()
+                  #task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][17]["step"]==frac_Waste_val.get()
                   with open(master_path+'\\newJobRequest.json', 'w') as myfile:
                             json.dump(task5json,myfile)
                  
