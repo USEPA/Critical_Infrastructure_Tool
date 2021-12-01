@@ -28,7 +28,7 @@ def importDataset(Temporary_Output_Path):
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0ccaf0c53b794eb8ac3d3de6afdb3286_0.geojson", "Fire_Stations_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/335ccc7c0684453fad69d8a64bc89192_0.geojson", "Urgent_Care_Facilities_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/362c9480f12e4587b6a502f9ceedccde_0.geojson", "Emergency_Medical_Center_HIFLD", Temporary_Output_Path)
-    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/02013eaa0e1e4cc59658fe9e1c7ac703_0.geojson", "Ports_HIFLD", Temporary_Output_Path)
+    #createLayerFromAPI(r"https://opendata.arcgis.com/datasets/b2de4fc3bdf34c6590ce6e26b4e6e484_0.geojson", "Ports_HIFLD", Temporary_Output_Path)
     #createLayerFromAPI(r"https://opendata.arcgis.com/datasets/e720d6671dc54e3084bd079b845e136f_0.geojson", "Primary_Roads_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/87376bdb0cb3490cbda39935626f6604_0.geojson", "Public_Schools_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0dfe37d2a68545a699b999804354dacf_0.geojson", "Private_Schools_HIFLD", Temporary_Output_Path)
@@ -38,6 +38,7 @@ def importDataset(Temporary_Output_Path):
                        "Corporate_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/97603afcff00443f874acbe03c9e794a_0.geojson",
                        "Worship_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/70512b03fe994c6393107cc9946e5c22_0.geojson","Transmission_HIFLD", Temporary_Output_Path)
         
 def createLayerFromShapefile(Input_Path, name, Temporary_Output_Path):
     path_to_layer= Temporary_Output_Path + "\\"+name + "_layer.lyr"

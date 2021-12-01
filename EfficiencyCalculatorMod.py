@@ -354,6 +354,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         getAffectedInfrastructures(Contaminated_Dataset, "Colleges_HIFLD","colleges", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        (electricgrid_contaminated) = getPercentage("grid", "Transmission_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.01 Mile", OutputPath, True)
         
     (waste) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath),2)
     getAffectedInfrastructures(ScenarioDataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Affected")
@@ -392,6 +393,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
 
     comm = (comm + broadcast)/2
     (roads) = getPercentage("roads", "USA_Roads", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath)
+    (electricgrid) = getPercentage("grid", "Transmission_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.01 Mile", OutputPath)
 
     #getAffectedInfrastructures(Contaminated_Dataset, "USA_Roads", "roads", OutputPath)
     (fire) = getPercentage("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath)
@@ -446,9 +448,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         water_percent_contaminated = round(wastewater_contaminated,2)
 
     # Process: Calculate Energy Percent (Calculate Value)
-    energy_percent = round(power_plants, 2)
+    energy_percent = round((power_plants+electricgrid)/2, 2)
     if arcpy.Exists(Contaminated_Dataset):
-        energy_percent_contaminated = round(power_plants_contaminated, 2)
+        energy_percent_contaminated = round((power_plants_contaminated+electricgrid_contaminated)/2, 2)
 
     # Process: Calculate Transport Percent (Calculate Value) 
     transport_percent = round((roads + ports)/2, 2)

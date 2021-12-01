@@ -599,8 +599,11 @@ def main():
                 Spore=ttk.Entry(SPORE, textvariable=Spore)
                 ttk.Label(SPORE,text="Enter Wide Area Decon Spore Loading (Indoor,Underground,Outdoor):  ").grid(row=2, column=2,sticky=tk.W)
                 Spore.grid(row=2, column=3,sticky=tk.W)
+                Spore01 = task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Outdoor"]["value"]
+                Spore02 = task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Underground"]["value"]
+                Spore03 = task5json["defineScenario"]["filters"][0]["parameters"][1]["values"]["Indoor"]["value"]
                
-                Spore.insert(0, "2.8 2.6 1.7")
+                Spore.insert(0, Spore01 + " " + Spore02 + " " + Spore03)
 
                 ttk.Label(top, text="").grid(row=1, sticky=tk.W, column = 0)
                 ttk.Label(top, text="").grid(row=2, sticky=tk.W, column = 0)

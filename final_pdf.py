@@ -535,7 +535,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 Outdoor_Area=[0 for i in range(10*numrealization)]
             for key in task2[z]["scenarioResults"]["outdoorResults"]:
                 for key2 in task2[z]["scenarioResults"]["outdoorResults"][key]:
-                    if key2 == "phaseCost":
+                    if key2 == "elementCost":
                        Outdoor_phase_costs[index]=task2[z]["scenarioResults"]["outdoorResults"][key][key2]
                        index=index+1
                     elif key2 == "workDays":
@@ -747,7 +747,7 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
                 index8=index8+1
                 for key2 in task2[z]["scenarioResults"]["indoorResults"][key]:
                     for key3 in task2[z]["scenarioResults"]["indoorResults"][key][key2]:
-                        if key3 == "phaseCost":   
+                        if key3 == "elementCost":   
                            Indoor_phase_costs[index9]=task2[z]["scenarioResults"]["indoorResults"][key][key2][key3]
                            index9=index9+1
                         elif key3 == "workDays":
