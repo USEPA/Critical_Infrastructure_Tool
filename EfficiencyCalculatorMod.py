@@ -355,6 +355,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         getAffectedInfrastructures(Contaminated_Dataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, "Contaminated", True)
         (electricgrid_contaminated) = getPercentage("grid", "Transmission_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.01 Mile", OutputPath, True)
+        arcpy.AddMessage("Grid: " + str(round(electricgrid_contaminated, 2)) + "%")
         
     (waste) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath),2)
     getAffectedInfrastructures(ScenarioDataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Affected")
@@ -394,6 +395,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     comm = (comm + broadcast)/2
     (roads) = getPercentage("roads", "USA_Roads", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath)
     (electricgrid) = getPercentage("grid", "Transmission_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.01 Mile", OutputPath)
+    arcpy.AddMessage("Grid: " + str(round(electricgrid, 2)) + "%")
 
     #getAffectedInfrastructures(Contaminated_Dataset, "USA_Roads", "roads", OutputPath)
     (fire) = getPercentage("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath)
@@ -651,19 +653,19 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     area_contaminated = sum([industrial_area, commerical, worship,
                  school_areas, government_area, agri])
 
-    dicts = {
-        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor Min", "Total Indoor Max", "Total Outdoor"],
-        "units":["", "", "", "", "", "", "m^2","m^2", "m^2"],
-        "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
-                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated,
-                 area_contaminated*(1.0-float(BPPMax)),area_contaminated*(1.0-float(BPPMin)), total_outdoor]
-        }
 ##    dicts = {
-##        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor", "Total Outdoor"],
-##        "units":["", "", "", "", "", "", "m^2", "m^2"],
+##        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor Min", "Total Indoor Max", "Total Outdoor"],
+##        "units":["", "", "", "", "", "", "m^2","m^2", "m^2"],
 ##        "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
-##                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated, area_contaminated*(1.0-float(BPPMin)), total_outdoor]
+##                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated,
+##                 area_contaminated*(1.0-float(BPPMax)),area_contaminated*(1.0-float(BPPMin)), total_outdoor]
 ##        }
+    dicts = {
+        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor", "Total Outdoor"],
+        "units":["", "", "", "", "", "", "m^2", "m^2"],
+        "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
+                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated, area_contaminated*(1.0-float(BPPMin)), total_outdoor]
+        }
     
     arcpy.AddMessage(sum([industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
                  school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated]))

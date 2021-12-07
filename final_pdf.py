@@ -1225,12 +1225,13 @@ def createPdf(ranked_dict, ranked_dict_rt, filename, sensitivity, paramIndexes, 
     
     pdf.cell(width, height,disclaimer1, ln=1)
     pdf.cell(width, height,disclaimer2, ln=1)
-    filePath=master_path+'\\'+'path'+'.json'
+    filePath=master_path+'\\'+'DATA'+'.json'
+    print("Filepath " + filePath)
     with open(filePath) as f:
         path=json.load(f)
     if path['change']==1:
-       
-        pdf.output(path['path']+'\\'+filename+'\\' +filename + "_Report.pdf", 'F')
+      print(path['path'])
+      pdf.output(path['path']+'\\'+filename+'\\' +filename + "_Report.pdf", 'F')
     else:
       pdf.output('Results/' + filename + "_Report.pdf", 'F')
     #tkMessageBox.showinfo("Completion","Report is outputed in Results folder")

@@ -378,7 +378,7 @@ def main():
                       _path=str('"'+master_path+'\\newJobRequest.json"')
                     
                       cmd=execute+" "+_path
-                      print(cmd)
+                      #print(cmd)
                       subprocess.call(cmd,shell=True,startupinfo=si)
                     else:
                        tkMessageBox.showinfo("Entry for Realizations is not a number model will not run please enter a number and try again")
@@ -640,25 +640,59 @@ def main():
                   waste_sampling_order = 5
                   task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][personel_order]["parameters"][0]["min"]=teams_char_min.get()
                   task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][personel_order]["parameters"][0]["max"]=teams_char_max.get()
-                  
+
+                  checkmin = float(teams_char_min.get())
+                  checkmax = float(teams_char_max.get())
+                  if checkmin >= checkmax or checkmin <= 0 or checkmax <= 0:
+                    tkMessageBox.showinfo("Incorrect Inputs", "Ensure min number of characterization teams is less than max number and that both are greater than 0.")
+
                   task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][logistic_order]["parameters"][17]["value"]=frac_min.get()
                   #task5json["modifyParameter"]["filters"][char_sampling_order]["filters"][logistic_order]["parameters"][17]["upperLimit"]=frac_max.get()
+                  checkmin = float(frac_min.get())
+
+                  if checkmin >= 1 or checkmin <= 0:
+                    tkMessageBox.showerror("Incorrect Inputs", "Ensure fractions are greater than 0 and less than 1")
                   
                   task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][personel_order]["parameters"][0]["min"]=teams_source_min.get()
                   task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][personel_order]["parameters"][0]["max"]=teams_source_max.get()
+
+                  checkmin = float(teams_source_min.get())
+                  checkmax = float(teams_source_max.get())
+                  if checkmin >= checkmax or checkmin <= 0 or checkmax <= 0:
+                    tkMessageBox.showerror("Incorrect Inputs", "Ensure min number of source sampling teams is less than max number and that both are greater than 0..")
                   
                   task5json["modifyParameter"]["filters"][source_reduction_order]["filters"][logistic_order_sr]["parameters"][11]["value"]=frac_source_min.get()
-                  
-                  
+                  checkmin = float(frac_source_min.get())
+
+                  if checkmin >= 1 or checkmin <= 0:
+                    tkMessageBox.showerror("Incorrect Inputs", "Ensure fractions are greater than 0 and less than 1")
+                    
                   task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][personel_order]["parameters"][0]["min"]=teams_clear_min.get()
                   task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][personel_order]["parameters"][0]["max"]=teams_clear_max.get()
+                  checkmin = float(teams_clear_min.get())
+                  checkmax = float(teams_clear_max.get())
+                  if checkmin >= checkmax or checkmin <= 0 or checkmax <= 0:
+                    tkMessageBox.showerror("Incorrect Inputs", "Ensure min number of clearance sampling teams is less than max number and that both are greater than 0..")
                   
                   task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][logistic_order]["parameters"][17]["value"]=frac_clear_min.get()
                   #task5json["modifyParameter"]["filters"][clearance_sampling_order]["filters"][logistic_order]["parameters"][17]["value"]=frac_clear_max.get()
+
+                  checkmin = float(frac_clear_min.get())
+
+                  if checkmin >= 1 or checkmin <= 0:
+                    tkMessageBox.showerror("Incorrect Inputs", "Ensure fractions are greater than 0 and less than 1")
                   
                   task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][personel_order]["parameters"][0]["value"]=teams_Waste_min.get()
-                  
+                  checkmin = float(teams_Waste_min.get())
+
+                  if checkmin <= 0:
+                    tkMessageBox.showerror("Incorrect Inputs", "Ensure values are greater than 0")
                   task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][18]["value"]=frac_Waste_min.get()
+                  checkmin = float(frac_Waste_min.get())
+
+                  if checkmin >= 1 or checkmin <= 0:
+                    tkMessageBox.showerror("Incorrect Inputs", "Ensure fractions are greater than 0 and less than 1")
+                    
                   #task5json["modifyParameter"]["filters"][waste_sampling_order]["filters"][logistic_order_waste]["parameters"][17]["upperLimit"]=frac_Waste_max.get()
                   Spore_Results=[]
                   Spore1=Spore.get()
@@ -710,7 +744,9 @@ def main():
             def save_report_location():
                #files = [('Pdf', '*.pdf')] 
                output_name = filedialog.askdirectory()
+               #print(filePath)
                if (output_name != ""):
+                 print(output_name)
                  other={}
                  other["path"]=output_name
                  other["change"]=1
@@ -721,7 +757,7 @@ def main():
                  other["change"]=0
                  with open(filePath,'w') as f:
                     path=json.dump(other,f)
-               print(output_name)
+               
                
             def runReports():
                 self.leg = report_GUI.main()

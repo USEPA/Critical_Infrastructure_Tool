@@ -260,7 +260,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
     ranked_dict, ranked = prioritizeByConnections(orders, list(range(len(n0))))
     ranked_dict_rt, ranked_rt = getRecoveryTimeDict(time_of_recovery_vals, sectorRange)
     master_path = os.path.dirname(os.path.abspath('final_pdf.py'))
-    filePath=master_path+'\\'+'path'+'.json'
+    filePath=master_path+'\\'+'DATA'+'.json'
     with open(filePath) as f:
        path=json.load(f)
     ######### RESULTS PRI
