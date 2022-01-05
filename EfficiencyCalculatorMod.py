@@ -274,7 +274,7 @@ def getPercentage(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buff
         return ((1-results/results2)*100)
 
 def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "contaminated", Infrastructure_Dataset="HoustonBlocks",
-                         BPPMin = 0, BPPMax = 1):  # EfficiencyCalculator
+                         BPPMin = 0, BPPMax = 1, Event_Type = False):  # EfficiencyCalculator
     # To allow overwriting outputs change overwriteOutput option to True.
     arcpy.env.overwriteOutput = True
     desc = arcpy.Describe("SIRM Tool.tbx")
@@ -289,6 +289,8 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     arcpy.Intersect_analysis(in_features=[[Infrastructure_Dataset, ""], [ScenarioDataset, ""]],
                              out_feature_class=Affected_Area, join_attributes="ALL", cluster_tolerance="", output_type="INPUT")
 
+    Destroyed = arcpy.GetParameter(5)
+    arcpy.AddMessage(Destroyed)
     #HIFLD counts
     #aprx = arcpy.mp.ArcGISProject('CURRENT')
     #Layout = aprx.listMaps()[0]
@@ -322,7 +324,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     os.mkdir(path_parent + "//Overall")
     os.mkdir(GUI_Tool_Location + "//Overall")
     if arcpy.Exists(Contaminated_Dataset):
-
+        multiplier = 0
+        if Destroyed:
+            multiplier = 1
 
         (waste_contaminated) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.1 Mile", OutputPath, True),2)
         getAffectedInfrastructures(Contaminated_Dataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Contaminated")
@@ -339,15 +343,17 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
                           OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Major_State_Government_Buildings_HIFLD", "government", OutputPath, GUI_Tool_Location, "Contaminated")
         (comm_contaminated) = getPercentage("cell", "Cellular_Towers_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.05 Mile", OutputPath, True)
+        comm_contaminated = comm_contaminated*multiplier
         getAffectedInfrastructures(Contaminated_Dataset, "Cellular_Towers_HIFLD", "cell_towers", OutputPath, GUI_Tool_Location, "Contaminated")
         (broadcast_contaminated) = getPercentage("broad", "Land_Mobile_Broadcast_Tower_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.05 Mile", OutputPath, True)
+        broadcast_contaminated = broadcast_contaminated*multiplier
         getAffectedInfrastructures(Contaminated_Dataset, "Land_Mobile_Broadcast_Tower_HIFLD", "broadcast_towers", OutputPath, GUI_Tool_Location, "Contaminated")
         (ems_contaminated) = getPercentage("ems", "Emergency_Medical_Center_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.1 Mile", OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Emergency_Medical_Center_HIFLD", "emergency_(EMS)", OutputPath, GUI_Tool_Location, "Contaminated")
         (roads_contaminated) = getPercentage("roads", "USA_Roads", Infrastructure_Dataset, Contaminated_Dataset, "0.1 Mile", OutputPath, True)
         (fire_contaminated) = getPercentage("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.05 Mile", OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Fire_Stations_HIFLD", "fire_stations", OutputPath, GUI_Tool_Location, "Contaminated")
-        (farm_contaminated) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, Contaminated_Dataset, "50 Mile", OutputPath, True)
+        (farm_contaminated) = getPercentage("farms", "USA_Farms", Infrastructure_Dataset, Contaminated_Dataset, "10 Mile", OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Industrial_HIFLD","industrial", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Public_Schools_HIFLD","public_schools", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Private_Schools_HIFLD","private_schools", OutputPath, GUI_Tool_Location, "Contaminated", True)
@@ -355,6 +361,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         getAffectedInfrastructures(Contaminated_Dataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, "Contaminated", True)
         (electricgrid_contaminated) = getPercentage("grid", "Transmission_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.01 Mile", OutputPath, True)
+        electricgrid_contaminated= electricgrid_contaminated*multiplier
+        (substation_contaminated) = getPercentage("substation", "Electric_Substation_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.01 Mile", OutputPath, True)
+        substation_contaminated = substation_contaminated*multiplier
         arcpy.AddMessage("Grid: " + str(round(electricgrid_contaminated, 2)) + "%")
         
     (waste) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath),2)
@@ -411,6 +420,8 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     getAffectedInfrastructures(ScenarioDataset, "Industrial_HIFLD","industrial", OutputPath, GUI_Tool_Location, "Affected", True)
     getAffectedInfrastructures(Infrastructure_Dataset, "Industrial_HIFLD","industrial", OutputPath, GUI_Tool_Location, "Overall", True)
 
+    getAffectedInfrastructures(ScenarioDataset, "Electric_Substation_HIFLD","substation", OutputPath, GUI_Tool_Location, "Affected", True)
+    getAffectedInfrastructures(Infrastructure_Dataset, "Electric_Substation_HIFLD","substation", OutputPath, GUI_Tool_Location, "Overall", True)
     
     getAffectedInfrastructures(ScenarioDataset, "Public_Schools_HIFLD","public_schools", OutputPath, GUI_Tool_Location, "Affected", True)
     getAffectedInfrastructures(Infrastructure_Dataset, "Public_Schools_HIFLD","public_schools", OutputPath, GUI_Tool_Location, "Overall", True)
@@ -588,6 +599,38 @@ def getArea(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buffer, Ou
         arcpy.AddMessage(name+ " " + str(area_contaminated))
         return area_contaminated
 
+def getBuildingFootprint(name, shapefile, Infrastructure_Dataset, ScenarioDataset, buffer, OutputPath, farmland = False):
+        arcpy.env.overwriteOutput = True
+        path_parent = os.path.dirname(arcpy.env.workspace)
+        sector_in_area = OutputPath + "\\possible_"+name + ".shp"
+        arcpy.AddMessage("Getting intersection")
+        arcpy.Intersect_analysis(in_features=[[Infrastructure_Dataset, ""], [shapefile, ""]],
+                             out_feature_class=sector_in_area, join_attributes="ALL", cluster_tolerance="",
+                                 output_type="INPUT")
+        dissolved_sector = arcpy.env.workspace + "\\dissolved_"+name
+        arcpy.AddMessage("Getting dissolve")
+        arcpy.Dissolve_management(sector_in_area, dissolved_sector)
+        affected_sector = OutputPath + "\\affected_"+name
+        affected_buffered_sector = OutputPath + "\\affected_buffered_"+name
+        arcpy.AddMessage("Getting intersection")
+        arcpy.Intersect_analysis(in_features=[dissolved_sector,ScenarioDataset],
+                                 out_feature_class=affected_sector,join_attributes="ALL",
+                                 cluster_tolerance="", output_type="INPUT")
+        arcpy.management.AddGeometryAttributes(Input_Features=affected_sector+".shp",
+                                               Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
+        affected_stats = arcpy.env.workspace + "\\affected_stats_"+name
+        arcpy.analysis.Statistics(in_table=affected_sector+".shp", out_table=affected_stats, statistics_fields=[["AREA_GEO", "SUM"]],
+                                  case_field=[])
+        cursor = arcpy.da.SearchCursor(affected_stats, "SUM_AREA_GEO")
+        results = 0
+        count = 0
+        for row in cursor:
+            results = row[0]
+            count +=1
+        area_contaminated = results
+        arcpy.AddMessage(name+ " " + str(area_contaminated))
+        return area_contaminated
+
 def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_Tool_Location, BPPMin, BPPMax):
     spreadsheet = pd.read_excel(excelDoc, sheet_name="Extent of Contamination")
     copy = OutputPath + "\\copied_features.shp"
@@ -626,19 +669,36 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     #Religious
     
 
-    worship = getArea("worship", "Worship_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.05 Mile", OutputPath) 
+    worship = getArea("worship", "Worship_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.01 Mile", OutputPath) 
 
     agri = getArea("agri", "USA_Farms", Infrastructure_Dataset,
                                        ScenarioDataset, "50 Mile", OutputPath)
 
     industrial2 = getArea("industrial", "Industrial_HIFLD", Infrastructure_Dataset,
                                        ScenarioDataset, "0.1 Mile", OutputPath)
+
+    #other Datasets
+    (waste_contaminated) = round(getArea("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True),2)
+    (ports_contaminated) = getArea("ports", "Ports_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
+    (power_plants_contaminated) = getArea("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
+    (wastewater_contaminated) = getArea("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,
+                             ScenarioDataset, "0.1 Mile", OutputPath, True)
+    (hospitals_contaminated) = getArea("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
+
+    (comm_contaminated) = getArea("cell", "Cellular_Towers_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.05 Mile", OutputPath, True)
+    (broadcast_contaminated) = getArea("broad", "Land_Mobile_Broadcast_Tower_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.05 Mile", OutputPath, True)
+    (ems_contaminated) = getArea("ems", "Emergency_Medical_Center_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
+    (roads_contaminated) = getArea("roads", "USA_Roads", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
+    (fire_contaminated) = getArea("fire", "Fire_Stations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.05 Mile", OutputPath, True)
+    (farm_contaminated) = getArea("farms", "USA_Farms", Infrastructure_Dataset, ScenarioDataset, "10 Mile", OutputPath, True)
+    (electricgrid_contaminated) = getArea("grid", "Transmission_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.01 Mile", OutputPath, True)
     #roofs = sum(areas)
     #building_exteriors = sum(areas)
     school_areas = public_schools + private_schools + colleges
     industrial_area = industrial + industrial2
     government_area = government
     affected_stats = arcpy.env.workspace + "\\affected_total"
+    # other areas
     #arcpy.management.AddGeometryAttributes(Input_Features=ScenarioDataset, Geometry_Properties=["AREA_GEODESIC"], Area_Unit="Square meters")
     #arcpy.analysis.Statistics(in_table=ScenarioDataset, out_table=affected_stats, statistics_fields=[["AREA_GEO", "SUM"]],case_field=[])
     #cursor = arcpy.da.SearchCursor(affected_stats, ["SHAPE@AREA"])
@@ -651,7 +711,9 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     total_outdoor = area
     arcpy.AddMessage("Total Area " + str(total_outdoor))
     area_contaminated = sum([industrial_area, commerical, worship,
-                 school_areas, government_area, agri])
+                 school_areas, government_area, agri, waste_contaminated, ports_contaminated,
+                             power_plants_contaminated, wastewater_contaminated, hospitals_contaminated, comm_contaminated,
+                             broadcast_contaminated, ems_contaminated, fire_contaminated, electricgrid_contaminated])
 
 ##    dicts = {
 ##        "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor Min", "Total Indoor Max", "Total Outdoor"],
@@ -660,15 +722,34 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
 ##                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated,
 ##                 area_contaminated*(1.0-float(BPPMax)),area_contaminated*(1.0-float(BPPMin)), total_outdoor]
 ##        }
+    arcpy.AddMessage("Getting Buildings")
+##    total = getBuildingFootprint("footprint", "MSBFP", Infrastructure_Dataset,
+##                                       ScenarioDataset, "0 Mile", OutputPath)
+##    area_contaminated = total
+    if(area_contaminated == 0):
+        industrial_percent = 0
+        commericial_percent = 0
+        worship_percent = 0
+        school_percent = 0
+        government_percent = 0
+        agri_percent = 0
+    else:
+        industrial_percent = industrial_area/area_contaminated
+        commericial_percent = commerical/area_contaminated
+        worship_percent = worship/area_contaminated
+        school_percent = school_areas/area_contaminated
+        government_percent = government_area/area_contaminated
+        agri_percent = agri/area_contaminated
+
     dicts = {
         "category":["Industrial","Commercial","Religious","Education", "Government","Agricultural", "Total Indoor", "Total Outdoor"],
         "units":["", "", "", "", "", "", "m^2", "m^2"],
-        "value":[industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
-                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated, area_contaminated*(1.0-float(BPPMin)), total_outdoor]
+        "value":[industrial_percent, commericial_percent, worship_percent,
+                 school_percent, government_percent, agri_percent, area_contaminated*(1.0-float(BPPMin)), total_outdoor]
         }
     
-    arcpy.AddMessage(sum([industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
-                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated]))
+##    arcpy.AddMessage(sum([industrial_area/area_contaminated, commerical/area_contaminated, worship/area_contaminated,
+##                 school_areas/area_contaminated, government_area/area_contaminated, agri/area_contaminated]))
     #write out information from the tool into its own 
     df2 = pd.DataFrame(dicts)
     new_loc = GUI_Tool_Location + "\\SIRMResults.json"

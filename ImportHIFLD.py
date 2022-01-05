@@ -39,6 +39,9 @@ def importDataset(Temporary_Output_Path):
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/97603afcff00443f874acbe03c9e794a_0.geojson",
                        "Worship_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/70512b03fe994c6393107cc9946e5c22_0.geojson","Transmission_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI("https://opendata.arcgis.com/datasets/755e8c8ae15a4c9abfceca7b2e95fb9a_0.geojson", "Electric_Substation_HIFLD", Temporary_Output_Path)
+    download_url(r"https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/MSBFP2/FeatureServer/0/query?outFields=*&where=1%3D1", "Building_Footprints")
+
         
 def createLayerFromShapefile(Input_Path, name, Temporary_Output_Path):
     path_to_layer= Temporary_Output_Path + "\\"+name + "_layer.lyr"
