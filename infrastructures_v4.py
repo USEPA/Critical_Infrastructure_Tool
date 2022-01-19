@@ -308,6 +308,7 @@ def infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes
           recoveryTimes.append(str(round(float(value), 2)))
       results["Sectors"] = sectors
       results["Recovery Times"] = recoveryTimes
+      results.to_csv("Results/" + imageFileName + ".csv")
       results.to_csv(newpath +'\\'+ imageFileName + ".csv")
     final_pdf.createPdf(ranked_dict, ranked_dict_rt, imageFileName, sensitivity, paramIndexes, paramTypes, n0,nRun, timeSpan, contamination, 
                         contaminatedListAvailable)

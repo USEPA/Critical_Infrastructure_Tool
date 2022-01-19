@@ -156,7 +156,7 @@ class sensitivityAnalysis(object):
             name = start
             if start < 1:
               name = round(start * 100, 0)
-            data["name"] = self.parameter + "_" + str(name).split(".")[0]
+            data["name"] = self.parameter + "_" + str(name).split(".")[0] + " " + str(self.sector)
             with open(fileLoc, "w") as outfile:
               json.dump(data, outfile)
             self.leg = infrastructures_from_file.run_file(False, orders, coeffs, k)
@@ -178,7 +178,10 @@ class sensitivityAnalysis(object):
         
         p = ggplot(results, aes(x='Value', y='RT', color = 'Sector')) + xlab(self.parameter) + ylab("Recovery Time (days)") + geom_point() + geom_line()
         file_name = self.parameter + "_" + self.sector
+        
         path_name = dir_path + "\\Sensitivity\\"
+
+
         p.save(filename=file_name, path = path_name, verbose = False, device= "jpeg")
         copyfile(temp_file, fileLoc)
         width= 60
@@ -257,7 +260,14 @@ class sensitivityAnalysis(object):
           pdf.cell(width, height, str(slope_results["Sector"][i]), border=1)
           pdf.cell(135, height, str(round(slope,2)), border=1, ln=1, fill=True, align = 'C')
           #pdf.cell(width, height,text, border=1, ln=1)
-
+        filePath=dir_path+'\\'+'DATA'+'.json'
+        with open(filePath) as f:
+            path=json.load(f)
+        if path['change']==1:
+          path_name = path['path']+"\\Sensitivity\\"
+        CHECK_FOLDER = os.path.isdir(path_name)
+        if not CHECK_FOLDER:
+          os.makedirs(path_name)
         pdf.output(path_name + file_name + "_Report.pdf", 'F')
                 
 def main():
