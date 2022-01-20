@@ -31,8 +31,11 @@ steps:
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\GDAL-3.0.4-cp37-cp37m-win_amd64.whl"
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\Fiona-1.8.13-cp37-cp37m-win_amd64.whl"
-    python -m pip install geopandas
   displayName: 'Install Dependencies'
+  
+- script: |
+    pyinstaller sensitivity_GUI.spec sensitivity_GUI.py
+  displayName: 'Create Sensitivity GUI'
 
 - script: |
     pyinstaller infrastructures_gui.spec infrastructures_gui.py
@@ -50,5 +53,5 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
+    ArtifactName: 'SIRMExe'
     publishLocation: 'Container'
