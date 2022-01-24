@@ -27,7 +27,7 @@ def importDataset(Temporary_Output_Path):
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/ec4d868ea1354fc9a85fe35e7db0cffd_0.geojson", "Land_Mobile_Broadcast_Tower_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0ccaf0c53b794eb8ac3d3de6afdb3286_0.geojson", "Fire_Stations_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/335ccc7c0684453fad69d8a64bc89192_0.geojson", "Urgent_Care_Facilities_HIFLD", Temporary_Output_Path)
-    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/362c9480f12e4587b6a502f9ceedccde_0.geojson", "Emergency_Medical_Center_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/3afdb0478d6940e7ace338976833925d_0.geojson", "Emergency_Medical_Center_HIFLD", Temporary_Output_Path)
     #createLayerFromAPI(r"https://opendata.arcgis.com/datasets/b2de4fc3bdf34c6590ce6e26b4e6e484_0.geojson", "Ports_HIFLD", Temporary_Output_Path)
     #createLayerFromAPI(r"https://opendata.arcgis.com/datasets/e720d6671dc54e3084bd079b845e136f_0.geojson", "Primary_Roads_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/87376bdb0cb3490cbda39935626f6604_0.geojson", "Public_Schools_HIFLD", Temporary_Output_Path)
@@ -38,9 +38,9 @@ def importDataset(Temporary_Output_Path):
                        "Corporate_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/97603afcff00443f874acbe03c9e794a_0.geojson",
                        "Worship_HIFLD", Temporary_Output_Path)
-    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/70512b03fe994c6393107cc9946e5c22_0.geojson","Transmission_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/468e9601b9b7407396e5c4f59772f1ff_0.geojson","Transmission_HIFLD", Temporary_Output_Path)
     createLayerFromAPI("https://opendata.arcgis.com/datasets/755e8c8ae15a4c9abfceca7b2e95fb9a_0.geojson", "Electric_Substation_HIFLD", Temporary_Output_Path)
-    download_url(r"https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/MSBFP2/FeatureServer/0/query?outFields=*&where=1%3D1", "Building_Footprints")
+    #download_url(r"https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/MSBFP2/FeatureServer/0/query?outFields=*&where=1%3D1", "Building_Footprints")
 
         
 def createLayerFromShapefile(Input_Path, name, Temporary_Output_Path):

@@ -278,6 +278,7 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     # To allow overwriting outputs change overwriteOutput option to True.
     arcpy.env.overwriteOutput = True
     desc = arcpy.Describe("SIRM Tool.tbx")
+    arcpy.AddMessage(desc)
     GUI_Tool_Location = desc.path + "\\infrastructures_gui"
     OutputPath = desc.path + "\\temp_output"
     arcpy.AddMessage("Path:      " + desc.path)
