@@ -12,7 +12,19 @@ Python and ArcGIS were used to design the graphical user interface for the Stoch
 ## Required Software Installations
 - [Python 3.7 or more recent] (https://www.python.org/downloads/)
   - Used for development of the tool
-  - Will need the following 
+  - Will need the following packages:
+	- pyinstaller
+	- os
+	- pandas
+	- json
+	- sys
+	- requests
+	- urllib
+	- urllib.request
+	- subprocess
+	- shutil
+  - pip install <package> after downloading Python
+	
 - [ArcGIS Pro] (https://pro.arcgis.com/en/pro-app/latest/get-started/download-arcgis-pro.htm)
   - Used for the GIS capabilities. The Python tool can be run separately, if ArcGIS is not available. 
 
@@ -37,20 +49,21 @@ Python and ArcGIS were used to design the graphical user interface for the Stoch
 
 The Python exe is contained within the "[location of Infrastructure Remediation Repository]/dist/infrastructures_gui" folder. This exe can be run separate from the ArcGIS tool. 
 
-[Note] The tool can be packaged as an independent zip file, if there are no plans to edit the code. Instructions to do this are in [Section]
+**Note:** The tool can be packaged as an independent zip file, if there are no plans to edit the code.
 
 ## Making edits to the code
 
-Any time edits are made to the code, run the following command in the repository folder. 
-From command line: 
-run: pip install pyinstaller
-run (in the folder with all the files): pyinstaller infrastructures_gui.spec infrastructures_gui.py
+Any time edits are made to the code, run the following command from the command line in the repository folder. 
+
+**pyinstaller infrastructures_gui.spec infrastructures_gui.py**
 
 The toolbox will automatically update. 
 
-[Note] If you are editing the sensitivity analysis GUI, then an additional step is required. First you must run the command: pyinstaller sensitivity_GUI.spec sensitivity_GUI.py
+**Note:** If you are editing the sensitivity analysis GUI, then an additional step is required. First you must run the command: **pyinstaller sensitivity_GUI.spec sensitivity_GUI.py**. Then, run the original command. 
 
-# Build and Test
+# Independently Packaging Tool
+
+Every time a pull request is completed, a build artifact entitled "SIRMExe" is created. This zip file can be unzipped onto any machine, and contains the exe of the infrastructures gui, and the Toolbox. The setup is identical to the rest of the tool, however the underlying code cannot be edited. 
 
 
 # Contribute

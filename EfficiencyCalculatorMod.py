@@ -15,7 +15,6 @@ from shutil import copyfile
 from arcgis.geometry import Geometry
 from arcgis.geocoding import reverse_geocode
 import shutil
-from pathlib import Path
 
 
 def wrapArg(s):
