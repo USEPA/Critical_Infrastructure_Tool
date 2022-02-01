@@ -14,7 +14,8 @@ import subprocess
 from shutil import copyfile
 from arcgis.geometry import Geometry
 from arcgis.geocoding import reverse_geocode
-import shutil  
+import shutil
+from pathlib import Path
 
 
 def wrapArg(s):
@@ -279,9 +280,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     arcpy.env.overwriteOutput = True
     desc = arcpy.Describe("SIRM Tool.tbx")
     arcpy.AddMessage(desc)
-    GUI_Tool_Location = desc.path + "\\infrastructures_gui"
-    OutputPath = desc.path + "\\temp_output"
-    arcpy.AddMessage("Path:      " + desc.path)
+    GUI_Tool_Location = os.getcwd()
+    OutputPath = GUI_Tool_Location + "\\temp_output"
+    arcpy.AddMessage("Path:      " + GUI_Tool_Location)
     path_parent = os.path.dirname(arcpy.env.workspace)
     # Process: Infrastructure Counts (Summary Statistics)
     filepath = os.getcwd()
@@ -304,7 +305,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     #layoutwork.exportToPDF(GUI_Tool_Location + "//Mapping.pdf", resolution = 300)
     aprx = arcpy.mp.ArcGISProject("CURRENT")
     mapping = aprx.listMaps()[0]
-    mapping.defaultView.exportToPNG(GUI_Tool_Location + "//Results//Mapping.png", width = 1400, height = 1000)
+    mapping_path = GUI_Tool_Location + r"/Results/Mapping.png"
+    arcpy.AddMessage(mapping_path)
+    mapping.defaultView.exportToPNG(mapping_path, width = 1400, height = 1000)
     
     if os.path.isdir(path_parent + "//Contaminated"):
         shutil.rmtree(path_parent + "//Contaminated")

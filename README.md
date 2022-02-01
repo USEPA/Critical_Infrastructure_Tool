@@ -1,11 +1,54 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+The Stochastic Infrastructure Remediation Model (SIRM) tool allows for a series of interconnected infrastructure sectors to be modeled and considers the realistic variability of the impact of a CBRN event. The SIRM's mechanics are based on the Gillespie Algorithm of stochastically modeling chemical kinetic systems, with adjustments made to suit the modeling of infrastructure remediation after an event that incapacitates infrastructure sectors (e.g. a CBRN event).
+
+The SIRM examines the interactions of 9 different infrastructure sectors: Water, Energy, Transportation, Communication, Government, Food/Agriculture, Emergency Services, Waste Management and Healthcare. Based on the initial operating efficiency after the event, the model calculates an estimated time of recovery for each sector. The tool doesn’t account for auxiliary infrastructure such as power lines, water pipes, etc. that may impact operations/recovery
+
+The SIRM examines the interactions of 9 different infrastructure sectors: Water, Energy, Transportation, Communication, Government, Food/Agriculture, Emergency Services, Waste Management and Healthcare. Based on the initial operating efficiency after the event, the model calculates an estimated time of recovery for each sector.
+
+Python and ArcGIS were used to design the graphical user interface for the Stochastic Infrastructure Remediation Model (SIRM). The tool allows for the user to (1) load or define the inputs for a specific contamination scenario (2) choose the desired outputs from the scenario (3) output the results in reports allowing for further analysis.
 
 # Getting Started
+
+## Required Software Installations
+- [Python 3.7 or more recent] (https://www.python.org/downloads/)
+  - Used for development of the tool
+  - Will need the following 
+- [ArcGIS Pro] (https://pro.arcgis.com/en/pro-app/latest/get-started/download-arcgis-pro.htm)
+  - Used for the GIS capabilities. The Python tool can be run separately, if ArcGIS is not available. 
+
+## Initial Steps
+
+1) Clone the repository in the folder of your choice.
+2) Once the repository is cloned, open ArcGIS Pro. Users should sign into their ArcGIS Online (AGO) account if planning to leverage ArcGIS Online resources. For EPA users, access your Esri Enterprise login credentials and use your portal ID or PIV card access credentials
+3) Navigate within ArcGIS Pro and create a New Project (new Map). 
+4) Click on the “Insert” tab on the top left. 
+5) Navigate to the Toolboxes icon in the top left corner.
+7) Click on it. Select “Add Toolbox”. 
+8) Navigate to the file location of the Infrastructure Remediation Repository, then select the "dist" folder, then select the "infrastructures_gui" folder. Select "SIRM Tool.tbx".
+9) The toolbox will appear in the pane on the side. 
+10) Expand the SIRM Tool, and right click the "Effiency Calculator" script. 
+11) Select "Properties". 
+12) Select "Store tool with relative path".  Change the path of the script file to "[location of Infrastructure Remediation Repository]/dist/infrastructures_gui/EfficiencyCalculatorMod.py". Click Ok. 
+13) Right click the "Import HIFLD" script. 
+14) Select "Properties". 
+15) Select "Store tool with relative path". Change the path of the script file to the location of the "[location of Infrastructure Remediation Repository]/dist/infrastructures_gui/ImportHIFLD.py". Click Ok. 
+
+## Running the Python script
+
+The Python exe is contained within the "[location of Infrastructure Remediation Repository]/dist/infrastructures_gui" folder. This exe can be run separate from the ArcGIS tool. 
+
+[Note] The tool can be packaged as an independent zip file, if there are no plans to edit the code. Instructions to do this are in [Section]
+
+## Making edits to the code
+
+Any time edits are made to the code, run the following command in the repository folder. 
 From command line: 
 run: pip install pyinstaller
-run (in the folder with all the files): pyinstaller infrastructures_gui.py --add-data default.csv;. --add-data infrastructures_inputs.txt;.
+run (in the folder with all the files): pyinstaller infrastructures_gui.spec infrastructures_gui.py
 
+The toolbox will automatically update. 
+
+[Note] If you are editing the sensitivity analysis GUI, then an additional step is required. First you must run the command: pyinstaller sensitivity_GUI.spec sensitivity_GUI.py
 
 # Build and Test
 
