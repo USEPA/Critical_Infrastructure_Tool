@@ -26,7 +26,7 @@ Python and ArcGIS were used to design the graphical user interface for the Stoch
   - pip install <package> after downloading Python
 	
 - [ArcGIS Pro] (https://pro.arcgis.com/en/pro-app/latest/get-started/download-arcgis-pro.htm)
-  - Used for the GIS capabilities. The Python tool can be run separately, if ArcGIS is not available. 
+  - Used for the GIS capabilities. The Python tool can be run separately if ArcGIS is not available. 
 
 ## Initial Steps
 
@@ -65,11 +65,17 @@ The toolbox will automatically update.
 
 Every time a pull request is completed, a build artifact entitled "SIRMExe" is created. This zip file can be unzipped onto any machine, and contains the exe of the infrastructures gui, and the Toolbox. The setup is identical to the rest of the tool, however the underlying code cannot be edited. 
 
+The zip file can be handed off to another machine. To add an additional layer of isolation and make the Toolbox independent of the scripts, before subitting a pull reuqest the following steps must be followed. 
+
+1) Right click on the "Import HIFLD" ascript within the Toolbox pane in ArcGIS. 
+2) Select "Properties".
+3) In the Options section, select "Import script" and deselect "Store tool with relative path". 
+4) Follow the same process with the "Efficiency Calculator" script. 
+
+# Common Errors
+
+1) If the ImportHIFLD cannot import a certain file, ensure that the URL is correct in the Python file. The URLS can be found here: ttps://hifld-geoplatform.opendata.arcgis.com/. In the ImportHIFLD.py file, replace "HIFLD_URL" in the relevant line in the function "importDataset" (createLayerFromAPI(r"<HIFLD_URL>", "<infrastructure_type>_HIFLD", Temporary_Output_Path))
+2) If the Internet connection is weak, either Import HIFLD or Efficiency Calculator may time out and throw an error. Ensure your connection is strong, and rerun the tool. Typically, each function takes around 10-15 minutes, but the Efficiency Calculator can take more time for larger incidents. 
 
 # Contribute
 TODO: Explain how other users and developers can contribute to make your code better. 
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
