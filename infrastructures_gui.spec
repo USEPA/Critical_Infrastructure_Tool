@@ -13,9 +13,11 @@ hidden_imports = [
     'shapely',
     'shapely.geometry',
     'matplotlib',
+	'matplotlib.pyplot',
     'pyproj',
      'scipy',
-
+	'urllib',
+	'urllib.request',
     'palettable',
     'rtree',
     'pytest',
@@ -37,7 +39,7 @@ hidden_imports = [
    'statsmodels.tsa.statespace._smoothers._univariate',
    'statsmodels.tsa.statespace._smoothers._univariate_diffuse'
 ]
-added_files = [('default.csv', '.'),('Contaminated','Contaminated\\') ,('infrastructures_inputs.txt', '.'),('Sensitivity Images','Sensitivity Images\\'),('Sensitivity','Sensitivity\\'),('report_inputs.txt','.'), ('DefineScenario.xlsx','.'),  ("dist\\sensitivity_GUI", "."), ('final_pdf.py','.'), ('Battelle.EPA.WideAreaDecon.Launcher.exe','.'),('Battelle.Native.External.Rmath.dll','.'),('Battelle.RiskAssessment.Common.Statistics.Native.Interface.dll','.'), ("executingDirectoryPath", "executingDirectoryPath\\"),("azure", "azure\\"),("Azure-ttk-theme-main", "Azure-ttk-theme-main\\"),("azure.tcl","."),("palettable","palettable\\"),("Affected","Affected\\"),("Contaminated","Contaminated\\"),("Overall","Overall\\"),("JobRequest.json","."),("SIRMResults.json","."),("newJobRequest.json","."),("Results","Results\\"),("SIRM Tool.tbx", "."), ("Input Shapefiles", "Input Shapefiles\\"), ("temp_output","temp_output\\"), ("EfficiencyCalculatorMod.py","."),("ImportHIFLD.py",".") ]
+added_files = [('default.csv', '.'),('Contaminated','Contaminated\\') ,('infrastructures_inputs.txt', '.'),('Sensitivity Images','Sensitivity Images\\'),('Sensitivity','Sensitivity\\'),('report_inputs.txt','.'), ('DefineScenario.xlsx','.'),  ("dist\\sensitivity_GUI", "."), ('final_pdf.py','.'), ('Battelle.EPA.WideAreaDecon.Launcher.exe','.'),('Battelle.Native.External.Rmath.dll','.'),('Battelle.RiskAssessment.Common.Statistics.Native.Interface.dll','.'), ("executingDirectoryPath", "executingDirectoryPath\\"),("azure", "azure\\"),("Azure-ttk-theme-main", "Azure-ttk-theme-main\\"),("azure.tcl","."),("palettable","palettable\\"),("Affected","Affected\\"),("Contaminated","Contaminated\\"),("Overall","Overall\\"),("JobRequest.json","."),("SIRMResults.json","."),("newJobRequest.json","."),("Results","Results\\"),("SIRM Tool.tbx", "."), ("Input Shapefiles", "Input Shapefiles\\"), ("temp_output","temp_output\\") ]
 
 a = Analysis(['infrastructures_gui.py'],
              pathex=['C:\\Repos\\SIRM\\InfrastructureRemediation'],

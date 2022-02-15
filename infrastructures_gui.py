@@ -870,7 +870,7 @@ def main():
 
             #tk.Button(self, text='Help', bg='#FCB1A0', command= lambda: showPDF(), font=("Arial", 14)).grid(row=0, column=4, sticky=tk.NSEW)
             #Checkboxes
-            extra=ttk.LabelFrame(self,text="Extra Commands")
+            extra=ttk.LabelFrame(self,text="Additional Commands")
             extra.place(x=490,y=545)
             if printProgress == "true" or printProgress == "True" or printProgress == "1":
                 var1 = tk.IntVar(value=int(bool(printProgress)))
@@ -1087,7 +1087,7 @@ def main():
 ##            P0.insert(0, p0)
 ##            P0.grid(row=12, column = 1, sticky=tk.NSEW)
 
-            ext=ttk.LabelFrame(self,text="Extra Parameters")
+            ext=ttk.LabelFrame(self,text="Addditional Parameters")
             ext.place(x=485,y=335)
             
             remediation=ttk.LabelFrame(self,text="Remediation Parameters")

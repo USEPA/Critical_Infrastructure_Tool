@@ -40,10 +40,10 @@ Python and ArcGIS were used to design the graphical user interface for the Stoch
 9) The toolbox will appear in the pane on the side. 
 10) Expand the SIRM Tool, and right click the "Effiency Calculator" script. 
 11) Select "Properties". 
-12) Select "Store tool with relative path".  Change the path of the script file to "[location of Infrastructure Remediation Repository]/dist/infrastructures_gui/EfficiencyCalculatorMod.py". Click Ok. 
+12) Select "Store tool with relative path".  Change the path of the script file to "[location of Infrastructure Remediation Repository]/EfficiencyCalculatorMod.py". Click Ok. 
 13) Right click the "Import HIFLD" script. 
 14) Select "Properties". 
-15) Select "Store tool with relative path". Change the path of the script file to the location of the "[location of Infrastructure Remediation Repository]/dist/infrastructures_gui/ImportHIFLD.py". Click Ok. 
+15) Select "Store tool with relative path". Change the path of the script file to the location of the "[location of Infrastructure Remediation Repository]/ImportHIFLD.py". Click Ok. 
 
 ## Running the Python script
 

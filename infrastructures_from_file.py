@@ -293,7 +293,7 @@ def check_inputs(inputName, inputs, max, min, length):
         meetsMin = all(float(i) >= min for i in inputs)
         meetsMax = all(float(i) <= max for i in inputs)
         lengthError = "length of " + inputName + " must be " + str(length)
-        valueError = inputName + " values must be between" + str(min) + " and " + str(max)
+        valueError = inputName + " values must be between " + str(min) + " and " + str(max)
         if meetsLength and meetsMin and meetsMax:
             return True
         else:

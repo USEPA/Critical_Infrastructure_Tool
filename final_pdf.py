@@ -1298,6 +1298,13 @@ def getInfrastructureList(location, pdf, width, height, location2, contaminated,
     if contaminated and len(tempresults) > 0:
         result = pd.merge(tempresults, tempresults2, on="Building Type")
         finalresult = pd.merge(tempresults3, result, on="Building Type")
+        p = finalresult.groupby('Building Type').mean().plot(kind='bar')
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        plt.xticks(rotation = -45, fontsize=8)
+        plt.tight_layout()
+        rcParams.update({'figure.autolayout': True})
+        p.get_figure().savefig('ColumnChart.png')
+        pdf.image(dir_path+"\\ColumnChart.png", w=200)
     else:
         finalresult = pd.merge(tempresults3, tempresults2, on="Building Type")
     #p = ggplot(finalresult, aes(x='Building Type', y='Number of Contaminated Buildings',fill = 'Building Type'))+ geom_col() + geom_col(aes(y='Number of Affected Buildings',x = 'Building Type', fill = 'Building Type')) + geom_col(aes(y='Number of Buildings', x = 'Building Type', fill = 'Building Type'))
@@ -1306,13 +1313,7 @@ def getInfrastructureList(location, pdf, width, height, location2, contaminated,
         'size'   : 10}
     plt.rc('font', **font)
     
-    p = finalresult.groupby('Building Type').mean().plot(kind='bar')
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    plt.xticks(rotation = -45, fontsize=8)
-    plt.tight_layout()
-    rcParams.update({'figure.autolayout': True})
-    p.get_figure().savefig('ColumnChart.png')
-    pdf.image(dir_path+"\\ColumnChart.png", w=200)
+
     return pdf
 
     
