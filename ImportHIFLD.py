@@ -18,7 +18,7 @@ def importDataset(Temporary_Output_Path):
     createLayerFromShapefile(Input_Path+ "\\farms.shp", "USA_Farms", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/636e283fc23645dfaeebdac5d9254776_0.geojson","Industrial_HIFLD", Temporary_Output_Path)
     #download_url(r"https://landscape11.arcgis.com/arcgis/rest/services/USA_Soils_Farmland_Class/ImageServer", "USA_Soils_Farmland_Class")
-    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/6ac5e325468c4cb9b905f1728d6fbf0f_0.geojson", "Hospital_Locations_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/f33f1d71c69c49648aacb47a123b750e_0.geojson", "Hospital_Locations_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/155761d340764921ab7fb2e88257bd97_0.geojson", "Landfills_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/4b9bac25263047c19e617d7bd7b30701_0.geojson", "Wastewater_Treatment_Plants_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/ee0263bd105d41599be22d46107341c3_0.geojson", "Power_Plants_HIFLD", Temporary_Output_Path)
@@ -30,7 +30,7 @@ def importDataset(Temporary_Output_Path):
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/3afdb0478d6940e7ace338976833925d_0.geojson", "Emergency_Medical_Center_HIFLD", Temporary_Output_Path)
     #createLayerFromAPI(r"https://opendata.arcgis.com/datasets/b2de4fc3bdf34c6590ce6e26b4e6e484_0.geojson", "Ports_HIFLD", Temporary_Output_Path)
     #createLayerFromAPI(r"https://opendata.arcgis.com/datasets/e720d6671dc54e3084bd079b845e136f_0.geojson", "Primary_Roads_HIFLD", Temporary_Output_Path)
-    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/87376bdb0cb3490cbda39935626f6604_0.geojson", "Public_Schools_HIFLD", Temporary_Output_Path)
+    createLayerFromAPI(r"https://opendata.arcgis.com/datasets/995f2474d4dc4a3ba2dec22a9b0c36d1_0.geojson", "Public_Schools_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/0dfe37d2a68545a699b999804354dacf_0.geojson", "Private_Schools_HIFLD", Temporary_Output_Path)
     createLayerFromAPI(r"https://opendata.arcgis.com/datasets/bc7ef39f9d2a4605b9d5aad0e050af11_0.geojson",
                        "Colleges_HIFLD", Temporary_Output_Path)
@@ -143,5 +143,6 @@ def getLayerStyle(name, lyr):
 if __name__ == '__main__':
     with arcpy.EnvManager(scratchWorkspace=arcpy.env.workspace, workspace=arcpy.env.workspace):
         importDataset(*argv[1:])
+
 
 
