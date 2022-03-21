@@ -162,8 +162,8 @@ class sensitivityAnalysis(object):
             self.leg = infrastructures_from_file.run_file(False, orders, coeffs, k)
             result = pd.read_csv(dir_path + "\\Results\\" + data["name"] + ".csv")
             for i in range(len(result["Sectors"])):
-              new_row = {'Sector': result["Sectors"][i], 'RT': result["Recovery Times"][i], 'Value': start}
-              results = results.append(new_row, ignore_index=True)
+              new_row = pd.DataFrame({'Sector': result["Sectors"][i], 'RT': result["Recovery Times"][i], 'Value': start}, index=[0])
+              results = pd.concat([results,new_row])
             start += step
         plt.style.use('ggplot')
         ggt = self.sector + " " + self.parameter + " vs Sector Recovery Times"

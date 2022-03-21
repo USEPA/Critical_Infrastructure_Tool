@@ -1257,8 +1257,8 @@ def getInfrastructureList(location, pdf, width, height, location2, contaminated,
                                         str(len(results)))
                 pdf.cell(width, height, text, ln=1)
                 if len(results)>0:
-                    new_row = {"Building Type": str(building_type).capitalize(), "Number of Contaminated buildings/infrastructure":len(results)}
-                    tempresults = tempresults.append(new_row, ignore_index=True)
+                    new_row = pd.DataFrame({"Building Type": str(building_type).capitalize(), "Number of Contaminated buildings/infrastructure":len(results)}, index=[0])
+                    tempresults = pd.concat([tempresults, new_row])
     pdf.cell(width, height, ln=1)
     pdf.cell(width, height, "Number of affected buildings/infrastructure:", ln=1)
     for filename in os.listdir(location2):
@@ -1272,8 +1272,8 @@ def getInfrastructureList(location, pdf, width, height, location2, contaminated,
                                     str(len(results)))
             pdf.cell(width, height, text, ln=1)
             if len(results)>0:
-                new_row = {"Building Type": str(building_type).capitalize(), "Number of Affected buildings/infrastructure":len(results)}
-                tempresults2 = tempresults2.append(new_row, ignore_index=True)
+                new_row = pd.DataFrame({"Building Type": str(building_type).capitalize(), "Number of Affected buildings/infrastructure":len(results)}, index=[0])
+                tempresults2 = pd.concat([tempresults2,new_row])
     pdf.cell(width, height, ln=1)
     pdf.cell(width, height, "Total buildings/infrastructure in area:", ln=1)
     for filename in os.listdir(location3):
@@ -1287,8 +1287,8 @@ def getInfrastructureList(location, pdf, width, height, location2, contaminated,
                                     str(len(results)))
             pdf.cell(width, height, text, ln=1)
             if len(results)>0:
-                new_row = {"Building Type": str(building_type).capitalize(), "Total number of buildings/infrastructure":len(results)}
-                tempresults3 = tempresults3.append(new_row, ignore_index=True)
+                new_row = pd.DataFrame({"Building Type": str(building_type).capitalize(), "Total number of buildings/infrastructure":len(results)}, index=[0])
+                tempresults3 = pd.concat([tempresults3,new_row])
     fig1, ax1 = plt.subplots()
     #print(tempresults)
     #patches, texts, autotexts = ax1.pie(tempresults["Number of Buildings"], labels=tempresults["Building Type"],

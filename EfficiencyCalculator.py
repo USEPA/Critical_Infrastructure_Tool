@@ -129,7 +129,8 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
         fdList = [infrastructureName]
         for row in arcpy.da.SearchCursor(outPolygons, [infrastructureName]):
             #arcpy.AddMessage(row)
-            results = results.append({"Building Name": row[0]}, ignore_index=True)
+            tempRow = pd.DataFrame({"Building Name": row[0]}, index=[0])
+            results = pd.concat([results, tempRow])
         #rcpy.AddMessage(results)
         results.to_csv(GISPath)
         results.to_csv(newPath)
@@ -142,7 +143,8 @@ def getAffectedInfrastructures(contaminated_shapefile, infrastructures, iname, O
         fdList = [infrastructureName, latname, longname]
         for row in arcpy.da.SearchCursor(outPolygons, [infrastructureName, latname, longname]):
             #arcpy.AddMessage(row)
-            results = results.append({"Building Name": row[0], name1: row[1], name2: row[2]}, ignore_index=True)
+            newRow = pd.DataFrame({"Building Name": row[0], name1: row[1], name2: row[2]}, index=[0])
+            results = pd.concat([results, newRow])
         #rcpy.AddMessage(results)
         results.to_csv(GISPath)
         results.to_csv(newPath)
