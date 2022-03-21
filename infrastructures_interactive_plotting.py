@@ -2,9 +2,7 @@
 """
 infrastructures_interactive_plotting.py
 Created on Sun Aug 27 14:39:25 2019
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
+
 """
 
 import numpy as np

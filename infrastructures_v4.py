@@ -2,9 +2,7 @@
 """
 infrastructures_v4.py
 Created on Sun Oct 23 19:23:05 2018
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
+
 """
 
 #import statements

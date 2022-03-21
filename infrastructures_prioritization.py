@@ -2,9 +2,7 @@
 """
 infrastructures_prioritization.py
 Created on Aug 28 14:06:28 2019
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
+
 """
 
 import numpy as np

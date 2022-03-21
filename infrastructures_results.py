@@ -2,9 +2,7 @@
 """
 infrastructures_results.py
 Created on Sun Aug 27 14:23:05 2019
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
+
 """
 
 import numpy as np

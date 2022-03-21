@@ -2,9 +2,6 @@
 """
 infrastructures_from_file.py
 Created on Wed Jun 19 15:12:06 2019
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
 """
 
 import numpy as np
