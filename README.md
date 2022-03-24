@@ -44,6 +44,7 @@ Python and ArcGIS were used to design the graphical user interface for the Stoch
 13) Right click the "Import HIFLD" script. 
 14) Select "Properties". 
 15) Select "Store tool with relative path". Change the path of the script file to the location of the "[location of Infrastructure Remediation Repository]/ImportHIFLD.py". Click Ok. 
+16) Ensure that the "Battelle.EPA.WideAreaDecon.Launcher.zip" files are unzipped, and add the exe to the same folder with the zip. There are two instances of this file - in the main repository and in the infrastructures_gui folder in the dist folder. 
 
 ## Running the Python script
 
