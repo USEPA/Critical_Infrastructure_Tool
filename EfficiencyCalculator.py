@@ -49,8 +49,8 @@ def getGov(den, num, den1, num1, den2, num2):
 		return 0
 
 def getInfName(infrastructures):
-    if "Wastewater" in infrastructures:
-        return "CWP_NAME"
+    if "Water" in infrastructures or "Agriculture" in infrastructures:
+        return "PRIMARY_NA"
     if "Roads" in infrastructures:
         return "Information"
     if "Land_Mobile" in infrastructures or "Cellular" in infrastructures:
@@ -69,6 +69,8 @@ def getInfName(infrastructures):
 def getLatName(infrastructures):
     if "Ports" in infrastructures:
         return "latitude11"
+    if "Water" in infrastructures or "Agriculture" in infrastructures:
+        return "LATITUDE83"
     if "Roads" in infrastructures:
         return "Information"
     if "Land_Mobile" in infrastructures:
@@ -87,6 +89,8 @@ def getLatName(infrastructures):
 def getLongName(infrastructures):
     if "Ports" in infrastructures:
         return "longitude1"
+    if "Water" in infrastructures or "Agriculture" in infrastructures:
+        return "LONGITUDE8"
     if "Roads" in infrastructures:
         return "Information"
     if "Land_Mobile" in infrastructures:
@@ -209,7 +213,7 @@ def getHIFLDlayers(OutputPath):
         createLayerFromAPI(r"https://opendata.arcgis.com/datasets/155761d340764921ab7fb2e88257bd97_0.geojson",
                            "Landfills_HIFLD", OutputPath)
         createLayerFromAPI(r"https://opendata.arcgis.com/datasets/4b9bac25263047c19e617d7bd7b30701_0.geojson",
-                           "Wastewater_Treatment_Plants_HIFLD", OutputPath)
+                           "Water_Treatment_Plants_FRS", OutputPath)
         createLayerFromAPI(r"https://opendata.arcgis.com/datasets/ee0263bd105d41599be22d46107341c3_0.geojson",
                            "Power_Plants_HIFLD", OutputPath)
         createLayerFromAPI(r"https://opendata.arcgis.com/datasets/1b6e231f88814aceb30fb6ad3ff86014_0.geojson",
@@ -338,9 +342,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         getAffectedInfrastructures(Contaminated_Dataset, "Ports_HIFLD","ports", OutputPath, GUI_Tool_Location, "Contaminated")
         (power_plants_contaminated) = getPercentage("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.1 Mile", OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Power_Plants_HIFLD", "power_plant", OutputPath, GUI_Tool_Location, "Contaminated")
-        (wastewater_contaminated) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,
+        (wastewater_contaminated) = getPercentage("wastewater", "Water_Treatment_Plants_FRS", Infrastructure_Dataset,
                                  Contaminated_Dataset, "0.1 Mile", OutputPath, True)
-        getAffectedInfrastructures(Contaminated_Dataset, "Wastewater_Treatment_Plants_HIFLD", "wastewater", OutputPath, GUI_Tool_Location, "Contaminated")
+        getAffectedInfrastructures(Contaminated_Dataset, "Water_Treatment_Plants_FRS", "wastewater", OutputPath, GUI_Tool_Location, "Contaminated")
         (hospitals_contaminated) = getPercentage("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.1 Mile", OutputPath, True)
         getAffectedInfrastructures(Contaminated_Dataset, "Hospital_Locations_HIFLD", "hospitals", OutputPath, GUI_Tool_Location, "Contaminated")
         (gov_contaminated) = getPercentage("government", "Major_State_Government_Buildings_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.1 Mile",
@@ -364,6 +368,10 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
         getAffectedInfrastructures(Contaminated_Dataset, "Colleges_HIFLD","colleges", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Corporate_HIFLD","corporate", OutputPath, GUI_Tool_Location, "Contaminated", True)
         getAffectedInfrastructures(Contaminated_Dataset, "Worship_HIFLD","worship", OutputPath, GUI_Tool_Location, "Contaminated", True)
+        (agrigov_contaminated) = getPercentage("agri_gov", "Agriculture_Buildings_FRS", Infrastructure_Dataset,
+                                 Contaminated_Dataset, "0.1 Mile", OutputPath, True)
+        getAffectedInfrastructures(Contaminated_Dataset, "Agriculture_Buildings_FRS", "agri_gov", OutputPath, GUI_Tool_Location, "Contaminated")
+        
         (electricgrid_contaminated) = getPercentage("grid", "Transmission_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.01 Mile", OutputPath, True)
         electricgrid_contaminated= electricgrid_contaminated*multiplier
         (substation_contaminated) = getPercentage("substation", "Electric_Substation_HIFLD", Infrastructure_Dataset, Contaminated_Dataset, "0.01 Mile", OutputPath, True)
@@ -373,6 +381,10 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     (waste) = round(getPercentage("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath),2)
     getAffectedInfrastructures(ScenarioDataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Affected")
     getAffectedInfrastructures(Infrastructure_Dataset, "Landfills_HIFLD","landfill", OutputPath, GUI_Tool_Location, "Overall")
+
+    (agri_gov) = round(getPercentage("agri_gov", "Agriculture_Buildings_FRS", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath),2)
+    getAffectedInfrastructures(ScenarioDataset, "Agriculture_Buildings_FRS","agri_gov", OutputPath, GUI_Tool_Location, "Affected")
+    getAffectedInfrastructures(Infrastructure_Dataset, "Agriculture_Buildings_FRS","agri_gov", OutputPath, GUI_Tool_Location, "Overall")
     
     (ports) = getPercentage("ports", "Ports_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.5 Mile", OutputPath)
     getAffectedInfrastructures(ScenarioDataset, "Ports_HIFLD","ports", OutputPath, GUI_Tool_Location, "Affected")
@@ -383,9 +395,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     getAffectedInfrastructures(Infrastructure_Dataset, "Power_Plants_HIFLD","plants", OutputPath, GUI_Tool_Location, "Overall")
     
     
-    (wastewater) = getPercentage("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,ScenarioDataset, "0.1 Mile", OutputPath)
-    getAffectedInfrastructures(ScenarioDataset, "Wastewater_Treatment_Plants_HIFLD","wastewater", OutputPath, GUI_Tool_Location, "Affected")
-    getAffectedInfrastructures(Infrastructure_Dataset, "Wastewater_Treatment_Plants_HIFLD","wastewater", OutputPath, GUI_Tool_Location, "Overall")
+    (wastewater) = getPercentage("wastewater", "Water_Treatment_Plants_FRS", Infrastructure_Dataset,ScenarioDataset, "0.1 Mile", OutputPath)
+    getAffectedInfrastructures(ScenarioDataset, "Water_Treatment_Plants_FRS","wastewater", OutputPath, GUI_Tool_Location, "Affected")
+    getAffectedInfrastructures(Infrastructure_Dataset, "Water_Treatment_Plants_FRS","wastewater", OutputPath, GUI_Tool_Location, "Overall")
                                  
     (hospitals) = getPercentage("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath)
     getAffectedInfrastructures(ScenarioDataset, "Hospital_Locations_HIFLD","hospitals", OutputPath, GUI_Tool_Location, "Affected")
@@ -455,9 +467,9 @@ def EfficiencyCalculator(ScenarioDataset="dissolved2", Contaminated_Dataset = "c
     # Process: Affected Infrastructure Statistics (Summary Statistics)
 
     # Process: Calculate Agriculture Percent (Calculate Value) 
-    agriculture_percent = round(farm, 2)
+    agriculture_percent = round((farm+agri_gov)/2, 2)
     if arcpy.Exists(Contaminated_Dataset):
-        agriculture_percent_contaminated = round(farm_contaminated, 2)
+        agriculture_percent_contaminated = round((farm_contaminated+agrigov_contaminated)/2, 2)
 
     # Process: Calculate WaterPercent (Calculate Value) 
     water_percent = round(wastewater, 2)
@@ -685,7 +697,7 @@ def fillOut(excelDoc, ScenarioDataset, Infrastructure_Dataset, OutputPath, GUI_T
     (waste_contaminated) = round(getArea("landfills", "Landfills_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True),2)
     (ports_contaminated) = getArea("ports", "Ports_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
     (power_plants_contaminated) = getArea("plants", "Power_Plants_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
-    (wastewater_contaminated) = getArea("wastewater", "Wastewater_Treatment_Plants_HIFLD", Infrastructure_Dataset,
+    (wastewater_contaminated) = getArea("wastewater", "Water_Treatment_Plants_FRS", Infrastructure_Dataset,
                              ScenarioDataset, "0.1 Mile", OutputPath, True)
     (hospitals_contaminated) = getArea("hospitals", "Hospital_Locations_HIFLD", Infrastructure_Dataset, ScenarioDataset, "0.1 Mile", OutputPath, True)
 
