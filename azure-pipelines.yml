@@ -26,8 +26,8 @@ steps:
     pip install -r requirements.txt
     python -m pip install numpy
     python -m pip install scipy
-    python -m --trusted-host pypi.org --trusted-host files.pythonhosted.org pip install matplotlib
-    python -m pip install pandas
+    python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\matplotlib-3.5.1-cp37-cp37m-win_amd64.whl"
+    python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\pandas-1.3.5-cp37-cp37m-win_amd64.whl"
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\PyInstaller-3.6.tar.gz"
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\GDAL-3.0.4-cp37-cp37m-win_amd64.whl"
     python -m pip install "\\milky-way\projects\NSD\Mothman\AutomatedBuilds\Build Server Resources\Fiona-1.8.13-cp37-cp37m-win_amd64.whl"
