@@ -4,22 +4,37 @@ block_cipher = None
 from PyInstaller.utils.hooks import collect_data_files
 
 hidden_imports = [
-	'numpy',
+    'numpy',
     'ctypes',
     'ctypes.util',
-    'fiona',
-    'gdal',
-    'geos',
-    'shapely',
-    'shapely.geometry',
+    'matplotlib',
+	'matplotlib.pyplot',
     'pyproj',
+     'scipy',
+	'urllib',
+	'urllib.request',
+    'palettable',
     'rtree',
-    'geopandas.datasets',
     'pytest',
     'pandas._libs.tslibs.timedeltas',
+     'statsmodels.tsa.statespace._kalman_initialization',
+     'statsmodels.tsa.statespace._kalman_filter',
+    'statsmodels.tsa.statespace._kalman_smoother',
+     'statsmodels.tsa.statespace._representation',
+      'statsmodels.tsa.statespace._simulation_smoother',
+    'statsmodels.tsa.statespace._statespace',
+    'statsmodels.tsa.statespace._tools',
+    'statsmodels.tsa.statespace._filters._conventional',
+    'statsmodels.tsa.statespace._filters._inversions',
+    'statsmodels.tsa.statespace._filters._univariate',
+    'statsmodels.tsa.statespace._filters._univariate_diffuse',
+    'statsmodels.tsa.statespace._smoothers._alternative',
+   'statsmodels.tsa.statespace._smoothers._classical',
+   'statsmodels.tsa.statespace._smoothers._conventional',
+   'statsmodels.tsa.statespace._smoothers._univariate',
+   'statsmodels.tsa.statespace._smoothers._univariate_diffuse'
 ]
-added_files = [('default.csv', '.'), ('infrastructures_inputs.txt', '.')]
-added_files += collect_data_files('geopandas', subdir='datasets')
+added_files = [('default.csv', '.'),('Contaminated','Contaminated\\') ,('infrastructures_inputs.txt', '.'),('Sensitivity Images','Sensitivity Images\\'),('Sensitivity','Sensitivity\\'),('report_inputs.txt','.'), ('DefineScenario.xlsx','.'),  ("dist\\sensitivity_GUI", "."), ('final_pdf.py','.'), ('Battelle.EPA.WideAreaDecon.Launcher.zip','.'),('Battelle.Native.External.Rmath.dll','.'),('Battelle.RiskAssessment.Common.Statistics.Native.Interface.dll','.'), ("executingDirectoryPath", "executingDirectoryPath\\"),("azure", "azure\\"),("Azure-ttk-theme-main", "Azure-ttk-theme-main\\"),("azure.tcl","."),("palettable","palettable\\"),("Affected","Affected\\"),("Contaminated","Contaminated\\"),("Overall","Overall\\"),("JobRequest.json","."),("SIRMResults.json","."),("newJobRequest.json","."),("Results","Results\\"),("SIRM Tool.tbx", "."), ("Input Shapefiles", "Input Shapefiles\\"), ("temp_output","temp_output\\") ]
 
 a = Analysis(['infrastructures_gui.py'],
              pathex=['C:\\Repos\\SIRM\\InfrastructureRemediation'],

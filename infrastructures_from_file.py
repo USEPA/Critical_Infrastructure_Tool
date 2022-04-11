@@ -2,9 +2,7 @@
 """
 infrastructures_from_file.py
 Created on Wed Jun 19 15:12:06 2019
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
+
 """
 
 import numpy as np
@@ -12,6 +10,12 @@ import warnings
 import infrastructures_v4
 import tkinter.messagebox as tkMessageBox
 import json
+import os
+import numpy
+import pathlib
+import os.path
+from inspect import getsourcefile
+from os.path import abspath
 
 def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
@@ -35,9 +39,11 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     contamination = [0,0,0,0,0,0,0,0,0]
 
     #read file
-    json_data = open(fname)
+    #dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.dirname(abspath(getsourcefile(lambda:0)))
+    json_data = open(dir_path + "//" + fname)
     data = json.load(json_data)
-    
+
     #n0 calculation
     n_values = list(data["n0"])
     if check_inputs("Initial efficiencies", n_values, 100, 0, 9):
@@ -204,7 +210,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
                 
     b_values = list(data["backups"])
     backups = []
-    if b_values[0] == "None" or b_values[0] == "none":
+    if b_values[0] == "None" or b_values[0] == "none" or b_values == None:
         backups = None
     elif check_inputs("Backup indexes", b_values, 9, 0, len(list(data["backupPercent"]))):
         for i in range(0, len(b_values)):
@@ -217,7 +223,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
     bp_values = list(data["backupPercent"])
     
     backupPercents = []
-    if bp_values[0] == "None" or bp_values[0] == "none":
+    if bp_values[0] == "None" or bp_values[0] == "none" or bp_values == None:
         backupPercents = None
     elif backups == None:
         tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
@@ -232,7 +238,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     db_values = list(data["daysBackup"])
     daysBackup = []
-    if db_values[0] == "None" or db_values[0] == "none":
+    if db_values[0] == "None" or db_values[0] == "none" or db_values == None:
         daysBackup = None
     elif backups == None:
         tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
@@ -247,7 +253,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
 
     depb_values = list(data["depBackup"])
     depBackup = [] 
-    if depb_values[0] == "None" or depb_values[0] == "none":
+    if depb_values[0] == "None" or depb_values[0] == "none" or depb_values == None:
         depBackup = None
     elif backups == None:
         tkMessageBox.showerror("Error","If backups all None all other backup related inputs must be none")
@@ -269,7 +275,7 @@ def run_file(optimize, orders, coeffs, ks ,fname="infrastructures_inputs.txt"):
         negatives = True
     else:
         negatives = False
-
+        #remediationFactor=timeSpan
     leg = infrastructures_v4.infrastructures(n0, repair_factors, nLoss, tLoss, timeSpan, nRun, paramTypes,
                                              paramIndexes, infStoichFactor, printProgress, averaging, intervals, seedValue, name, remediationFactor, contamination,
                                                  backups, backupPercents, daysBackup, depBackup, orders, coeffs, ks, negatives)
@@ -285,7 +291,7 @@ def check_inputs(inputName, inputs, max, min, length):
         meetsMin = all(float(i) >= min for i in inputs)
         meetsMax = all(float(i) <= max for i in inputs)
         lengthError = "length of " + inputName + " must be " + str(length)
-        valueError = inputName + " values must be between" + str(min) + " and " + str(max)
+        valueError = inputName + " values must be between " + str(min) + " and " + str(max)
         if meetsLength and meetsMin and meetsMax:
             return True
         else:
@@ -317,6 +323,8 @@ def read_file(fname = "infrastructures_inputs.txt"):
     #This function is only used by infrastructures_gui to prepopulate the entry boxes in the GUI
 
     #read file
+    #dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = os.path.dirname(os.path.realpath(__file__))
     json_data = open(fname)
     data = json.load(json_data)
     

@@ -2,9 +2,7 @@
 """
 infrastructures_interactive_plotting.py
 Created on Sun Aug 27 14:39:25 2019
-Created by: Mitchell Wendt
-Revised: 08/28/2019
-Revised by: Mitchell Wendt
+
 """
 
 import numpy as np
@@ -19,7 +17,7 @@ def plotting(t,n,lower_bounds,upper_bounds,timeSpan, imageFileName, contam):
     fig, ax = plt.subplots(figsize=(17,8))
     for i in range(0, 9):
         ax.plot(t[:len(n)], n[:,i], color = colors[i], label = labels[i])
-        ax.plot(t, contam[:,i], color = colors[i], label = str("Uncontaminated " +  labels[i]), linestyle="--")
+        #ax.plot(t, contam[:,i], color = colors[i], label = str("Uncontaminated " +  labels[i]), linestyle="--")
         if t[len(n)-1] < timeSpan:
             ax.plot([t[len(n)-1], timeSpan], [n[len(n)-1][i], n[len(n)-1][i]], color = colors[i])
         if lower_bounds is not None and upper_bounds is not None:
