@@ -32,7 +32,7 @@ steps:
   displayName: 'Install Dependencies'
   
 - script: |
-    pyinstaller sensitivity_GUI.spec sensitivity_GUI.py
+    pyinstaller sensitivity_GUI.py
   displayName: 'Create Sensitivity GUI'
 
 - script: |
