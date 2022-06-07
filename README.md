@@ -77,4 +77,5 @@ The zip file can be handed off to another machine. To add an additional layer of
 
 1) If the ImportHIFLD cannot import a certain file, ensure that the URL is correct in the Python file. The URLS can be found here: ttps://hifld-geoplatform.opendata.arcgis.com/. In the ImportHIFLD.py file, replace "HIFLD_URL" in the relevant line in the function "importDataset" (createLayerFromAPI(r"<HIFLD_URL>", "<infrastructure_type>_HIFLD", Temporary_Output_Path))
 2) If the Internet connection is weak, either Import HIFLD or Efficiency Calculator may time out and throw an error. Ensure your connection is strong, and rerun the tool. Typically, each function takes around 10-15 minutes, but the Efficiency Calculator can take more time for larger incidents. 
+3) If the dist folder does not exist, you will need to run the command: **pyinstaller sensitivity_GUI.spec sensitivity_GUI.py** in the code folder, then **pyinstaller infrastructures_gui.spec infrastructures_gui.py**. 
  
